@@ -3,7 +3,7 @@ import os
 import argparse
 
 parser = argparse.ArgumentParser(description='Generate entropies matrix from *.pat.entropy.bed file of entropyExtractForpat.')
-parser.add_argument('-d', '--depth', default='close', type=int, help='The totalC less than depth will bed filter out')
+parser.add_argument('-d', '--depth', default='1', type=int, help='The totalC less than depth will bed filter out')
 parser.add_argument('-c', '--coordinate', required=True, help='The coordinate bed file')
 parser.add_argument('-i', '--input', required=True, help='The input file list to merge')
 parser.add_argument('-o', '--output', default='./merge.ratio.bed', help='The output file')
