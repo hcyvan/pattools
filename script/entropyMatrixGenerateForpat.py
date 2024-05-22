@@ -2,8 +2,8 @@ import time
 import os
 import argparse
 
-parser = argparse.ArgumentParser(description='Generate methylation level matrix from *.G.bed file of MOABS.')
-parser.add_argument('-d', '--depth', default=0, type=int, help='The totalC less than depth will bed filter out')
+parser = argparse.ArgumentParser(description='Generate entropies matrix from *.pat.entropy.bed file of entropyExtractForpat.')
+parser.add_argument('-d', '--depth', default='close', type=int, help='The totalC less than depth will bed filter out')
 parser.add_argument('-c', '--coordinate', required=True, help='The coordinate bed file')
 parser.add_argument('-i', '--input', required=True, help='The input file list to merge')
 parser.add_argument('-o', '--output', default='./merge.ratio.bed', help='The output file')
@@ -30,7 +30,7 @@ files = []
 for x in open(input_dir, 'r'):
     if len(x.strip()) > 0:
         files.append(x.strip())
-header = ["#chrom", "start", "end"]
+header = ["#chrom", "mapinfo", "end"]
 header.extend([os.path.basename(x).split('.')[0] for x in files])
 
 fs = []
@@ -75,11 +75,11 @@ for line in open(coordinate, 'r'):
             ratio_plus.append('-1')
             ratio_minus.append('-1')
         else:
-            totalC = int(t[6].strip()) 
-            if row[0] == t[0] and int(row[1]) == int(t[1]):
+            totalC = int(t[1].strip()) 
+            if row[0] == t[0] and int(row[2]) == int(t[1]):
                 if merge_ratio_bed:
                     if totalC >= depth:
-                        ratio.append(t[4].strip())
+                        ratio.append(t[2].strip())
                     else:
                         ratio.append('-1')
                         minus1 += 1
