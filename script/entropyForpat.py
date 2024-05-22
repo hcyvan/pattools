@@ -1,6 +1,7 @@
 import gzip
 import math
 import argparse
+import os
 
 class PatWindow:
     """
@@ -121,12 +122,15 @@ def calculate_entropy(patWin, deep):
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', dest='input', help='Input file path')
-parser.add_argument('-o', dest='output', help='Output dir')
+parser.add_argument('-o', dest='output_dir', help='Output dir')
 parser.add_argument('-d', dest='deep', help='total counts for pattern')
 
 args = parser.parse_args()
 
 patWindow = PatWindow(args.input)
+
+base_name = os.path.splitext(os.path.basename(args.input))[0]
+output_file = f"{args.output_dir}/{base_name}.entropy.bed"
 
 with open(args.output, 'w') as f:
     for pat in patWindow:
