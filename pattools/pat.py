@@ -67,9 +67,10 @@ class PatWindow:
         self.patternTmpDictChr = self.patternDictChr
         self.patternTmpDictStart = self.patternDictStart + 1
         ret = dict()
+
         for k, v in self.patternDict.items():
             if len(k) >= self.window:
-                ret[k[0:self.window]] = v
+                ret[k[0:self.window]] = ret.get(k[0:self.window], 0) + v
                 if len(k) >= self.window + 1:
                     self.patternTmpDict[k[1:]] = v
         return self.patternDictChr, self.patternDictStart, ret
