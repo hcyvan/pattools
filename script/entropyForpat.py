@@ -132,7 +132,7 @@ patWindow = PatWindow(args.input)
 base_name = os.path.splitext(os.path.basename(args.input))[0]
 output_file = f"{args.output_dir}/{base_name}.entropy.bed"
 
-with open(args.output, 'w') as f:
+with open(output_file, 'w') as f:
     for pat in patWindow:
         entropy = calculate_entropy(pat[2],int(args.deep))
         f.write(f"{pat[0]}\t{pat[1]}\t{entropy}\n")
