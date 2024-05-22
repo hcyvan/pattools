@@ -30,7 +30,7 @@ files = []
 for x in open(input_dir, 'r'):
     if len(x.strip()) > 0:
         files.append(x.strip())
-header = ["#chrom", "mapinfo", "end"]
+header = ["#chrom", "strat", "end","number"]
 header.extend([os.path.basename(x).split('.')[0] for x in files])
 
 fs = []
@@ -76,7 +76,7 @@ for line in open(coordinate, 'r'):
             ratio_minus.append('-1')
         else:
             totalC = int(t[1].strip()) 
-            if row[0] == t[0] and int(row[2]) == int(t[1]):
+            if row[0] == t[0] and int(row[3]) == int(t[1]):
                 if merge_ratio_bed:
                     if totalC >= depth:
                         ratio.append(t[2].strip())
