@@ -3,7 +3,7 @@ import argparse
 import os
 from pattools.pat import PatWindow
 
-def calculate_entropy(patWin, deep):
+def calculate_entropy(patWin, depth):
     """
     Calculate the entropy of given patterns.
     
@@ -14,16 +14,22 @@ def calculate_entropy(patWin, deep):
     Returns:
     - float, entropy value, or -1 if total count is less than `deep`
     """
-    total_count = sum(patWin.values())
+    given_substrings = {'CCCC': 0, 'CCCT': 0, 'CCTC': 0, 'CCTT': 0, 'CTCC': 0, 'CTCT': 0, 'CTTC': 0, 'CTTT': 0,
+                        'TCCC': 0, 'TCCT': 0, 'TCTC': 0, 'TCTT': 0, 'TTCC': 0, 'TTCT': 0, 'TTTC': 0, 'TTTT': 0}
 
-    if total_count < deep:
-        return -1
-
-    entropy = -sum((count / total_count) * math.log2(count / total_count) for count in patWin.values() if count > 0) * 0.25
-    if entropy == -0.0:
-        entropy = 0.0
+    total_count = 0
+    for substring, count in patWin.items():
+        if substring in given_substrings:
+            given_substrings[substring] += count
+            total_count += count   
+    if total_count >= depth:
+        entropies = {key: (value / total_count) * math.log2((value / total_count)) for key, value in given_substrings.items() if value != 0}
+        entropy = -sum(entropies.values()) * 0.25
+        if entropy == -0.0:
+            entropy = 0.0
+    else:
+        entropy = -1
     return round(entropy, 4)
-
 
 def main():
     parser = argparse.ArgumentParser()
