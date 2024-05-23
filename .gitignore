@@ -8,3 +8,5 @@ config.yaml
 __pycache__/
 .ipynb_checkpoints
 tmp
+
+*.egg-info
