@@ -25,7 +25,7 @@ def main():
 
     parser_entropy = subparsers.add_parser('entropy',
                                            help='This command performs entropy analysis on the sample')
-    parser_region.add_argument('-o', '--out', required=True, help='The output file')
+    parser_entropy.add_argument('-o', '--out', required=True, help='The output file')
 
     args = parser.parse_args()
     if args.sub == 'deconv':
