@@ -8,4 +8,9 @@ config.yaml
 __pycache__/
 .ipynb_checkpoints
 tmp
+<<<<<<< HEAD
 .DS_Store
+=======
+
+*.egg-info
+>>>>>>> origin/master
