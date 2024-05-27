@@ -40,6 +40,7 @@ def get_methylation_density_from_pat_by_cpg_idx(pat_file, genome_cpg_regions: Or
         for genome_idx, cpg_idx in genome_cpg_regions.items():
             counter = Counter()
             for record in tbx.fetch(region=cpg_idx):
+                # TODO: Remove out-of-bounds motif on the right
                 motif = record.split("\t")[2]
                 counter += Counter(motif)
             total = counter["T"] + counter["C"]
