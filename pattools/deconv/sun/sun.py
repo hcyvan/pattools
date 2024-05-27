@@ -6,18 +6,6 @@ from collections import Counter
 from collections import OrderedDict
 from importlib import resources
 
-# CpGBed = "/mnt/d/project/wgbs_tools/references/hg38/CpG.bed.gz"
-# CpGBedCsi = "/mnt/d/project/wgbs_tools/references/hg38/CpG.bed.gz.csi"
-# patFile = "/mnt/d/data/cacLung/raw/pat/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.pat.gz"
-# markerFile = "/mnt/d/project/cacLung/pattools/deconv/sun/markerType2.csv"
-# markerFile = "/mnt/d/project/cacLung/pattools/deconv/sun/markerType1.csv"
-#
-# typeMap = "/mnt/d/project/cacLung/tmp/type2.map.bed"
-# typeMap = "/mnt/d/project/cacLung/tmp/type1.map.bed"
-
-# md_array
-
-
 TISSUE = ['Liver', 'Lungs', 'Colon', 'SmallIntestines', 'Pancreas', 'AdrenalGlands', 'Esophagus', 'AdiposeTissues',
           'Heart', 'Brain', 'T-cells', 'B-cells', 'Neutrophils', 'Placenta']
 
