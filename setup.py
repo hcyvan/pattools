@@ -14,7 +14,7 @@ setup(
         'Programming Language :: Python :: 3.10',
         "Operating System :: OS Independent"
     ],
-    install_requires=['pysam'],
+    install_requires=['pysam', 'cvxpy', 'scipy'],
     entry_points={
         'console_scripts': [
             'pattools=pattools:main',
