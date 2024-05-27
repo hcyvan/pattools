@@ -1,4 +1,5 @@
 import argparse
+from pattools.deconv import deconvolution_sun
 
 
 def main():
@@ -8,12 +9,12 @@ def main():
     parser.add_argument('-q', '--quiet', action='store_true', help='print run details to stderr')
     subparsers = parser.add_subparsers(dest='sub', required=True, title='command', description='The available commands',
                                        help='select a sub command to use')
-
+    # =====================================================================
     parser_region = subparsers.add_parser('deconv',
                                           help='This command is used to calculate the cellular composition of the '
                                                'sample according to the pat format.')
     parser_region.add_argument('-p', '--pat', required=True, help='The pat file')
-    parser_region.add_argument('-m', '--method', required=True,
+    parser_region.add_argument('-m', '--method', choices=['sun', 'moss', 'loyfer'], default='sun',
                                help='The deconvolution method.'
                                     'sun: Sun et al. Plasma DNA tissue mapping by genome-wide methylation sequencing'
                                     ' for noninvasive prenatal, cancer, and transplantation assessments. '
@@ -21,14 +22,23 @@ def main():
                                     ' of circulating cell-free DNA in health and disease. '
                                     'loyfer: Loyfer et al. A DNA methylation atlas of normal human cell types.'
                                )
+    parser_region.add_argument('-a', '--optimization-algorithm', choices=['nnls', 'qp'], default='nnls',
+                               help='The optimization algorithm for deconvolution.')
+    parser_region.add_argument('-g', '--genome-version', choices=['hg38', 'hg19'], default='hg38',
+                               help='The genome version.')
+    parser_region.add_argument('-c', '--cpg-bed', required=True, help='The cpg_bed file of the selected genome.')
     parser_region.add_argument('-o', '--out', required=True, help='The output file')
-
+    # =====================================================================
     parser_entropy = subparsers.add_parser('entropy',
                                            help='This command performs entropy analysis on the sample')
     parser_entropy.add_argument('-o', '--out', required=True, help='The output file')
 
     args = parser.parse_args()
     if args.sub == 'deconv':
-        print("This method is not complete")
+        if args.method == 'sun':
+            deconvolution_sun(args.pat, args.out, args.genome_version, cpg_bed=args.cpg_bed,
+                              optimization=args.optimization_algorithm)
+        else:
+            print("This method is not complete")
     elif args.sub == 'entropy':
         print("This method is not complete")
