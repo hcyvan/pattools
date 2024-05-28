@@ -1,4 +1,5 @@
 import pandas as pd
+from collections import Counter
 from collections import OrderedDict
 from pattools.pat import PatRegion
 
@@ -21,7 +22,9 @@ def get_methylation_density_from_pat_by_cpg_idx(pat_file, genome_cpg_regions: Or
     cpg_methylation_density = []
     pat = PatRegion(pat_file, genome_cpg_regions_df['cpg'].to_list())
     for _, line in enumerate(pat):
-        counter = line[1]
+        counter = Counter()
+        for item in list(line[1].elements()):
+            counter += Counter(item)
         total = counter["T"] + counter["C"]
         if total:
             methy_density = (counter["C"] / total)
