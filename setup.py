@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name="pattools",
     packages=['pattools'],
-    version="0.0.2",
+    version="0.0.3",
     author="gomics",
     author_email="it@gomicsgene.com",
     description="pattools is a BS-seq analysis tool suite based on pat format",

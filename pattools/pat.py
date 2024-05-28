@@ -5,11 +5,12 @@ class PatWindow:
     """
     This class is used to split Pat file into windows
     eg:
-        patFile = 'D:/data/cacLung/raw/pat/test.chr21_22.pat.gz'
+        patFile = '/path/to/test.chr21_22.pat.gz'
         patWindow = PatWindow(patFile)
         for win in patWindow:
             print(win)
     """
+
     def __init__(self, pat_file, window=4, remove_empty=True):
         self.window = window
         self.remove_empty = remove_empty
@@ -34,6 +35,8 @@ class PatWindow:
         if self.line is None and not self.patternDict:
             return False
         if self.line is None and self.patternDict:
+            self.patternDictChr = self.patternTmpDictChr
+            self.patternDictStart = self.patternTmpDictStart
             return True
         elif self.line and self.patternDict:
             if self.patternTmpDictChr != self.line[0] or self.patternTmpDictStart != int(self.line[1]):
@@ -72,7 +75,7 @@ class PatWindow:
             if len(k) >= self.window:
                 ret[k[0:self.window]] = ret.get(k[0:self.window], 0) + v
                 if len(k) >= self.window + 1:
-                    self.patternTmpDict[k[1:]] = v
+                    self.patternTmpDict[k[1:]] = self.patternTmpDict.get(k[1:], 0) + v
         return self.patternDictChr, self.patternDictStart, ret
 
     def __iter__(self):
@@ -90,6 +93,7 @@ class PatWindow:
                     return chr, start, pattern
             else:
                 raise StopIteration
+
 
 if __name__ == '__main__':
     pass
