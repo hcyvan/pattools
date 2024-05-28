@@ -1,3 +1,4 @@
+import sys
 import pysam
 from collections import OrderedDict
 
@@ -22,8 +23,13 @@ class GenomicRegion:
         with pysam.TabixFile(self.cpg_bed, index=self.cpg_bed_csi) as tbx:
             for region in g_idx_regions:
                 tmp = []
-                for record in tbx.fetch(region=region):
-                    tmp.append(record)
+                try:
+                    fetch_regions = tbx.fetch(region=region)
+                    for record in fetch_regions:
+                        tmp.append(record)
+                except Exception as e:
+                    sys.stderr.write(f'{e}')
+
                 if len(tmp):
                     chrom = tmp[0].split('\t')[0]
                     cpg_start = tmp[0].split('\t')[2]
