@@ -3,7 +3,7 @@ from setuptools import setup,find_packages
 setup(
     name="pattools",
     packages=find_packages(),
-    version="0.0.8",
+    version="0.0.9",
     author="gomics",
     author_email="it@gomicsgene.com",
     description="pattools is a BS-seq analysis tool suite based on pat format",
