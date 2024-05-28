@@ -1,6 +1,6 @@
 import pandas as pd
 from pattools.region import GenomicRegion
-from pattools.deconv.optimization import opt_qp, opt_nnsl
+from pattools.deconv.optimization import opt_qp, opt_nnls
 from pattools.deconv.utils import get_methylation_density_from_pat_by_cpg_idx
 from importlib import resources
 
@@ -34,12 +34,12 @@ def ge_tissue_matrix_and_methylation_density(pat_file, genome_version, cpg_bed):
     return data.loc[:, TISSUE], data.loc[:, 'methylation_density']
 
 
-def deconvolution_sun(pat_file, out_file, genome_version, cpg_bed, optimization='nnsl'):
+def deconvolution_sun(pat_file, out_file, genome_version, cpg_bed, optimization='nnls'):
     tissue_matrix, methy_density = ge_tissue_matrix_and_methylation_density(pat_file, genome_version, cpg_bed)
     if optimization == 'QP':
         opt_func = opt_qp
     else:
-        opt_func = opt_nnsl
+        opt_func = opt_nnls
     proportion = opt_func(tissue_matrix.values, methy_density.values)
     out = pd.DataFrame({'tissue': tissue_matrix.columns, 'proportion': proportion})
     out.to_csv(out_file, sep='\t', index=False)

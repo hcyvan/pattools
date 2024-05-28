@@ -1,5 +1,5 @@
 import argparse
-from pattools.deconv import deconvolution_sun
+from pattools.deconv import deconvolution_sun, deconvolution_moss
 
 
 def main():
@@ -38,6 +38,9 @@ def main():
         if args.method == 'sun':
             deconvolution_sun(args.pat, args.out, args.genome_version, cpg_bed=args.cpg_bed,
                               optimization=args.optimization_algorithm)
+        if args.method == 'moss':
+            deconvolution_moss(args.pat, args.out, args.genome_version, cpg_bed=args.cpg_bed,
+                               optimization=args.optimization_algorithm)
         else:
             print("This method is not complete")
     elif args.sub == 'entropy':

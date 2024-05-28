@@ -3,7 +3,7 @@ import numpy as np
 from scipy.optimize import nnls
 
 
-def opt_nnsl(A, b):
+def opt_nnls(A, b):
     x, rnorm = nnls(A, b)
     if np.all(x >= 0):
         return x

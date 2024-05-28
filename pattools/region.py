@@ -28,7 +28,7 @@ class GenomicRegion:
                     for record in fetch_regions:
                         tmp.append(record)
                 except Exception as e:
-                    sys.stderr.write(f'{e}')
+                    sys.stderr.write(f'{e}\n')
 
                 if len(tmp):
                     chrom = tmp[0].split('\t')[0]
