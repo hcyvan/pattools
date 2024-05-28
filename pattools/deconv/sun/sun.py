@@ -1,9 +1,7 @@
 import pandas as pd
 from pattools.region import GenomicRegion
 from pattools.deconv.optimization import opt_qp, opt_nnsl
-import pysam
-from collections import Counter
-from collections import OrderedDict
+from pattools.deconv.utils import get_methylation_density_from_pat_by_cpg_idx
 from importlib import resources
 
 TISSUE = ['Liver', 'Lungs', 'Colon', 'SmallIntestines', 'Pancreas', 'AdrenalGlands', 'Esophagus', 'AdiposeTissues',
@@ -24,41 +22,13 @@ def get_marker(genome_version='hg38'):
     return marker
 
 
-def get_methylation_density_from_pat_by_cpg_idx(pat_file, genome_cpg_regions: OrderedDict):
-    """
-    Get methylation density from pat file.
-    Sun et al. Plasma DNA tissue mapping by genome-wide methylation sequencing for noninvasive prenatal, cancer,
-     and transplantation assessments.
-
-    :param pat_file:
-    :param genome_cpg_regions: ordered dict of Genomic index => CpG index
-    :return: ordered dict of Genomic index => methylation density
-    """
-    pat_csi_file = pat_file + ".csi"
-    methy_density_dict = OrderedDict()
-    with pysam.TabixFile(pat_file, index=pat_csi_file) as tbx:
-        for genome_idx, cpg_idx in genome_cpg_regions.items():
-            counter = Counter()
-            for record in tbx.fetch(region=cpg_idx):
-                # TODO: Remove out-of-bounds motif on the right
-                motif = record.split("\t")[2]
-                counter += Counter(motif)
-            total = counter["T"] + counter["C"]
-            if total:
-                methy_density = (counter["C"] / total) * 100
-            else:
-                methy_density = -1
-            methy_density_dict[genome_idx] = methy_density
-    return methy_density_dict
-
-
 def ge_tissue_matrix_and_methylation_density(pat_file, genome_version, cpg_bed):
     marker = get_marker(genome_version)
     gr = GenomicRegion(cpg_bed)
     genome_cpg_idx = gr.genomic_to_cpg_idx(marker[genome_version].to_list())
-    md_dict = get_methylation_density_from_pat_by_cpg_idx(pat_file, genome_cpg_idx)
-    methy = pd.DataFrame([[k, v] for k, v in md_dict.items()], columns=[genome_version, 'methylation_density'])
-
+    methy = get_methylation_density_from_pat_by_cpg_idx(pat_file, genome_cpg_idx)
+    methy.columns = [genome_version, 'cpg', 'methylation_density']
+    methy['methylation_density'] = methy['methylation_density']*100
     data = pd.merge(marker, methy, on=genome_version, how='left')
     data = data[~data['methylation_density'].isna()]
     return data.loc[:, TISSUE], data.loc[:, 'methylation_density']
