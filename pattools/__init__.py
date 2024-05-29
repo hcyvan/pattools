@@ -34,13 +34,13 @@ def main():
                                            help='This command performs entropy analysis on the sample')
     parser_entropy.add_argument('-i', '--input', required=True, help='Input file, *.pat.gz format')
     parser_entropy.add_argument('-d', '--depth', required=True, help='the minimum total count required to calculate entropy')
-    parser_entropy.add_argument('-o', '--out_dir', required=True, help='The output directory')
+    parser_entropy.add_argument('-o', '--out', required=True, help='The output file, *.gz format')
     # =====================================================================
-    parser_entropy = subparsers.add_parser('ratio',
+    parser_ratio = subparsers.add_parser('ratio',
                                            help='This command performs methylation ratio analysis on the sample')
-    parser_entropy.add_argument('-i', '--input', required=True, help='Input file, *.pat.gz format')
-    parser_entropy.add_argument('-d', '--depth', required=True, help='the minimum total count required to calculate entropy')
-    parser_entropy.add_argument('-o', '--out_dir', required=True, help='The output directory')    
+    parser_ratio.add_argument('-i', '--input', required=True, help='Input file, *.pat.gz format')
+    parser_ratio.add_argument('-d', '--depth', required=True, help='the minimum total count required to calculate entropy')
+    parser_ratio.add_argument('-o', '--out', required=True, help='The output file, *.gz format')    
 
     args = parser.parse_args()
     if args.sub == 'deconv':
@@ -53,7 +53,7 @@ def main():
         else:
             print("This method is not complete")
     elif args.sub == 'entropy':
-        extract_entropy(args.input, args.depth, args.out_dir)
+        extract_entropy(args.input, args.depth, args.out)
     elif args.sub == 'ratio':
-        extract_ratio(args.input, args.depth, args.out_dir)
+        extract_ratio(args.input, args.depth, args.out)
         # print("This method is not complete")
