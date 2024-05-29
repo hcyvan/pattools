@@ -1,4 +1,4 @@
-import os
+import gzip
 from pattools.pat import PatWindow
 
 def calculate_methlevel(patWin, depth):
@@ -24,16 +24,12 @@ def calculate_methlevel(patWin, depth):
     else:
         return -1
 
-def extract_ratio(input, depth, out_dir):
+def extract_ratio(input, depth, out):
+    if not out.endswith('.gz'):
+        out += '.gz'
 
     patWindow = PatWindow(input, window=1)
-    base_name = os.path.basename(input)
-    base_name = os.path.splitext(base_name)[0]
-    if base_name.endswith('.pat'):
-        base_name = base_name[:-4]
-    output_file = os.path.join(out_dir, f"{base_name}_ratio.bed")
-
-    with open(output_file, 'w') as f:
+    with gzip.open(out, 'wt') as f:
         for pat in patWindow:
             ratio = calculate_methlevel(pat[2], depth)
             f.write(f"{pat[0]}\t{pat[1]}\t{ratio}\n")
