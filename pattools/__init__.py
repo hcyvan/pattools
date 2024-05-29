@@ -34,13 +34,13 @@ def main():
                                            help='This command performs entropy analysis on the sample')
     parser_entropy.add_argument('-i', '--input', required=True, help='Input file, *.pat.gz format')
     parser_entropy.add_argument('-d', '--depth', required=True, help='the minimum total count required to calculate entropy')
-    parser_entropy.add_argument('-o', '--out', required=True, help='The output file')
+    parser_entropy.add_argument('-o', '--out', required=True, help='The output file, *.gz format')
     # =====================================================================
     parser_ratio = subparsers.add_parser('ratio',
                                            help='This command performs methylation ratio analysis on the sample')
     parser_ratio.add_argument('-i', '--input', required=True, help='Input file, *.pat.gz format')
     parser_ratio.add_argument('-d', '--depth', required=True, help='the minimum total count required to calculate entropy')
-    parser_ratio.add_argument('-o', '--out', required=True, help='The output file, *.gzip format')    
+    parser_ratio.add_argument('-o', '--out', required=True, help='The output file, *.gz format')    
 
     args = parser.parse_args()
     if args.sub == 'deconv':
