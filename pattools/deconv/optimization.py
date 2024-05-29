@@ -6,6 +6,7 @@ from scipy.optimize import nnls
 def opt_nnls(A, b):
     x, rnorm = nnls(A, b)
     if np.all(x >= 0):
+        x /= np.sum(x)
         return x
     return None
 
@@ -19,6 +20,8 @@ def opt_qp(A, b):
     status = problem.status
     if status == cp.OPTIMAL:
         x.value[x.value < 0] = 0
-        return x.value
+        x = x.value
+        x /= np.sum(x)
+        return x
     else:
         return None
