@@ -1,6 +1,7 @@
 import argparse
 from pattools.deconv import deconvolution_sun, deconvolution_moss
-
+from pattools.entropy import extract_entropy
+from pattools.ratio import extract_ratio
 
 def main():
     parser = argparse.ArgumentParser(prog='pattools',
@@ -31,7 +32,15 @@ def main():
     # =====================================================================
     parser_entropy = subparsers.add_parser('entropy',
                                            help='This command performs entropy analysis on the sample')
-    parser_entropy.add_argument('-o', '--out', required=True, help='The output file')
+    parser_entropy.add_argument('-i', '--input', required=True, help='Input file, *.pat.gz format')
+    parser_entropy.add_argument('-d', '--depth', required=True, help='the minimum total count required to calculate entropy')
+    parser_entropy.add_argument('-o', '--out_dir', required=True, help='The output directory')
+    # =====================================================================
+    parser_entropy = subparsers.add_parser('ratio',
+                                           help='This command performs methylation ratio analysis on the sample')
+    parser_entropy.add_argument('-i', '--input', required=True, help='Input file, *.pat.gz format')
+    parser_entropy.add_argument('-d', '--depth', required=True, help='the minimum total count required to calculate entropy')
+    parser_entropy.add_argument('-o', '--out_dir', required=True, help='The output directory')    
 
     args = parser.parse_args()
     if args.sub == 'deconv':
@@ -44,4 +53,7 @@ def main():
         else:
             print("This method is not complete")
     elif args.sub == 'entropy':
-        print("This method is not complete")
+        extract_entropy(args.input, args.depth, args.out_dir)
+    elif args.sub == 'ratio':
+        extract_ratio(args.input, args.depth, args.out_dir)
+        # print("This method is not complete")

@@ -22,6 +22,10 @@ pattools deconv -m moss -g hg38 \
     -o /mnt/d/project/pattools/tmp/out.csv
 ```
 #### entropy
+pattools entropy -d 3\
+    -i /mnt/d/data/cacLung/raw/pat/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.pat.gz \
+    -o /mnt/d/project/pattools/tmp/
+```
 ## Installation
 
 ### Source code
