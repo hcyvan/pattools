@@ -1,4 +1,5 @@
 import itertools
+import numpy as np
 from collections import OrderedDict
 
 
@@ -37,6 +38,24 @@ class Motif:
             if k in order_counter:
                 order_counter[k] += v
         return order_counter
+
+    def motif_count2vectors(self, counter: dict):
+        """
+        Change motif count dict to motif vectors
+        eg:
+
+        {'CC': 3, 'TC': 0, 'CT': 2, 'TT': 0}
+        to
+        [[1,1],[1,1],[1,1], [1,0],[1,0]]
+
+        :param counter: motif count dict.
+        :return: array of motif vectors
+        """
+        motif2vector_map = self.motif2vector()
+        vectors = []
+        for k, v in counter.items():
+            vectors.extend([motif2vector_map[k]] * v)
+        return np.array(vectors)
 
     def _get_motif_array(self):
         motifs = ["C" * self.count]
