@@ -25,6 +25,19 @@ class Motif:
             motif_order[m] = i
         return motif_order
 
+    def motif2order_counter(self):
+        motif_order = OrderedDict()
+        for _, m in enumerate(self.motifs):
+            motif_order[m] = 0
+        return motif_order
+
+    def count_motifs(self, motifs: dict):
+        order_counter = self.motif2order_counter()
+        for k, v in motifs.items():
+            if k in order_counter:
+                order_counter[k] += v
+        return order_counter
+
     def _get_motif_array(self):
         motifs = ["C" * self.count]
         for i in range(1, self.count + 1):
