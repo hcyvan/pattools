@@ -1,5 +1,5 @@
 import argparse
-from pattools.deconv import deconvolution_sun, deconvolution_moss
+from pattools.deconv import deconvolution_sun, deconvolution_moss, deconvolution_loyfer
 from pattools.entropy import extract_entropy
 from pattools.ratio import extract_ratio
 
@@ -35,7 +35,8 @@ def main():
     parser_entropy = subparsers.add_parser('entropy',
                                            help='This command performs entropy analysis on the sample')
     parser_entropy.add_argument('-i', '--input', required=True, help='Input file, *.pat.gz format')
-    parser_entropy.add_argument('-d', '--depth', required=True, help='the minimum total count required to calculate entropy')
+    parser_entropy.add_argument('-d', '--depth', required=True, type=int, help='the minimum total count required to calculate entropy')
+    parser_entropy.add_argument('-w', '--window', required=True, type=int, default= '4', help='Define the length of motif, such as ''3:CCT; 4: CCTT; 5:CCTTT'' ')
     parser_entropy.add_argument('-o', '--out', required=True, help='The output file, *.gz format')
     # =====================================================================
     parser_ratio = subparsers.add_parser('ratio',
@@ -58,7 +59,7 @@ def main():
         else:
             print("This method is not complete")
     elif args.sub == 'entropy':
-        extract_entropy(args.input, args.depth, args.out)
+        extract_entropy(args.input, args.depth, args.window, args.out)
     elif args.sub == 'ratio':
         extract_ratio(args.input, args.depth, args.out)
         # print("This method is not complete")

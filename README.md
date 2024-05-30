@@ -30,7 +30,7 @@ pattools deconv -m loyfer -g hg38 -f Atlas.U25.l4.hg38.tsv\
 ```
 #### entropy
 ```
-pattools entropy -d 3\
+pattools entropy -d 3 -w 4\
     -i /mnt/d/data/cacLung/raw/pat/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.pat.gz \
     -o /mnt/d/project/pattools/tmp/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.entropy
 ```
