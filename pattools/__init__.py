@@ -27,6 +27,8 @@ def main():
                                help='The optimization algorithm for deconvolution.')
     parser_region.add_argument('-g', '--genome-version', choices=['hg38', 'hg19'], default='hg38',
                                help='The genome version.')
+    parser_region.add_argument('-f', '--markerfile', default='Atlas.U25.l4.hg38.tsv',
+                               help='markerfile for loyfer method')
     parser_region.add_argument('-c', '--cpg-bed', required=True, help='The cpg_bed file of the selected genome.')
     parser_region.add_argument('-o', '--out', required=True, help='The output file')
     # =====================================================================
@@ -50,6 +52,9 @@ def main():
         if args.method == 'moss':
             deconvolution_moss(args.pat, args.out, args.genome_version, cpg_bed=args.cpg_bed,
                                optimization=args.optimization_algorithm)
+        if args.method == 'loyfer':
+            deconvolution_loyfer(args.pat, args.out, args.markerfile, args.genome_version, cpg_bed=args.cpg_bed,
+                                 optimization=args.optimization_algorithm)
         else:
             print("This method is not complete")
     elif args.sub == 'entropy':

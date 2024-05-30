@@ -21,6 +21,13 @@ pattools deconv -m moss -g hg38 \
     -p /mnt/d/data/cacLung/raw/pat/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.pat.gz \
     -o /mnt/d/project/pattools/tmp/out.csv
 ```
+loyfer
+```
+pattools deconv -m loyfer -g hg38 -f Atlas.U25.l4.hg38.tsv\
+    -c /mnt/d/project/wgbs_tools/references/hg38/CpG.bed.gz \
+    -p /mnt/d/data/cacLung/raw/pat/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.pat.gz \
+    -o /mnt/d/project/pattools/tmp/out.csv
+```
 #### entropy
 ```
 pattools entropy -d 3\
