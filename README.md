@@ -2,7 +2,7 @@
 
 Pat format toolkit
 
-![pattools framework](notebook/framework.png)
+<img src="notebook/framework.png" alt="pattools framework" width="200"/>
 
 
 ## Usage
