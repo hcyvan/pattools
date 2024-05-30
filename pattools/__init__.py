@@ -1,5 +1,5 @@
 import argparse
-from pattools.deconv import deconvolution_sun, deconvolution_moss
+from pattools.deconv import deconvolution_sun, deconvolution_moss, deconvolution_loyfer
 from pattools.entropy import extract_entropy
 from pattools.ratio import extract_ratio
 
