@@ -22,7 +22,7 @@ def calculate_entropy(patWin, depth, window):
         if substring in given_substrings:
             given_substrings[substring] += count
             total_count += count   
-    if total_count >= int(depth):
+    if total_count >= depth:
         entropies = {key: (value / total_count) * math.log2((value / total_count)) for key, value in given_substrings.items() if value != 0}
         entropy = -sum(entropies.values()) * 0.25
         if entropy == -0.0:

@@ -33,8 +33,8 @@ def main():
     parser_entropy = subparsers.add_parser('entropy',
                                            help='This command performs entropy analysis on the sample')
     parser_entropy.add_argument('-i', '--input', required=True, help='Input file, *.pat.gz format')
-    parser_entropy.add_argument('-d', '--depth', required=True, help='the minimum total count required to calculate entropy')
-    parser_entropy.add_argument('-w', '--window', required=True, default= '4', help='Define the length of motif, such as ''3:CCT; 4: CCTT; 5:CCTTT'' ')
+    parser_entropy.add_argument('-d', '--depth', required=True, type=int, help='the minimum total count required to calculate entropy')
+    parser_entropy.add_argument('-w', '--window', required=True, type=int, default= '4', help='Define the length of motif, such as ''3:CCT; 4: CCTT; 5:CCTTT'' ')
     parser_entropy.add_argument('-o', '--out', required=True, help='The output file, *.gz format')
     # =====================================================================
     parser_ratio = subparsers.add_parser('ratio',
