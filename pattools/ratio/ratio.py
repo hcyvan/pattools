@@ -19,19 +19,19 @@ def calculate_methlevel(patWin, depth):
         if substring in cpgsite:
             cpgsite[substring] += count
             total_count += count 
-    if total_count >= int(depth):
-        meth_ratio = cpgsite['C'] / total_count
-        return round(meth_ratio, 4)
+    if total_count >= depth:
+        meth_ratio = cpgsite['C'] / total_count   
     else:
-        return -1
+        meth_ratio = -1
+    return round(meth_ratio, 4), total_count
 
 def extract_ratio(input, depth, outfile, bgzip: bool = True):
 
     patWindow = PatWindow(input, window=1)
     with Output(filename=outfile, bgzip=bgzip) as f:
         for pat in patWindow:
-            ratio = calculate_methlevel(pat[2], depth)
-            f.write(f"{pat[0]}\t{pat[1]}\t{ratio}\n")
+            ratio, count = calculate_methlevel(pat[2], depth)
+            f.write(f"{pat[0]}\t{pat[1]}\t{ratio}\t{count}\n")
 
 if __name__ == '__main__':
     pass
