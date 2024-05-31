@@ -1,5 +1,6 @@
 import gzip
 from pattools.pat import PatWindow
+from pattools.io import Output
 
 def calculate_methlevel(patWin, depth):
     """
@@ -7,10 +8,10 @@ def calculate_methlevel(patWin, depth):
     
     Parameters:
     - patWin: dict, a dictionary with substring patterns as keys and their counts as values
-    - deep: int, the minimum total count required to calculate methylation level
+    - depth: int, the minimum total count required to calculate methylation level
     
     Returns:
-    - float, methylation level value, or -1 if total count is less than `deep`
+    - float, methylation level value, or -1 if total count is less than `depth`
     """
     cpgsite = {'C': 0, 'T': 0}
     total_count = 0
@@ -24,12 +25,10 @@ def calculate_methlevel(patWin, depth):
     else:
         return -1
 
-def extract_ratio(input, depth, out):
-    if not out.endswith('.gz'):
-        out += '.gz'
+def extract_ratio(input, depth, outfile, bgzip: bool = True):
 
     patWindow = PatWindow(input, window=1)
-    with gzip.open(out, 'wt') as f:
+    with Output(filename=outfile, bgzip=bgzip) as f:
         for pat in patWindow:
             ratio = calculate_methlevel(pat[2], depth)
             f.write(f"{pat[0]}\t{pat[1]}\t{ratio}\n")
