@@ -25,7 +25,7 @@ def calculate_methlevel(patWin, depth):
         meth_ratio = -1
     return round(meth_ratio, 4), total_count
 
-def extract_ratio(input, depth, outfile, bgzip: bool = True):
+def extract_beta(input, depth, outfile, bgzip: bool = True):
 
     patWindow = PatWindow(input, window=1)
     with Output(filename=outfile, bgzip=bgzip) as f:

@@ -1,7 +1,7 @@
 import argparse
 from pattools.deconv import deconvolution_sun, deconvolution_moss, deconvolution_loyfer
 from pattools.entropy import extract_entropy
-from pattools.ratio import extract_ratio
+from pattools.beta import extract_beta
 from pattools.format import pat2motif
 
 
@@ -45,12 +45,12 @@ def main():
                                 help='The output file, *.gz format. There are four columns in total, '
                                      'representing chromosome, index, entropy, and total sequencing depth of loci')
     # =====================================================================
-    parser_ratio = subparsers.add_parser('ratio',
+    parser_beta = subparsers.add_parser('beta',
                                          help='This command performs methylation ratio analysis on the sample')
-    parser_ratio.add_argument('-i', '--input', required=True, help='Input file, *.pat.gz format')
-    parser_ratio.add_argument('-d', '--depth', type=int, default='1',
+    parser_beta.add_argument('-i', '--input', required=True, help='Input file, *.pat.gz format')
+    parser_beta.add_argument('-d', '--depth', type=int, default='1',
                               help='the minimum total count required to calculate methylation ratio')
-    parser_ratio.add_argument('-o', '--out', required=True, 
+    parser_beta.add_argument('-o', '--out', required=True, 
                               help='The output file, *.gz format. There are four columns in total,'
                                    'representing chromosome, index, methylation ratio, and total sequencing depth of loci')
     # =====================================================================
@@ -83,8 +83,8 @@ def main():
                                  optimization=args.optimization_algorithm)
     if args.sub == 'entropy':
         extract_entropy(args.input, args.depth, args.window, args.out)
-    if args.sub == 'ratio':
-        extract_ratio(args.input, args.depth, args.out)
+    if args.sub == 'beta':
+        extract_beta(args.input, args.depth, args.out)
     if args.sub == 'vector':
         pass
     if args.sub == 'pat2motif':
