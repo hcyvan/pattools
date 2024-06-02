@@ -1,4 +1,5 @@
 import itertools
+from typing import Dict
 import numpy as np
 from collections import OrderedDict
 
@@ -32,7 +33,13 @@ class Motif:
             motif_order[m] = 0
         return motif_order
 
-    def count_motifs(self, motifs: dict):
+    def count_motifs(self, motifs: Dict[str, int]) -> OrderedDict[str, int]:
+        """
+        :param motifs: a dictionary of motif => motif_count
+        :return: an ordered dictionary of motif => motif_count. Only motifs including C/T are retained,
+                    and these motifs are sorted from CCC to TTT,
+                    such as: ['CCC', 'TCC', 'CTC', 'CCT', 'TTC', 'TCT', 'CTT', 'TTT']
+        """
         order_counter = self.motif2order_counter()
         for k, v in motifs.items():
             if k in order_counter:

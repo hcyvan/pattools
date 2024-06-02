@@ -1,9 +1,9 @@
-from setuptools import setup,find_packages
+from setuptools import setup, find_packages
 
 setup(
     name="pattools",
     packages=find_packages(),
-    version="0.0.11",
+    version="0.0.12",
     author="gomics",
     author_email="it@gomicsgene.com",
     description="pattools is a BS-seq analysis tool suite based on pat format",
@@ -19,7 +19,7 @@ setup(
         'pattools.deconv.sun': ['*.csv'],
         'pattools.deconv.loyfer': ['*.tsv']
     },
-    install_requires=['pysam', 'cvxpy', 'scipy'],
+    install_requires=['pysam', 'cvxpy', 'scipy', 'sklearn'],
     entry_points={
         'console_scripts': [
             'pattools=pattools:main',
