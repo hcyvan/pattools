@@ -60,7 +60,8 @@ def main():
     parser_pat2motif = subparsers.add_parser('pat2motif',
                                              help='This command is used to convert pat file to motif file')
     parser_pat2motif.add_argument('-i', '--input', required=True, help='The input file')
-    parser_pat2motif.add_argument('-o', '--out', default=None, help='The output file')
+    parser_pat2motif.add_argument('-o', '--out', default=None,
+                                  help='The output file, If not set, output is sent to standard output.')
     parser_pat2motif.add_argument('--text', action='store_true', help='If set, files are not '
                                                                       'compressed with bgzip')
     parser_pat2motif.add_argument('-w', '--window', type=int, default='4',
