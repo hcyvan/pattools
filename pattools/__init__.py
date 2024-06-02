@@ -2,6 +2,7 @@ import argparse
 from pattools.deconv import deconvolution_sun, deconvolution_moss, deconvolution_loyfer
 from pattools.entropy import extract_entropy
 from pattools.ratio import extract_ratio
+from pattools.vector import extract_vector
 from pattools.format import pat2motif
 
 
@@ -52,10 +53,9 @@ def main():
     # =====================================================================
     parser_vector = subparsers.add_parser('vector',
                                           help='This command performs vector analysis on the sample')
-    parser_vector.add_argument('-i', '--input', required=True, help='Input file, *.pat.gz format')
-    # parser_vector.add_argument('-d', '--depth', required=True,
-    #                            help='the minimum total count required to calculate entropy')
-    # parser_vector.add_argument('-o', '--out', required=True, help='The output file, *.gz format')
+    parser_vector.add_argument('-i', '--input', required=True, help='Input file, *.motif.gz format')
+    parser_vector.add_argument('-o', '--out', default=None,
+                                  help='The output file, If not set, output is sent to standard output.')
     # =====================================================================
     parser_pat2motif = subparsers.add_parser('pat2motif',
                                              help='This command is used to convert pat file to motif file')
@@ -83,6 +83,6 @@ def main():
     if args.sub == 'ratio':
         extract_ratio(args.input, args.depth, args.out)
     if args.sub == 'vector':
-        pass
+        extract_vector(args.input, args.out)
     if args.sub == 'pat2motif':
         pat2motif(args.input, args.out, args.window, not args.text)
