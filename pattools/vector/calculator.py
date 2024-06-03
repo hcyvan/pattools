@@ -4,12 +4,14 @@ from numpy.typing import NDArray
 import numpy as np
 from collections import Counter, OrderedDict
 from sklearn.cluster import DBSCAN
+from sklearn.manifold import TSNE
 from scipy.spatial.distance import pdist, squareform
+import matplotlib.pyplot as plt
 
 from pattools.motif import Motif
 
-Array2D = NDArray[Tuple[int, int]]
-Array1D = NDArray[Tuple[int]]
+Array2D = np.typing.NDArray[Tuple[int, int]]
+Array1D = np.typing.NDArray[Tuple[int]]
 
 
 class VectorCalculator(object):
@@ -79,6 +81,12 @@ class VectorCalculator(object):
             return self._distance_matrix[0, k + 1]
         return None
 
+    def get_vectors(self):
+        return self._vectors
+
+    def get_labels(self):
+        return self._labels
+
     def distance_between_top_m_and_n(self, m=0, n=1):
         """
         0-based index
@@ -128,3 +136,25 @@ class VectorCalculator(object):
         distance_matrix = squareform(distances)
         distance_matrix = distance_matrix / scale
         return distance_matrix
+
+
+class VectorPlot:
+    def __init__(self, vector_calculator: VectorCalculator):
+        self._vector_calculator: VectorCalculator = vector_calculator
+
+    def plot_vector_cluster(self):
+        vectors = self._vector_calculator.get_vectors()
+        labels = self._vector_calculator.get_labels()
+        colorsMap = {-1: 'gray', 0: '#1f77b4', 1: '#ff7f0e', 2: '#2ca02c', 3: "#d62728", 4: "#9467bd", 5: "#8c564b",
+                     6: "#e377c2", 7: "#7f7f7f", 8: "#bcbd22", 9: "#17becf"}
+        labels_color = np.vectorize(lambda x: colorsMap[x])(labels)
+
+        tsne = TSNE(n_components=2)
+        X_2d = tsne.fit_transform(vectors)
+
+        plt.figure(figsize=(4.2, 4))
+        plt.scatter(X_2d[:, 0], X_2d[:, 1], c=labels_color, s=15)
+        plt.title('Cluster Plot after t-SNE')
+        plt.xlabel('t-SNE Dimension 1')
+        plt.ylabel('t-SNE Dimension 2')
+        plt.show()
