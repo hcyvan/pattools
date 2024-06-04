@@ -1,15 +1,15 @@
 import argparse
 from pattools.deconv import deconvolution_sun, deconvolution_moss, deconvolution_loyfer
 from pattools.entropy import extract_entropy
-from pattools.ratio import extract_ratio
-from pattools.vector import extract_vector, extract_vector_from_multi_motif_file
+from pattools.beta import extract_beta
 from pattools.format import pat2motif
-
+from pattools.vector import extract_vector, extract_vector_from_multi_motif_file
+from pattools.matrixgenerate import matrix_generate
 
 def main():
     parser = argparse.ArgumentParser(prog='pattools',
                                      description='pattools is a BS-seq analysis tool suite based on pat format')
-    parser.add_argument('-v', '--version', action='version', version='0.0.1')
+    parser.add_argument('-v', '--version', action='version', version='0.0.11')
     parser.add_argument('-q', '--quiet', action='store_true', help='print run details to stderr')
     subparsers = parser.add_subparsers(dest='sub', required=True, title='command', description='The available commands',
                                        help='select a sub command to use')
@@ -38,18 +38,22 @@ def main():
     parser_entropy = subparsers.add_parser('entropy',
                                            help='This command performs entropy analysis on the sample')
     parser_entropy.add_argument('-i', '--input', required=True, help='Input file, *.pat.gz format')
-    parser_entropy.add_argument('-d', '--depth', required=True, type=int,
+    parser_entropy.add_argument('-d', '--depth', type=int, default='3',
                                 help='the minimum total count required to calculate entropy')
     parser_entropy.add_argument('-w', '--window', type=int, default='4',
                                 help='Define the length of motif, such as ''3:CCT; 4: CCTT; 5:CCTTT'' ')
-    parser_entropy.add_argument('-o', '--out', required=True, help='The output file, *.gz format')
+    parser_entropy.add_argument('-o', '--out', required=True, 
+                                help='The output file, *.gz format. There are four columns in total, '
+                                     'representing chromosome, index, entropy, and total sequencing depth of loci')
     # =====================================================================
-    parser_ratio = subparsers.add_parser('ratio',
+    parser_beta = subparsers.add_parser('beta',
                                          help='This command performs methylation ratio analysis on the sample')
-    parser_ratio.add_argument('-i', '--input', required=True, help='Input file, *.pat.gz format')
-    parser_ratio.add_argument('-d', '--depth', required=True,
-                              help='the minimum total count required to calculate entropy')
-    parser_ratio.add_argument('-o', '--out', required=True, help='The output file, *.gz format')
+    parser_beta.add_argument('-i', '--input', required=True, help='Input file, *.pat.gz format')
+    parser_beta.add_argument('-d', '--depth', type=int, default='1',
+                              help='the minimum total count required to calculate methylation ratio')
+    parser_beta.add_argument('-o', '--out', required=True, 
+                              help='The output file, *.gz format. There are four columns in total,'
+                                   'representing chromosome, index, methylation ratio, and total sequencing depth of loci')
     # =====================================================================
     parser_vector = subparsers.add_parser('vector',
                                           help='This command performs vector analysis on the sample')
@@ -78,6 +82,17 @@ def main():
     parser_pat2motif.add_argument('-w', '--window', type=int, default='4',
                                   help='Define the length of motif, such as ''3:CCT; 4: CCTT; 5:CCTTT'' ')
     # ======================================================================
+    parser_matrix_generate = subparsers.add_parser('matrix_generate',
+                                             help='This command is used to generate matrix for entropy and beta')
+    parser_matrix_generate.add_argument('-i', '--input', required=True, help='The input file')
+    parser_matrix_generate.add_argument('-o', '--out', default=None, help='The output file')
+    parser_matrix_generate.add_argument('-c', '--coordinate', help='If set, files are not '
+                                                                      'compressed with bgzip')
+    parser_matrix_generate.add_argument('-d', '--depth', type=int, help='If set, files are not '
+                                                                      'compressed with bgzip')
+    parser_matrix_generate.add_argument('-e', '--exclude_mode', help='If set, files are not '
+                                                                      'compressed with bgzip')
+    # ======================================================================    
     args = parser.parse_args()
     if args.sub == 'deconv':
         if args.method == 'sun':
@@ -91,11 +106,13 @@ def main():
                                  optimization=args.optimization_algorithm)
     if args.sub == 'entropy':
         extract_entropy(args.input, args.depth, args.window, args.out)
-    if args.sub == 'ratio':
-        extract_ratio(args.input, args.depth, args.out)
+    if args.sub == 'beta':
+        extract_beta(args.input, args.depth, args.out)
     if args.sub == 'vector':
         extract_vector(args.input, args.out)
     if args.sub == 'vector-multi':
         extract_vector_from_multi_motif_file(args.input, args.cpg_bed, args.out, window=args.window)
     if args.sub == 'pat2motif':
         pat2motif(args.input, args.out, args.window, not args.text)
+    if args.sub == 'matrix_generate':
+        matrix_generate(args.input, args.coordinate, args.depth, args.exclude_mode, args.out)        
