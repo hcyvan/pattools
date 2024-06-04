@@ -18,28 +18,6 @@ def matrix_generate(input_dir, coordinate, depth, exclude_mode, output_file):
         decoded_line = line.decode('utf-8')
         top.append(decoded_line.split('\t'))
 
-    # fs = []
-
-    # for file_name in files:
-    #     try:
-    #         f = gzip.open(file_name, 'rb')
-    #         fs.append(f)
-    #     except IOError as e:
-    #         print(f"Error opening file {file_name}: {e}")
-
-    # top = []
-    # for i, f in enumerate(fs):
-    #     try:
-    #         line = f.readline()
-    #         if line:
-    #             decoded_line = line.decode('utf-8')  # 解码字节字符串为普通字符串
-    #             top.append(decoded_line.split('\t'))
-    #         else:
-    #             print(f"File {files[i]} is empty or could not read the line.")
-    #     except Exception as e:
-    #         print(f"Error reading from file {files[i]}: {e}")
-
-
     merge_ratio_bed = open(output_file, 'w')
     merge_ratio_bed.write("{}\n".format('\t'.join(header)))
 
