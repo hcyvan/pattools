@@ -3,6 +3,7 @@ from pattools.deconv import deconvolution_sun, deconvolution_moss, deconvolution
 from pattools.entropy import extract_entropy
 from pattools.beta import extract_beta
 from pattools.format import pat2motif
+from pattools.vector import extract_vector, extract_vector_from_multi_motif_file
 from pattools.matrixgenerate import matrix_generate
 
 def main():
