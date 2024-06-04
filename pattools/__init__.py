@@ -56,15 +56,26 @@ def main():
     # =====================================================================
     parser_vector = subparsers.add_parser('vector',
                                           help='This command performs vector analysis on the sample')
-    parser_vector.add_argument('-i', '--input', required=True, help='Input file, *.pat.gz format')
-    # parser_vector.add_argument('-d', '--depth', required=True,
-    #                            help='the minimum total count required to calculate entropy')
-    # parser_vector.add_argument('-o', '--out', required=True, help='The output file, *.gz format')
+    parser_vector.add_argument('-i', '--input', required=True, help='Input file, *.motif.gz')
+    parser_vector.add_argument('-o', '--out', default=None,
+                               help='The output file, If not set, output is sent to standard output.')
+    # =====================================================================
+    parser_vector_multi = subparsers.add_parser('vector-multi',
+                                                help='This command performs vector analysis on the sample')
+    parser_vector_multi.add_argument('-c', '--cpg-bed', required=True, help='The cpg_bed file of the selected genome.')
+    parser_vector_multi.add_argument('-i', '--input', required=True,
+                                     help='a list file in tsv format, which contains multiple sample files,'
+                                          ' sample grouping, etc. eg: <MOTIF_FILE>  <GROUP_LABEL>')
+    parser_vector_multi.add_argument('-w', '--window', type=int, default='4',
+                                     help='Define the length of motif, such as ''3:CCT; 4: CCTT; 5:CCTTT'' ')
+    parser_vector_multi.add_argument('-o', '--out', default=None,
+                                     help='The output file, If not set, output is sent to standard output.')
     # =====================================================================
     parser_pat2motif = subparsers.add_parser('pat2motif',
                                              help='This command is used to convert pat file to motif file')
     parser_pat2motif.add_argument('-i', '--input', required=True, help='The input file')
-    parser_pat2motif.add_argument('-o', '--out', default=None, help='The output file')
+    parser_pat2motif.add_argument('-o', '--out', default=None,
+                                  help='The output file, If not set, output is sent to standard output.')
     parser_pat2motif.add_argument('--text', action='store_true', help='If set, files are not '
                                                                       'compressed with bgzip')
     parser_pat2motif.add_argument('-w', '--window', type=int, default='4',
@@ -97,7 +108,9 @@ def main():
     if args.sub == 'beta':
         extract_beta(args.input, args.depth, args.out)
     if args.sub == 'vector':
-        pass
+        extract_vector(args.input, args.out)
+    if args.sub == 'vector-multi':
+        extract_vector_from_multi_motif_file(args.input, args.cpg_bed, args.out, window=args.window)
     if args.sub == 'pat2motif':
         pat2motif(args.input, args.out, args.window, not args.text)
     if args.sub == 'matrix_generate':
