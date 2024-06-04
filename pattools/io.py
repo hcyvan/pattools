@@ -98,6 +98,17 @@ class Tabix:
         except StopIteration:
             return None
 
+    def close(self):
+        if self._tabixfile:
+            self._tabixfile.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+        return False
+
 
 class CpGTabix(Tabix):
     def __init__(self, filename, region=None):
@@ -105,7 +116,7 @@ class CpGTabix(Tabix):
 
     def _parse_line(self, line):
         row = line.split('\t')
-        return row[0], int(row[2])
+        return row[0], int(row[1]), int(row[2])
 
 
 class MotifTabix(Tabix):
@@ -118,3 +129,11 @@ class MotifTabix(Tabix):
         cpg_idx = int(row[1])
         motif_count_arr = [int(x) for x in row[2:]]
         return chrom, cpg_idx, motif_count_arr
+
+    def readline_and_parse(self, motifs):
+        items = self.readline()
+        if items:
+            chrom, cpg_idx, motif_count_arr = items
+            motif_count = dict(zip(motifs, motif_count_arr))
+            return chrom, cpg_idx, motif_count
+        return None
