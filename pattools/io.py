@@ -21,6 +21,9 @@ class Output:
         self.bgzip = bgzip
         if self.filename is None:
             self.bgzip = False
+        else:
+            if not self.filename.endswith('.gz'):
+                self.filename += '.gz'
 
         if self.filename is None:
             self.of = sys.stdout

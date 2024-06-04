@@ -2,6 +2,8 @@ import math
 import gzip
 from pattools.pat import PatWindow
 from pattools.motif import Motif
+from pattools.io import Output
+
 def calculate_entropy(patWin, depth, window):
     """
     Calculate the entropy of given patterns.
@@ -31,12 +33,10 @@ def calculate_entropy(patWin, depth, window):
         entropy = -1
     return round(entropy, 4), total_count
 
-def extract_entropy(input, depth, window, out):
-    if not out.endswith('.gz'):
-        out += '.gz'
+def extract_entropy(input, depth, window, outfile, bgzip: bool = True):
         
     patWindow = PatWindow(input, window)
-    with gzip.open(out, 'wt') as f:
+    with Output(filename=outfile, bgzip=bgzip) as f:
         for pat in patWindow:
             entropy, count = calculate_entropy(pat[2], depth, window)
             f.write(f"{pat[0]}\t{pat[1]}\t{entropy}\t{count}\n")
