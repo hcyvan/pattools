@@ -12,31 +12,32 @@ from pattools.io import Output, CpGTabix, MotifTabix
 
 
 def split_cpg(filename, process=10, region=None):
+    """
+    This function is used to divide the cpg index into [process] parts.
+    """
     total = 0
     with CpGTabix(filename, region) as tabix:
         for _ in tabix:
             total += 1
-    batch = total // process
-    remainder = total % process
+    batch, remainder = divmod(total, process)
+    batches = [batch + 1 if p < remainder else batch for p in range(process)]
+    cut = [sum(batches[0:(p + 1)]) for p in range(process)]
     process_regions = []
     od: OrderedDict[str, List[int]] = OrderedDict()
     with CpGTabix(filename, region) as tabix:
-        i = 0
-        n = 1
-        for chrom, _, start in tabix:
-            i += 1
+        cut_idx = 0
+        for i, (chrom, _, start) in enumerate(tabix):
             if chrom in od:
                 od[chrom][1] = start
             else:
                 od[chrom] = [start, start]
-            if batch + (0 if n > remainder else 1) == i:
+            if i == cut[cut_idx] - 1:
                 regions = []
                 for k, v in od.items():
                     regions.append(f'{k}:{v[0]}-{v[1]}')
                 process_regions.append(regions)
                 od = OrderedDict()
-                i = 0
-                n += 1
+                cut_idx += 1
         if len(od):
             regions = []
             for k, v in od.items():
