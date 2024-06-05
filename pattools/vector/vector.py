@@ -1,7 +1,5 @@
 import sys
 import os
-import gzip
-import math
 import uuid
 import multiprocessing
 from collections import OrderedDict
@@ -9,6 +7,7 @@ from typing import List
 from pattools.motif import Motif
 from pattools.vector.calculator import VectorCalculator
 from pattools.io import Output, CpGTabix, MotifTabix
+from mpi4py import MPI
 
 
 def split_cpg(filename, process=10, region=None):
@@ -60,7 +59,7 @@ def extract_vector(input_file, outfile=None, window: int = 4, regions=None):
                 of.write(f"{vector_calculator}\n")
 
 
-def _extract_vector_from_multi_motif_file(file_list, cpg_bed, outfile, window: int = 4, regions=None):
+def extract_vector_multi(file_list, cpg_bed, outfile, window: int = 4, regions=None):
     input_files = []
     groups = []
     samples = []
@@ -74,7 +73,6 @@ def _extract_vector_from_multi_motif_file(file_list, cpg_bed, outfile, window: i
     motif = Motif(window)
     tabix_arr: List[MotifTabix] = []
     lines = []
-
     for motif_file in input_files:
         tabix = MotifTabix(motif_file, regions)
         tabix_arr.append(tabix)
@@ -102,10 +100,9 @@ def _extract_vector_from_multi_motif_file(file_list, cpg_bed, outfile, window: i
         tabix.close()
 
 
-def _extract_vector_from_multi_motif_file_process_wrapper(queue, process_order, file_list, cpg_bed, outfile,
-                                                          window, regions):
+def extract_vector_multi_process(queue, process_order, file_list, cpg_bed, outfile, window, regions):
     try:
-        _extract_vector_from_multi_motif_file(file_list, cpg_bed, outfile, window, regions)
+        extract_vector_multi(file_list, cpg_bed, outfile, window, regions)
         queue.put((process_order, 'success', outfile))
     except Exception as e:
         queue.put((process_order, 'failure', str(e)))
@@ -122,45 +119,76 @@ def get_label_from_regions(regions):
     return f"{start}_{end}"
 
 
+def get_filename_by_split_regions(split_regions, outfile):
+    if outfile is None:
+        outfile = f'./merge.{uuid.uuid4()}.motif.gz'
+    filenames = []
+    for i, regions in enumerate(split_regions):
+        tag = get_label_from_regions(regions)
+        filenames.append(f'{outfile}.{i}.{tag}.tmp')
+    return outfile, filenames
+
+
+def merge_split_filenames(outfile, filenames):
+    with Output(filename=outfile, file_format='motif', bgzip=True) as out:
+        for file in filenames:
+            with open(file) as infile:
+                for line in infile:
+                    out.write(line)
+    for file in filenames:
+        sys.stderr.write(f"Remove {file}\n")
+        os.remove(file)
+
+
 def extract_vector_from_multi_motif_file(file_list, cpg_bed, outfile, window: int = 4, process=1, region=None):
-    sys.stderr.write(f"Process: {process}\n")
-    if process == 1:
-        _extract_vector_from_multi_motif_file(file_list, cpg_bed, outfile, window, region)
-    else:
-        if outfile is None:
-            outfile = f'./merge.{uuid.uuid4()}.motif.gz'
-        split_regions = split_cpg(cpg_bed, process, region)
-        process_jobs = []
-        queue = multiprocessing.Queue()
-        for i, regions in enumerate(split_regions):
-            tag = get_label_from_regions(regions)
-            process_outfile = f'{outfile}.{i}.{tag}.tmp'
-            sys.stderr.write(f"process {i} generating {process_outfile}\n")
-            p = multiprocessing.Process(target=_extract_vector_from_multi_motif_file_process_wrapper,
-                                        args=(queue, i, file_list, cpg_bed, process_outfile, window, regions))
-            process_jobs.append(p)
-            p.start()
-
-        for i, job in enumerate(process_jobs):
-            job.join()
-
-        success = True
-        process_files = []
-        while not queue.empty():
-            process_order, status, ret = queue.get()
-            if status == 'success':
-                process_files.append([process_order, ret])
-            else:
-                success = False
-        process_files = sorted(process_files, key=lambda x: x[0])
-        if success:
-            with Output(filename=outfile, file_format='motif', bgzip=True) as out:
-                for i, file in process_files:
-                    with open(file) as infile:
-                        for line in infile:
-                            out.write(line)
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    task_count = comm.Get_size()
+    if task_count > 1:
+        if rank == 0:
+            sys.stderr.write(f"MPI Size: {task_count}\n")
+            split_regions = split_cpg(cpg_bed, task_count, region)
+            outfile, split_filenames = get_filename_by_split_regions(split_regions, outfile)
+            split_regions_and_filenames = zip(split_regions, split_filenames)
         else:
-            sys.stderr.write(f"Process Failed\n")
-            for i, file in process_files:
-                sys.stderr.write(f"Remove {file}\n")
-                os.remove(file)
+            split_regions_and_filenames = None
+            outfile = None
+        regions_and_filename = comm.scatter(split_regions_and_filenames, root=0)
+        extract_vector_multi(file_list, cpg_bed, regions_and_filename[1], window, regions_and_filename[0])
+        tmp_files = comm.gather(regions_and_filename[1], root=0)
+        if rank == 0:
+            merge_split_filenames(outfile, tmp_files)
+    else:
+        sys.stderr.write(f"Process: {process}\n")
+        if process == 1:
+            extract_vector_multi(file_list, cpg_bed, outfile, window, region)
+        else:
+            if outfile is None:
+                outfile = f'./merge.{uuid.uuid4()}.motif.gz'
+            split_regions = split_cpg(cpg_bed, process, region)
+            outfile, split_filenames = get_filename_by_split_regions(split_regions, outfile)
+            process_jobs = []
+            queue = multiprocessing.Queue()
+            for i, regions in enumerate(split_regions):
+                sys.stderr.write(f"process {i} generating {split_filenames[i]}\n")
+                p = multiprocessing.Process(target=extract_vector_multi_process,
+                                            args=(queue, i, file_list, cpg_bed, split_filenames[i], window, regions))
+                process_jobs.append(p)
+                p.start()
+
+            for i, job in enumerate(process_jobs):
+                job.join()
+
+            success = True
+            process_files = []
+            while not queue.empty():
+                process_order, status, ret = queue.get()
+                if status == 'success':
+                    process_files.append([process_order, ret])
+                else:
+                    success = False
+            process_files = sorted(process_files, key=lambda x: x[0])
+            if success:
+                merge_split_filenames(outfile, [x[1] for x in process_files])
+            else:
+                sys.stderr.write(f"Process Failed\n")

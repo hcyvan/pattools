@@ -19,7 +19,7 @@ setup(
         'pattools.deconv.sun': ['*.csv'],
         'pattools.deconv.loyfer': ['*.tsv']
     },
-    install_requires=['pysam', 'cvxpy', 'scipy', 'pandas', 'matplotlib', 'scikit-learn'],
+    install_requires=['pysam', 'cvxpy', 'scipy', 'pandas', 'matplotlib', 'scikit-learn', 'mpi4py'],
     entry_points={
         'console_scripts': [
             'pattools=pattools:main',
