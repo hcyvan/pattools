@@ -10,7 +10,7 @@ from pattools.matrixgenerate import matrix_generate
 def main():
     parser = argparse.ArgumentParser(prog='pattools',
                                      description='pattools is a BS-seq analysis tool suite based on pat format')
-    parser.add_argument('-v', '--version', action='version', version='0.0.14')
+    parser.add_argument('-v', '--version', action='version', version='0.0.17')
     parser.add_argument('-q', '--quiet', action='store_true', help='print run details to stderr')
     subparsers = parser.add_subparsers(dest='sub', required=True, title='command', description='The available commands',
                                        help='select a sub command to use')
