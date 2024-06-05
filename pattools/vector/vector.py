@@ -16,7 +16,7 @@ def split_cpg(filename, process=10):
     with gzip.open(filename, 'rt') as f:
         for _ in f:
             total += 1
-    batch = math.floor((total + 3) / process)
+    batch = math.floor((total + process) / process)
     process_regions = []
     od: OrderedDict[str, List[int]] = OrderedDict()
     with gzip.open(filename, 'rt') as f:
@@ -34,10 +34,11 @@ def split_cpg(filename, process=10):
                     regions.append(f'{k}:{v[0]}-{v[1]}')
                 process_regions.append(regions)
                 od = OrderedDict()
-        regions = []
-        for k, v in od.items():
-            regions.append(f'{k}:{v[0]}-{v[1]}')
-        process_regions.append(regions)
+        if len(od):
+            regions = []
+            for k, v in od.items():
+                regions.append(f'{k}:{v[0]}-{v[1]}')
+            process_regions.append(regions)
     return process_regions
 
 
@@ -98,7 +99,7 @@ def _extract_vector_from_multi_motif_file(file_list, cpg_bed, outfile, window: i
 
 
 def _extract_vector_from_multi_motif_file_process_wrapper(queue, process_order, file_list, cpg_bed, outfile,
-                                                          window: int = 4, regions=None):
+                                                          window, regions):
     try:
         _extract_vector_from_multi_motif_file(file_list, cpg_bed, outfile, window, regions)
         queue.put((process_order, 'success', outfile))
