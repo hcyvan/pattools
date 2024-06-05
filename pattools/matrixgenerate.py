@@ -51,6 +51,7 @@ def matrix_generate(input_dir, coordinate, depth, exclude_mode, output_file):
                             top[i] = None
                 else:
                     ratio.append('-1')
+                    minus1 += 1
 
         if merge_ratio_bed:
             if (exclude_mode == 'all' and minus1 == len(fs)) or (exclude_mode == 'one' and minus1 >= 1):
