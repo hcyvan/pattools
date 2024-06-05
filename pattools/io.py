@@ -23,7 +23,7 @@ class Output:
         if self.filename is None:
             self.bgzip = False
         else:
-            if not self.filename.endswith('.gz'):
+            if bgzip and not self.filename.endswith('.gz'):
                 self.filename += '.gz'
 
         if self.filename is None:

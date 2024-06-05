@@ -6,6 +6,7 @@ from pattools.format import pat2motif
 from pattools.vector import extract_vector, extract_vector_from_multi_motif_file
 from pattools.matrixgenerate import matrix_generate
 
+
 def main():
     parser = argparse.ArgumentParser(prog='pattools',
                                      description='pattools is a BS-seq analysis tool suite based on pat format')
@@ -42,18 +43,18 @@ def main():
                                 help='the minimum total count required to calculate entropy')
     parser_entropy.add_argument('-w', '--window', type=int, default='4',
                                 help='Define the length of motif, such as ''3:CCT; 4: CCTT; 5:CCTTT'' ')
-    parser_entropy.add_argument('-o', '--out', required=True, 
+    parser_entropy.add_argument('-o', '--out', required=True,
                                 help='The output file, *.gz format. There are four columns in total, '
                                      'representing chromosome, index, entropy, and total sequencing depth of loci')
     # =====================================================================
     parser_beta = subparsers.add_parser('beta',
-                                         help='This command performs methylation ratio analysis on the sample')
+                                        help='This command performs methylation ratio analysis on the sample')
     parser_beta.add_argument('-i', '--input', required=True, help='Input file, *.pat.gz format')
     parser_beta.add_argument('-d', '--depth', type=int, default='1',
-                              help='the minimum total count required to calculate methylation ratio')
-    parser_beta.add_argument('-o', '--out', required=True, 
-                              help='The output file, *.gz format. There are four columns in total,'
-                                   'representing chromosome, index, methylation ratio, and total sequencing depth of loci')
+                             help='the minimum total count required to calculate methylation ratio')
+    parser_beta.add_argument('-o', '--out', required=True,
+                             help='The output file, *.gz format. There are four columns in total,'
+                                  'representing chromosome, index, methylation ratio, and total sequencing depth of loci')
     # =====================================================================
     parser_vector = subparsers.add_parser('vector',
                                           help='This command performs vector analysis on the sample')
@@ -71,6 +72,8 @@ def main():
                                           ' sample grouping, etc. eg: <MOTIF_FILE>  <GROUP_LABEL>')
     parser_vector_multi.add_argument('-w', '--window', type=int, default='4',
                                      help='Define the length of motif, such as ''3:CCT; 4: CCTT; 5:CCTTT'' ')
+    parser_vector_multi.add_argument('-p', '--process', type=int, default=1,
+                                     help='The number of processes used for processing')
     parser_vector_multi.add_argument('-o', '--out', default=None,
                                      help='The output file, If not set, output is sent to standard output.')
     # =====================================================================
@@ -85,15 +88,15 @@ def main():
                                   help='Define the length of motif, such as ''3:CCT; 4: CCTT; 5:CCTTT'' ')
     # ======================================================================
     parser_matrix_generate = subparsers.add_parser('matrix_generate',
-                                             help='This command is used to generate matrix for entropy and beta')
+                                                   help='This command is used to generate matrix for entropy and beta')
     parser_matrix_generate.add_argument('-i', '--input', required=True, help='The input file')
     parser_matrix_generate.add_argument('-o', '--out', default=None, help='The output file')
     parser_matrix_generate.add_argument('-c', '--coordinate', help='If set, files are not '
-                                                                      'compressed with bgzip')
+                                                                   'compressed with bgzip')
     parser_matrix_generate.add_argument('-d', '--depth', type=int, help='If set, files are not '
-                                                                      'compressed with bgzip')
+                                                                        'compressed with bgzip')
     parser_matrix_generate.add_argument('-e', '--exclude_mode', help='If set, files are not '
-                                                                      'compressed with bgzip')
+                                                                     'compressed with bgzip')
     # ======================================================================    
     args = parser.parse_args()
     if args.sub == 'deconv':
@@ -113,8 +116,8 @@ def main():
     if args.sub == 'vector':
         extract_vector(args.input, args.out, window=args.window)
     if args.sub == 'vector-multi':
-        extract_vector_from_multi_motif_file(args.input, args.cpg_bed, args.out, window=args.window)
+        extract_vector_from_multi_motif_file(args.input, args.cpg_bed, args.out, window=args.window,process=args.process)
     if args.sub == 'pat2motif':
         pat2motif(args.input, args.out, args.window, not args.text)
     if args.sub == 'matrix_generate':
-        matrix_generate(args.input, args.coordinate, args.depth, args.exclude_mode, args.out)        
+        matrix_generate(args.input, args.coordinate, args.depth, args.exclude_mode, args.out)

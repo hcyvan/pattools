@@ -1,7 +1,44 @@
+import sys
+import os
+import gzip
+import math
+import uuid
+import multiprocessing
+from collections import OrderedDict
 from typing import List
 from pattools.motif import Motif
 from pattools.vector.calculator import VectorCalculator
 from pattools.io import Output, CpGTabix, MotifTabix
+
+
+def split_cpg(filename, process=10):
+    total = 0
+    with gzip.open(filename, 'rt') as f:
+        for _ in f:
+            total += 1
+    batch = math.floor((total + 3) / process)
+    process_regions = []
+    od: OrderedDict[str, List[int]] = OrderedDict()
+    with gzip.open(filename, 'rt') as f:
+        for i, line in enumerate(f):
+            line = line.strip().split('\t')
+            chrom = line[0]
+            start = int(line[2])
+            if chrom in od:
+                od[chrom][1] = start
+            else:
+                od[chrom] = [start, -1]
+            if i > 0 and i % batch == 0:
+                regions = []
+                for k, v in od.items():
+                    regions.append(f'{k}:{v[0]}-{v[1]}')
+                process_regions.append(regions)
+                od = OrderedDict()
+        regions = []
+        for k, v in od.items():
+            regions.append(f'{k}:{v[0]}-{v[1]}')
+        process_regions.append(regions)
+    return process_regions
 
 
 def extract_vector(input_file, outfile=None, window: int = 4, regions=None):
@@ -18,7 +55,7 @@ def extract_vector(input_file, outfile=None, window: int = 4, regions=None):
                 of.write(f"{vector_calculator}\n")
 
 
-def extract_vector_from_multi_motif_file(file_list, cpg_bed, outfile, window: int = 4, regions=None):
+def _extract_vector_from_multi_motif_file(file_list, cpg_bed, outfile, window: int = 4, regions=None):
     input_files = []
     groups = []
     samples = []
@@ -58,3 +95,67 @@ def extract_vector_from_multi_motif_file(file_list, cpg_bed, outfile, window: in
 
     for tabix in tabix_arr:
         tabix.close()
+
+
+def _extract_vector_from_multi_motif_file_process_wrapper(queue, process_order, file_list, cpg_bed, outfile,
+                                                          window: int = 4, regions=None):
+    try:
+        _extract_vector_from_multi_motif_file(file_list, cpg_bed, outfile, window, regions)
+        queue.put((process_order, 'success', outfile))
+    except Exception as e:
+        queue.put((process_order, 'failure', str(e)))
+
+
+def get_label_from_regions(regions):
+    start = ""
+    end = ""
+    for region in regions:
+        if len(start) == 0:
+            start, end = region.split(':')[1].split('-')
+        else:
+            _, end = region.split(':')[1].split('-')
+    return f"{start}_{end}"
+
+
+def extract_vector_from_multi_motif_file(file_list, cpg_bed, outfile, window: int = 4, process=1):
+    sys.stderr.write(f"Process: {process}\n")
+    if process == 1:
+        _extract_vector_from_multi_motif_file(file_list, cpg_bed, outfile, window)
+    else:
+        if outfile is None:
+            outfile = f'./merge.{uuid.uuid4()}.motif.gz'
+        split_regions = split_cpg(cpg_bed, process)
+        process_jobs = []
+        queue = multiprocessing.Queue()
+        for i, regions in enumerate(split_regions):
+            tag = get_label_from_regions(regions)
+            process_outfile = f'{outfile}.{i}.{tag}.tmp'
+            sys.stderr.write(f"process {i} generating {process_outfile}\n")
+            p = multiprocessing.Process(target=_extract_vector_from_multi_motif_file_process_wrapper,
+                                        args=(queue, i, file_list, cpg_bed, process_outfile, window, regions))
+            process_jobs.append(p)
+            p.start()
+
+        for i, job in enumerate(process_jobs):
+            job.join()
+
+        success = True
+        process_files = []
+        while not queue.empty():
+            process_order, status, ret = queue.get()
+            if status == 'success':
+                process_files.append([process_order, ret])
+            else:
+                success = False
+        process_files = sorted(process_files, key=lambda x: x[0])
+        if success:
+            with Output(filename=outfile, file_format='motif', bgzip=True) as out:
+                for i, file in process_files:
+                    with open(file) as infile:
+                        for line in infile:
+                            out.write(line)
+        else:
+            sys.stderr.write(f"Process Failed\n")
+            for i, file in process_files:
+                sys.stderr.write(f"Remove {file}\n")
+                os.remove(file)
