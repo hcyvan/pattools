@@ -1,4 +1,3 @@
-import gzip
 from pattools.pat import PatWindow
 from pattools.io import Output
 
