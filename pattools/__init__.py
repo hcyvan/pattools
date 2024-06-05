@@ -74,6 +74,9 @@ def main():
                                      help='Define the length of motif, such as ''3:CCT; 4: CCTT; 5:CCTTT'' ')
     parser_vector_multi.add_argument('-p', '--process', type=int, default=1,
                                      help='The number of processes used for processing')
+    parser_vector_multi.add_argument('-r', '--region', default=None,
+                                     help='TThe region to be processed. If not set, the entire genome is processed.'
+                                          ' eg: -r chr1:10000-15000')
     parser_vector_multi.add_argument('-o', '--out', default=None,
                                      help='The output file, If not set, output is sent to standard output.')
     # =====================================================================
@@ -92,11 +95,13 @@ def main():
     parser_matrix_generate.add_argument('-i', '--input', required=True, help='This is a text, with each line being the'
                                                                              'path to each entropy or beta file')
     parser_matrix_generate.add_argument('-o', '--out', required=True, help='The output is a standard bed format file')
-    parser_matrix_generate.add_argument('-c', '--coordinate', required=True, help='This is a standard CpG coordinate file '
-                                                                   'The current path is /PUBLIC/rd/lung_cac/rawdata/cpgMapinfo')
+    parser_matrix_generate.add_argument('-c', '--coordinate', required=True,
+                                        help='This is a standard CpG coordinate file '
+                                             'The current path is /PUBLIC/rd/lung_cac/rawdata/cpgMapinfo')
     parser_matrix_generate.add_argument('-d', '--depth', type=int, default=3, help='the lowest depth of a matrix')
-    parser_matrix_generate.add_argument('-e', '--exclude_mode', default='all', help='exclude -1 mode: all - exclude if all sample is -1,'
-                                                                     'one - exclude if contain one -1, close exclude mode')
+    parser_matrix_generate.add_argument('-e', '--exclude_mode', default='all',
+                                        help='exclude -1 mode: all - exclude if all sample is -1,'
+                                             'one - exclude if contain one -1, close exclude mode')
     # ======================================================================    
     args = parser.parse_args()
     if args.sub == 'deconv':
@@ -116,7 +121,8 @@ def main():
     if args.sub == 'vector':
         extract_vector(args.input, args.out, window=args.window)
     if args.sub == 'vector-multi':
-        extract_vector_from_multi_motif_file(args.input, args.cpg_bed, args.out, window=args.window,process=args.process)
+        extract_vector_from_multi_motif_file(args.input, args.cpg_bed, args.out, window=args.window,
+                                             process=args.process, region=args.region)
     if args.sub == 'pat2motif':
         pat2motif(args.input, args.out, args.window, not args.text)
     if args.sub == 'matgen':

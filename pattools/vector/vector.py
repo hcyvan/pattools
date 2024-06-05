@@ -11,29 +11,32 @@ from pattools.vector.calculator import VectorCalculator
 from pattools.io import Output, CpGTabix, MotifTabix
 
 
-def split_cpg(filename, process=10):
+def split_cpg(filename, process=10, region=None):
     total = 0
-    with gzip.open(filename, 'rt') as f:
-        for _ in f:
+    with CpGTabix(filename, region) as tabix:
+        for _ in tabix:
             total += 1
-    batch = math.floor((total + process) / process)
+    batch = total // process
+    remainder = total % process
     process_regions = []
     od: OrderedDict[str, List[int]] = OrderedDict()
-    with gzip.open(filename, 'rt') as f:
-        for i, line in enumerate(f):
-            line = line.strip().split('\t')
-            chrom = line[0]
-            start = int(line[2])
+    with CpGTabix(filename, region) as tabix:
+        i = 0
+        n = 1
+        for chrom, _, start in tabix:
+            i += 1
             if chrom in od:
                 od[chrom][1] = start
             else:
-                od[chrom] = [start, -1]
-            if i > 0 and i % batch == 0:
+                od[chrom] = [start, start]
+            if batch + (0 if n > remainder else 1) == i:
                 regions = []
                 for k, v in od.items():
                     regions.append(f'{k}:{v[0]}-{v[1]}')
                 process_regions.append(regions)
                 od = OrderedDict()
+                i = 0
+                n += 1
         if len(od):
             regions = []
             for k, v in od.items():
@@ -118,14 +121,14 @@ def get_label_from_regions(regions):
     return f"{start}_{end}"
 
 
-def extract_vector_from_multi_motif_file(file_list, cpg_bed, outfile, window: int = 4, process=1):
+def extract_vector_from_multi_motif_file(file_list, cpg_bed, outfile, window: int = 4, process=1, region=None):
     sys.stderr.write(f"Process: {process}\n")
     if process == 1:
-        _extract_vector_from_multi_motif_file(file_list, cpg_bed, outfile, window)
+        _extract_vector_from_multi_motif_file(file_list, cpg_bed, outfile, window, region)
     else:
         if outfile is None:
             outfile = f'./merge.{uuid.uuid4()}.motif.gz'
-        split_regions = split_cpg(cpg_bed, process)
+        split_regions = split_cpg(cpg_bed, process, region)
         process_jobs = []
         queue = multiprocessing.Queue()
         for i, regions in enumerate(split_regions):
