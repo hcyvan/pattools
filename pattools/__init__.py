@@ -65,7 +65,9 @@ def main():
                                help='The output file, If not set, output is sent to standard output.')
     # =====================================================================
     parser_vector_multi = subparsers.add_parser('vector-multi',
-                                                help='This command performs vector analysis on the sample')
+                                                help='Extract vectors from multiple samples from different groups and'
+                                                     ' analyze them. This command supports MPI, which can accelerate'
+                                                     ' calculations in HPC')
     parser_vector_multi.add_argument('-c', '--cpg-bed', required=True, help='The cpg_bed file of the selected genome.')
     parser_vector_multi.add_argument('-i', '--input', required=True,
                                      help='a list file in tsv format, which contains multiple sample files,'
