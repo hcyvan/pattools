@@ -10,7 +10,7 @@ from pattools.matrixgenerate import matrix_generate
 def main():
     parser = argparse.ArgumentParser(prog='pattools',
                                      description='pattools is a BS-seq analysis tool suite based on pat format')
-    parser.add_argument('-v', '--version', action='version', version='0.0.14')
+    parser.add_argument('-v', '--version', action='version', version='0.0.17')
     parser.add_argument('-q', '--quiet', action='store_true', help='print run details to stderr')
     subparsers = parser.add_subparsers(dest='sub', required=True, title='command', description='The available commands',
                                        help='select a sub command to use')
@@ -87,16 +87,16 @@ def main():
     parser_pat2motif.add_argument('-w', '--window', type=int, default='4',
                                   help='Define the length of motif, such as ''3:CCT; 4: CCTT; 5:CCTTT'' ')
     # ======================================================================
-    parser_matrix_generate = subparsers.add_parser('matrix_generate',
+    parser_matrix_generate = subparsers.add_parser('matgen',
                                                    help='This command is used to generate matrix for entropy and beta')
-    parser_matrix_generate.add_argument('-i', '--input', required=True, help='The input file')
-    parser_matrix_generate.add_argument('-o', '--out', default=None, help='The output file')
-    parser_matrix_generate.add_argument('-c', '--coordinate', help='If set, files are not '
-                                                                   'compressed with bgzip')
-    parser_matrix_generate.add_argument('-d', '--depth', type=int, help='If set, files are not '
-                                                                        'compressed with bgzip')
-    parser_matrix_generate.add_argument('-e', '--exclude_mode', help='If set, files are not '
-                                                                     'compressed with bgzip')
+    parser_matrix_generate.add_argument('-i', '--input', required=True, help='This is a text, with each line being the'
+                                                                             'path to each entropy or beta file')
+    parser_matrix_generate.add_argument('-o', '--out', required=True, help='The output is a standard bed format file')
+    parser_matrix_generate.add_argument('-c', '--coordinate', required=True, help='This is a standard CpG coordinate file '
+                                                                   'The current path is /PUBLIC/rd/lung_cac/rawdata/cpgMapinfo')
+    parser_matrix_generate.add_argument('-d', '--depth', type=int, default=3, help='the lowest depth of a matrix')
+    parser_matrix_generate.add_argument('-e', '--exclude_mode', default='all', help='exclude -1 mode: all - exclude if all sample is -1,'
+                                                                     'one - exclude if contain one -1, close exclude mode')
     # ======================================================================    
     args = parser.parse_args()
     if args.sub == 'deconv':
@@ -119,5 +119,5 @@ def main():
         extract_vector_from_multi_motif_file(args.input, args.cpg_bed, args.out, window=args.window,process=args.process)
     if args.sub == 'pat2motif':
         pat2motif(args.input, args.out, args.window, not args.text)
-    if args.sub == 'matrix_generate':
+    if args.sub == 'matgen':
         matrix_generate(args.input, args.coordinate, args.depth, args.exclude_mode, args.out)
