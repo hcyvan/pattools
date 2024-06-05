@@ -87,7 +87,7 @@ def main():
     parser_pat2motif.add_argument('-w', '--window', type=int, default='4',
                                   help='Define the length of motif, such as ''3:CCT; 4: CCTT; 5:CCTTT'' ')
     # ======================================================================
-    parser_matrix_generate = subparsers.add_parser('mtrxgen',
+    parser_matrix_generate = subparsers.add_parser('matgen',
                                                    help='This command is used to generate matrix for entropy and beta')
     parser_matrix_generate.add_argument('-i', '--input', required=True, help='This is a text, with each line being the'
                                                                              'path to each entropy or beta file')
@@ -119,5 +119,5 @@ def main():
         extract_vector_from_multi_motif_file(args.input, args.cpg_bed, args.out, window=args.window,process=args.process)
     if args.sub == 'pat2motif':
         pat2motif(args.input, args.out, args.window, not args.text)
-    if args.sub == 'mtrxgen':
+    if args.sub == 'matgen':
         matrix_generate(args.input, args.coordinate, args.depth, args.exclude_mode, args.out)
