@@ -1,5 +1,6 @@
 import sys
 import pysam
+from typing import List
 from collections import OrderedDict
 
 
@@ -10,13 +11,22 @@ class GenomicRegion:
     Region string (region_str) is a string formatted as chrom:start-end, which is 1-based and end included.
     """
 
-    def __init__(self, cpg_bed):
+    def __init__(self, cpg_bed, csi_cpg=None):
         self.cpg_bed = cpg_bed
         self.cpg_bed_csi = cpg_bed + ".csi"
-
-    def genomic_to_cpg_idx(self, g_idx_regions):
         """
-        :param g_idx_regions: Genomic index region string array
+        Use the second and third columns as the start to create indexes.
+        --begin 2: index for genomic coordinate system
+        --begin 3: cpg.csi, index for CpG system
+        """
+        if csi_cpg:
+            self.cpg_bed_cpg_csi = csi_cpg
+        else:
+            self.cpg_bed_cpg_csi = cpg_bed + ".cpg.csi"
+
+    def genomic_to_cpg_idx(self, g_idx_regions: List[str]) -> OrderedDict[str, str]:
+        """
+        :param g_idx_regions: Genomic index region string array: such as: ['chr1:20000-20050', 'chr1:30000-30050']
         :return: Ordered dictionary from Genomic index regions to CpG index regions
         """
         gr_cpg_map = OrderedDict()
@@ -38,3 +48,24 @@ class GenomicRegion:
                 else:
                     gr_cpg_map[region] = None
         return gr_cpg_map
+
+    def cpg_to_genomic_idx(self, cpg_idx_regions: List[str]) -> OrderedDict[str, str]:
+        cpg_gr_map = OrderedDict()
+        with pysam.TabixFile(self.cpg_bed, index=self.cpg_bed_cpg_csi) as tbx:
+            for region in cpg_idx_regions:
+                tmp = []
+                try:
+                    fetch_regions = tbx.fetch(region=region)
+                    for record in fetch_regions:
+                        tmp.append(record)
+                except Exception as e:
+                    sys.stderr.write(f'{e}\n')
+
+                if len(tmp):
+                    chrom = tmp[0].split('\t')[0]
+                    start = tmp[0].split('\t')[1]
+                    end = tmp[-1].split('\t')[1]
+                    cpg_gr_map[region] = f'{chrom}:{start}-{end}'
+                else:
+                    cpg_gr_map[region] = None
+        return cpg_gr_map
