@@ -79,6 +79,8 @@ def main():
     parser_vector_multi.add_argument('-r', '--region', default=None,
                                      help='TThe region to be processed. If not set, the entire genome is processed.'
                                           ' eg: -r chr1:10000-15000')
+    parser_vector_multi.add_argument('-m', '--cluster-method', choices=['HDBSCAN', 'DBSCAN'], default='HDBSCAN',
+                               help='Algorithm for classifying all motifs in a window')
     parser_vector_multi.add_argument('-o', '--out', default=None,
                                      help='The output file, If not set, output is sent to standard output.')
     # =====================================================================
@@ -124,7 +126,7 @@ def main():
         extract_vector(args.input, args.out, window=args.window)
     if args.sub == 'vector-multi':
         extract_vector_from_multi_motif_file(args.input, args.cpg_bed, args.out, window=args.window,
-                                             process=args.process, region=args.region)
+                                             process=args.process, region=args.region, cluster=args.cluster_method)
     if args.sub == 'pat2motif':
         pat2motif(args.input, args.out, args.window, not args.text)
     if args.sub == 'matgen':

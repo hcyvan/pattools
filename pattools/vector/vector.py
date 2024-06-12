@@ -49,7 +49,7 @@ def extract_vector(input_file, outfile=None, window: int = 4, regions=None):
     motif = Motif(window)
     with Output(filename=outfile, file_format='motif', bgzip=False) as of:
         with MotifTabix(input_file, regions) as tabix:
-            vector_calculator = VectorCalculator(window=window, min_vector_proportion_in_cluster=0.33)
+            vector_calculator = VectorCalculator(window=window)
             while True:
                 line = tabix.readline_and_parse(motif.motifs)
                 if not line:
@@ -59,7 +59,7 @@ def extract_vector(input_file, outfile=None, window: int = 4, regions=None):
                 of.write(f"{vector_calculator}\n")
 
 
-def extract_vector_multi(file_list, cpg_bed, outfile, window: int = 4, regions=None):
+def extract_vector_multi(file_list, cpg_bed, outfile, window: int = 4, regions=None, cluster='HDBSCAN'):
     input_files = []
     groups = []
     samples = []
@@ -80,12 +80,12 @@ def extract_vector_multi(file_list, cpg_bed, outfile, window: int = 4, regions=N
     with Output(filename=outfile, file_format='motif', bgzip=False) as of:
         with CpGTabix(cpg_bed, regions) as cpg:
             for chrom, _, start in cpg:
-                vector_calculator = VectorCalculator()
+                vector_calculator = VectorCalculator(window=window, cluster=cluster)
                 vector_calculator.set_motif_count(chrom, start, dict())
                 for i, (tabix, line) in enumerate(zip(tabix_arr, lines)):
                     if line is None:
                         continue
-                    vc = VectorCalculator()
+                    vc = VectorCalculator(window=window, cluster=cluster)
                     vc.set_motif_count(line[0], line[1], line[2], sample=samples[i], group=groups[i])
                     while vector_calculator > vc:
                         line = tabix.readline_and_parse(motif.motifs)
@@ -100,9 +100,9 @@ def extract_vector_multi(file_list, cpg_bed, outfile, window: int = 4, regions=N
         tabix.close()
 
 
-def extract_vector_multi_process(queue, process_order, file_list, cpg_bed, outfile, window, regions):
+def extract_vector_multi_process(queue, process_order, file_list, cpg_bed, outfile, window, regions, cluster='HDBSCAN'):
     try:
-        extract_vector_multi(file_list, cpg_bed, outfile, window, regions)
+        extract_vector_multi(file_list, cpg_bed, outfile, window, regions, cluster)
         queue.put((process_order, 'success', outfile))
     except Exception as e:
         queue.put((process_order, 'failure', str(e)))
@@ -140,7 +140,8 @@ def merge_split_filenames(outfile, filenames):
         os.remove(file)
 
 
-def extract_vector_from_multi_motif_file(file_list, cpg_bed, outfile, window: int = 4, process=1, region=None):
+def extract_vector_from_multi_motif_file(file_list, cpg_bed, outfile, window: int = 4, process=1, region=None,
+                                         cluster='HDBSCAN'):
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     task_count = comm.Get_size()
@@ -154,14 +155,15 @@ def extract_vector_from_multi_motif_file(file_list, cpg_bed, outfile, window: in
             split_regions_and_filenames = None
             outfile = None
         regions_and_filename = comm.scatter(split_regions_and_filenames, root=0)
-        extract_vector_multi(file_list, cpg_bed, regions_and_filename[1], window, regions_and_filename[0])
+        extract_vector_multi(file_list, cpg_bed, regions_and_filename[1], window, regions_and_filename[0],
+                             cluster=cluster)
         tmp_files = comm.gather(regions_and_filename[1], root=0)
         if rank == 0:
             merge_split_filenames(outfile, tmp_files)
     else:
         sys.stderr.write(f"Process: {process}\n")
         if process == 1:
-            extract_vector_multi(file_list, cpg_bed, outfile, window, region)
+            extract_vector_multi(file_list, cpg_bed, outfile, window, region, cluster=cluster)
         else:
             if outfile is None:
                 outfile = f'./merge.{uuid.uuid4()}.motif.gz'
@@ -172,7 +174,9 @@ def extract_vector_from_multi_motif_file(file_list, cpg_bed, outfile, window: in
             for i, regions in enumerate(split_regions):
                 sys.stderr.write(f"process {i} generating {split_filenames[i]}\n")
                 p = multiprocessing.Process(target=extract_vector_multi_process,
-                                            args=(queue, i, file_list, cpg_bed, split_filenames[i], window, regions))
+                                            args=(
+                                                queue, i, file_list, cpg_bed, split_filenames[i], window, regions,
+                                                cluster))
                 process_jobs.append(p)
                 p.start()
 

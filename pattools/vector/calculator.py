@@ -4,6 +4,7 @@ from numpy.typing import NDArray
 import numpy as np
 from collections import Counter, OrderedDict
 from sklearn.cluster import DBSCAN
+import hdbscan
 from sklearn.manifold import TSNE
 from scipy.spatial.distance import pdist, squareform
 import matplotlib.pyplot as plt
@@ -13,14 +14,18 @@ from pattools.motif import Motif
 Array2D = np.typing.NDArray[Tuple[int, int]]
 Array1D = np.typing.NDArray[Tuple[int]]
 
+np.random.seed(1000)
+
 
 class VectorCalculator(object):
-    def __init__(self, window: int = 4, min_vector_proportion_in_cluster=0.33):
+    def __init__(self, window: int = 4, cluster='HDBSCAN'):
+        """
+        :param cluster: HDBSCAN, DBSCAN
+        """
         self._window = None
         self._base_vector = None
         self._motif = None
         self._scale = None
-        self._min_vector_proportion_in_cluster = None
 
         self._chr = None
         self._start = None
@@ -40,10 +45,7 @@ class VectorCalculator(object):
         self._distance_matrix: Array2D = np.array([[0.0]])
 
         self.set_param_window(window)
-        self.set_param_min_vector_proportion_in_cluster(min_vector_proportion_in_cluster)
-
-    def set_param_min_vector_proportion_in_cluster(self, min_vector_proportion_in_cluster):
-        self._min_vector_proportion_in_cluster = min_vector_proportion_in_cluster
+        self._cluster = cluster
 
     def set_param_window(self, window: int):
         self._window = window
@@ -156,7 +158,7 @@ class VectorCalculator(object):
 
     def __add__(self, other):
         if isinstance(other, VectorCalculator):
-            vc = VectorCalculator(self._window, self._min_vector_proportion_in_cluster)
+            vc = VectorCalculator(self._window, self._cluster)
             counter2 = Counter(self._motif_count) + Counter(other._motif_count)
             _group = np.append(self._group, other._group)
             _sample = np.append(self._sample, other._sample)
@@ -224,26 +226,55 @@ class VectorCalculator(object):
         return f"{self._chr}\t{self._start}\t{self.get_clusters_number()}\t{dist_top_0_1_tag:.3f}\t{dist_top_0_base_tag:.3f}\t{len(self._vectors)}\t{motif_tag}"
 
     def _do_cluster(self):
-        max_vector = 500
-        if len(self._vectors) <= max_vector:
-            _min_samples = math.ceil(len(self._vectors) * self._min_vector_proportion_in_cluster)
-            _dbscan = DBSCAN(eps=1, min_samples=_min_samples).fit(self._vectors)
-            labels = np.array(_dbscan.labels_)
+        sample_idx = self._get_sample_idx()
+        if sample_idx is not None:
+            _vectors = self._vectors[sample_idx, :]
+            _group = self._group[sample_idx]
         else:
-            select_idx = np.random.choice(self._vectors.shape[0], max_vector, replace=False)
-            _vectors = self._vectors[select_idx, :]
+            _vectors = self._vectors
+            _group = self._group
 
-            _min_samples = math.ceil(len(_vectors) * self._min_vector_proportion_in_cluster)
-            _dbscan = DBSCAN(eps=1, min_samples=_min_samples).fit(_vectors)
+        if self._cluster == 'HDBSCAN':
+            _labels = self._do_cluster_hdbscan(_vectors, _group)
+        else:
+            _labels = self._do_cluster_dbscan(_vectors)
+
+        if sample_idx is not None:
             _label_map = dict()
-            for v, l in zip(_vectors, _dbscan.labels_):
+            for v, l in zip(_vectors, _labels):
                 _label_map[''.join([str(x) for x in v])] = l
             _labels = []
             for v in self._vectors:
                 label = _label_map.get(''.join([str(x) for x in v]), -1)
                 _labels.append(label)
             labels = np.array(_labels)
+        else:
+            labels = _labels
         self._labels = labels
+
+    @staticmethod
+    def _do_cluster_hdbscan(vectors, vector_group):
+        if len(vectors) < 2:
+            return np.array([0])
+        min_group = Counter(vector_group).most_common()[-1]
+        min_cluster_size = min_group[1] // 3
+        if min_cluster_size < 2:
+            min_cluster_size = 2
+        _labels = hdbscan.HDBSCAN(min_cluster_size=min_cluster_size).fit_predict(vectors)
+        return _labels
+
+    @staticmethod
+    def _do_cluster_dbscan(vectors):
+        _min_samples = math.ceil(len(vectors) * 0.33)
+        _dbscan = DBSCAN(eps=1, min_samples=_min_samples).fit(vectors)
+        return _dbscan.labels_
+
+    def _get_sample_idx(self):
+        MAX_VECTOR_SIZE = 5000
+        if len(self._vectors) > MAX_VECTOR_SIZE:
+            select_idx = np.random.choice(self._vectors.shape[0], MAX_VECTOR_SIZE, replace=False)
+            return select_idx
+        return None
 
     def _count_labels(self):
         _labels = self._labels[self._labels != -1]
