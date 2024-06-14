@@ -35,6 +35,10 @@ def main():
                                help='markerfile for loyfer method')
     parser_region.add_argument('-c', '--cpg-bed', required=True, help='The cpg_bed file of the selected genome.')
     parser_region.add_argument('-o', '--out', required=True, help='The output file')
+    parser_region.add_argument('-in', '--include', nargs='+',
+                               help='Columns in the atlas to include. Complementary to --ignore')
+    parser_region.add_argument('-ig', '--ignore', nargs='+',
+                               help='Columns in the atlas to remove, along with their corresponding marker lines')
     # =====================================================================
     parser_entropy = subparsers.add_parser('entropy',
                                            help='This command performs entropy analysis on the sample')
@@ -117,7 +121,7 @@ def main():
                                optimization=args.optimization_algorithm)
         if args.method == 'loyfer':
             deconvolution_loyfer(args.pat, args.out, args.markerfile, args.genome_version, cpg_bed=args.cpg_bed,
-                                 optimization=args.optimization_algorithm)
+                                 optimization=args.optimization_algorithm, include=args.include, ignore=args.ignore)
     if args.sub == 'entropy':
         extract_entropy(args.input, args.depth, args.window, args.out)
     if args.sub == 'beta':
