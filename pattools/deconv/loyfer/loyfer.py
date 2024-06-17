@@ -6,14 +6,29 @@ from pattools.deconv.optimization import opt_qp, opt_nnls
 from pattools.deconv.utils import get_uxm_ratio_from_pat_by_cpg_idx
 from importlib import resources
 
-def get_marker(markerfile="Atlas.U25.l4.hg38.tsv"):
+def validate_ref_tissues(marker, tissue_list):
+    for col in tissue_list:
+        if col not in marker.columns:
+            eprint('Invalid cell type (not in markerfile):', col)
+            exit()
+
+def get_marker(markerfile="Atlas.U25.l4.hg38.tsv", ignore=None, include=None):
     marker_path = resources.path('pattools.deconv.loyfer', markerfile)
     marker = pd.read_csv(str(marker_path), sep='\t')
     marker = marker[~marker['name'].isna()]
+    if ignore is not None:
+        validate_ref_tissues(marker, ignore)
+        for col in ignore:
+            del marker[col]
+            marker = marker[marker.target != col]
+    elif include is not None:
+        validate_ref_tissues(marker, include)
+        marker = marker[marker.target.isin(include)]
+        keep = list(marker.columns[:8]) + include
+        marker = marker[keep]
     return marker
 
-def ge_tissue_matrix_and_methylation_density(pat_file, markerfile, genome_version, cpg_bed):
-    marker = get_marker(markerfile)
+def ge_tissue_matrix_and_methylation_density(pat_file, marker, genome_version, cpg_bed):
     TISSUE = list(Counter(marker['target']).keys())
     TISSUE = sorted(TISSUE,reverse=False)
     marker = marker[~np.any(marker[TISSUE].isna(),axis=1)]
@@ -27,9 +42,9 @@ def ge_tissue_matrix_and_methylation_density(pat_file, markerfile, genome_versio
     data = data[~data['uxm_ratio'].isna()]
     return data.loc[:, TISSUE]*data['depth'].values[:,np.newaxis], data.loc[:, 'uxm_ratio']*data['depth']
 
-
-def deconvolution_loyfer(pat_file, out_file, markerfile, genome_version, cpg_bed, optimization='nnls'):
-    tissue_matrix, methy_density = ge_tissue_matrix_and_methylation_density(pat_file, markerfile, genome_version, cpg_bed)
+def deconvolution_loyfer(pat_file, out_file, markerfile, genome_version, cpg_bed, optimization='nnls',ignore=None, include=None):
+    marker = get_marker(markerfile,ignore,include)
+    tissue_matrix, methy_density = ge_tissue_matrix_and_methylation_density(pat_file, marker, genome_version, cpg_bed)
     if optimization == 'QP':
         opt_func = opt_qp
     else:
