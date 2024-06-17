@@ -1,5 +1,11 @@
 <img src="docs/image/logo.svg" alt="logo" width="600"/>
 
+[![Documentation](https://img.shields.io/badge/docs-Github_Page-blue?style=flat-square)](https://hcyvan.github.io/pattools/intro.html)
+![Python 3.10](https://img.shields.io/badge/python-3.10+-32cd32)
+![Development](https://img.shields.io/badge/development-rapid%20progress-orange)
+![Developers](https://img.shields.io/github/contributors/hcyvan/pattools?color=green)
+[![Packagist License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
 ## Introduction
 Pat format toolkit
 <img src="notebook/framework.png" alt="pattools framework" width="500"/>
@@ -134,3 +140,10 @@ genome index coordinates or CpG index coordinates.
 ```
 pattools region -t cpg2genome -i chr1:266762-266762 -c /mnt/d/project/wgbs_tools/references/hg38/CpG.bed.gz
 ```
+## License
+Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
+
+## Acknowledgements
++ [wgbstools](https://github.com/nloyfer/wgbs_tools)
++ [pysam](https://github.com/pysam-developers/pysam)
++ [samtools](http://www.htslib.org/)
