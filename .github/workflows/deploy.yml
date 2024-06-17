@@ -20,10 +20,10 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -U jupyter-book 
-          jupyter-book build .
+          jupyter-book build docs
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-          publish_dir: _build/html
+          publish_dir: docs/_build/html
