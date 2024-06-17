@@ -10,3 +10,4 @@ __pycache__/
 tmp
 .DS_Store
 *.egg-info
+_build

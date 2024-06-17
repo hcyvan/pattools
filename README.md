@@ -1,4 +1,4 @@
-<img src="notebook/logo.svg" alt="logo" width="500"/>
+<img src="notebook/logo.svg" alt="docs/image/logo" width="600"/>
 
 ## Introduction
 Pat format toolkit
