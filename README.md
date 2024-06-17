@@ -57,6 +57,12 @@ pattools vector-multi -i ./tmp/input.list.txt -c /mnt/d/project/wgbs_tools/refer
 pattools pat2motif -i /mnt/d/data/cacLung/raw/pat/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.pat.gz \
                     -o /mnt/d/data/cacLung/raw/pat/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.motif.gz
 ```
+#### region
+This command is used to convert a region between different coordinate systems, such as 
+genome index coordinates or CpG index coordinates.
+```
+pattools region -t cpg2genome -i chr1:266762-266762 -c /mnt/d/project/wgbs_tools/references/hg38/CpG.bed.gz
+```
 ## Installation
 
 ### Source code

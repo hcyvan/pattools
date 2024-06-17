@@ -69,3 +69,17 @@ class GenomicRegion:
                 else:
                     cpg_gr_map[region] = None
         return cpg_gr_map
+
+
+def region_cpg2genome(regions, cpg, cpg_index=None):
+    gr = GenomicRegion(cpg, csi_cpg=cpg_index)
+    regions_map = gr.cpg_to_genomic_idx(regions)
+    for k, v in regions_map.items():
+        print(v)
+
+
+def region_genome2cpg(regions, cpg):
+    gr = GenomicRegion(cpg)
+    regions_map = gr.genomic_to_cpg_idx(regions)
+    for k, v in regions_map.items():
+        print(v)

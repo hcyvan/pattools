@@ -1,10 +1,12 @@
 import argparse
+from pathlib import Path
 from pattools.deconv import deconvolution_sun, deconvolution_moss, deconvolution_loyfer
 from pattools.entropy import extract_entropy
 from pattools.beta import extract_beta
 from pattools.format import pat2motif
 from pattools.vector import extract_vector, extract_vector_from_multi_motif_file
 from pattools.matrixgenerate import matrix_generate
+from pattools.region import region_cpg2genome, region_genome2cpg
 
 
 def main():
@@ -15,11 +17,19 @@ def main():
     subparsers = parser.add_subparsers(dest='sub', required=True, title='command', description='The available commands',
                                        help='select a sub command to use')
     # =====================================================================
-    parser_region = subparsers.add_parser('deconv',
+    parser_region = subparsers.add_parser('region',
+                                          help='This command is used to convert a region between different coordinate systems, such as genome index coordinates or CpG index coordinates.')
+    parser_region.add_argument('-t', '--transform', choices=['cpg2genome', 'genome2cpg'], default='cpg2genome',
+                               help='Conversion direction of genomic coordinates')
+    parser_region.add_argument('-c', '--cpg-bed', required=True, help='The cpg_bed file of the selected genome.')
+    parser_region.add_argument('-i', '--input', required=True,
+                               help='The input can be: 1) region string, eg: chr1:250-300, 2) a file where each line is a region string.')
+    # =====================================================================
+    parser_deconv = subparsers.add_parser('deconv',
                                           help='This command is used to calculate the cellular composition of the '
                                                'sample according to the pat format.')
-    parser_region.add_argument('-p', '--pat', required=True, help='The pat file')
-    parser_region.add_argument('-m', '--method', choices=['sun', 'moss', 'loyfer'], default='sun',
+    parser_deconv.add_argument('-p', '--pat', required=True, help='The pat file')
+    parser_deconv.add_argument('-m', '--method', choices=['sun', 'moss', 'loyfer'], default='sun',
                                help='The deconvolution method.'
                                     'sun: Sun et al. Plasma DNA tissue mapping by genome-wide methylation sequencing'
                                     ' for noninvasive prenatal, cancer, and transplantation assessments. '
@@ -27,14 +37,14 @@ def main():
                                     ' of circulating cell-free DNA in health and disease. '
                                     'loyfer: Loyfer et al. A DNA methylation atlas of normal human cell types.'
                                )
-    parser_region.add_argument('-a', '--optimization-algorithm', choices=['nnls', 'qp'], default='nnls',
+    parser_deconv.add_argument('-a', '--optimization-algorithm', choices=['nnls', 'qp'], default='nnls',
                                help='The optimization algorithm for deconvolution.')
-    parser_region.add_argument('-g', '--genome-version', choices=['hg38', 'hg19'], default='hg38',
+    parser_deconv.add_argument('-g', '--genome-version', choices=['hg38', 'hg19'], default='hg38',
                                help='The genome version.')
-    parser_region.add_argument('-f', '--markerfile', default='Atlas.U25.l4.hg38.tsv',
+    parser_deconv.add_argument('-f', '--markerfile', default='Atlas.U25.l4.hg38.tsv',
                                help='markerfile for loyfer method')
-    parser_region.add_argument('-c', '--cpg-bed', required=True, help='The cpg_bed file of the selected genome.')
-    parser_region.add_argument('-o', '--out', required=True, help='The output file')
+    parser_deconv.add_argument('-c', '--cpg-bed', required=True, help='The cpg_bed file of the selected genome.')
+    parser_deconv.add_argument('-o', '--out', required=True, help='The output file')
     # =====================================================================
     parser_entropy = subparsers.add_parser('entropy',
                                            help='This command performs entropy analysis on the sample')
@@ -80,7 +90,7 @@ def main():
                                      help='TThe region to be processed. If not set, the entire genome is processed.'
                                           ' eg: -r chr1:10000-15000')
     parser_vector_multi.add_argument('-m', '--cluster-method', choices=['HDBSCAN', 'DBSCAN'], default='HDBSCAN',
-                               help='Algorithm for classifying all motifs in a window')
+                                     help='Algorithm for classifying all motifs in a window')
     parser_vector_multi.add_argument('-o', '--out', default=None,
                                      help='The output file, If not set, output is sent to standard output.')
     # =====================================================================
@@ -131,3 +141,16 @@ def main():
         pat2motif(args.input, args.out, args.window, not args.text)
     if args.sub == 'matgen':
         matrix_generate(args.input, args.coordinate, args.depth, args.exclude_mode, args.out)
+    if args.sub == 'region':
+        regions = []
+        file_path = Path(args.input)
+        if file_path.exists():
+            with file_path.open(mode='r') as f:
+                for line in f:
+                    regions.append(line.strip())
+        else:
+            regions.append(args.input)
+        if args.transform == 'cpg2genome':
+            region_cpg2genome(regions, args.cpg_bed)
+        elif args.transform == 'genome2cpg':
+            region_genome2cpg(regions, args.cpg_bed)
