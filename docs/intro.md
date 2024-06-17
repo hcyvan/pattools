@@ -16,6 +16,5 @@ Pattools currently offers the following functionalities:
 + Methylation vector analysis
 
 
-
 ```{bibliography}
 ```
