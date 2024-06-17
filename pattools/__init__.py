@@ -4,7 +4,7 @@ from pattools.deconv import deconvolution_sun, deconvolution_moss, deconvolution
 from pattools.entropy import extract_entropy
 from pattools.beta import extract_beta
 from pattools.format import pat2motif
-from pattools.vector import extract_vector, extract_vector_from_multi_motif_file
+from pattools.vector import extract_vector, extract_vector_from_multi_motif_file, vector_diff
 from pattools.matrixgenerate import matrix_generate
 from pattools.region import region_cpg2genome, region_genome2cpg
 
@@ -98,6 +98,16 @@ def main():
     parser_vector_multi.add_argument('-o', '--out', default=None,
                                      help='The output file, If not set, output is sent to standard output.')
     # =====================================================================
+    parser_vector_diff = subparsers.add_parser('vector-diff',
+                                               help='Identify the window of the differential vector within'
+                                                    ' the merged file. (generate by vector-multi)')
+    parser_vector_diff.add_argument('-i', '--input', required=True, help='The input merged vector files.'
+                                                                         ' (generate by vector-multi)')
+    parser_vector_diff.add_argument('-o', '--out', default=None,
+                                    help='The output file, If not set, output is sent to standard output.')
+    parser_vector_diff.add_argument('-g', '--group', required=True, help='Output group-specific '
+                                                                         'differential vector window')
+    # =====================================================================
     parser_pat2motif = subparsers.add_parser('pat2motif',
                                              help='This command is used to convert pat file to motif file')
     parser_pat2motif.add_argument('-i', '--input', required=True, help='The input file')
@@ -141,6 +151,8 @@ def main():
     if args.sub == 'vector-multi':
         extract_vector_from_multi_motif_file(args.input, args.cpg_bed, args.out, window=args.window,
                                              process=args.process, region=args.region, cluster=args.cluster_method)
+    if args.sub == 'vector-diff':
+        vector_diff(args.input, args.group, args.out)
     if args.sub == 'pat2motif':
         pat2motif(args.input, args.out, args.window, not args.text)
     if args.sub == 'matgen':

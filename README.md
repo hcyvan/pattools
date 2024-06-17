@@ -52,6 +52,10 @@ This command is used to merge all samples and find different vector
 ```
 pattools vector-multi -i ./tmp/input.list.txt -c /mnt/d/project/wgbs_tools/references/hg38/CpG.bed.gz > ./tmp/ddd.txt
 ```
+#### vector-diff
+```
+pattools vector-diff -i /mnt/d/data/cacLung/raw/yixing/20240612/merge.motif.gz -g 1
+```
 #### pat2motif
 ```
 pattools pat2motif -i /mnt/d/data/cacLung/raw/pat/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.pat.gz \
