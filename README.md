@@ -4,6 +4,9 @@
 Pat format toolkit
 <img src="notebook/framework.png" alt="pattools framework" width="500"/>
 
++ [Pattools Document Website](https://hcyvan.github.io/pattools/intro.html)
++ [Github](https://github.com/hcyvan/pattools)
++ [Open Issues](https://github.com/hcyvan/pattools/issues/)
 ## Development
 
 1. Create a python 3.10+ environment, you can use conda, virtualenv, docker, etc. Or a local python environment (not
