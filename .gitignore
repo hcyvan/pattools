@@ -11,3 +11,5 @@ tmp
 .DS_Store
 *.egg-info
 _build
+build
+dist

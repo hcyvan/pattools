@@ -1,18 +1,18 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="pattools",
+    name="pattools-methy",
     packages=find_packages(),
-    version="0.0.20",
-    author="gomics",
+    version="0.1.0",
+    author="Department of research and development, Zhejiang Gaomei Genomics",
     author_email="it@gomicsgene.com",
     description="pattools is a BS-seq analysis tool suite based on pat format",
+    url='https://hcyvan.github.io/pattools/index.html',
+    license='MIT',
     classifiers=[
-        "Programming Language :: Python :: 3",
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
-        'Programming Language :: Python :: 3.10',
-        "Operating System :: OS Independent"
+        'Programming Language :: Python :: 3',
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: POSIX :: Linux',
     ],
     package_data={
         'pattools.deconv.moss': ['*.csv'],
@@ -26,5 +26,5 @@ setup(
         ],
     },
     py_modules=[],
-    python_requires='>=3.8, <4',
+    python_requires='>=3.10, <4',
 )
