@@ -1,9 +1,9 @@
 <img src="docs/image/logo.svg" alt="logo" width="600"/>
 
 [![Documentation](https://img.shields.io/badge/docs-Github_Page-blue?style=flat-square)](https://hcyvan.github.io/pattools/intro.html)
-![Python 3.10](https://img.shields.io/badge/python-3.10+-32cd32)
-![Development](https://img.shields.io/badge/development-rapid%20progress-orange)
-![Developers](https://img.shields.io/github/contributors/hcyvan/pattools?color=green)
+[![Python 3.10](https://img.shields.io/badge/python-3.10+-32cd32)](https://www.python.org/)
+[![Development](https://img.shields.io/badge/development-rapid%20progress-orange)](https://github.com/hcyvan/pattools/graphs/commit-activity)
+[![Developers](https://img.shields.io/github/contributors/hcyvan/pattools?color=green)](https://github.com/hcyvan/pattools/graphs/contributors)
 [![Packagist License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 ## Introduction
