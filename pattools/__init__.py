@@ -120,7 +120,7 @@ def main():
     # ======================================================================
     parser_matrix_generate = subparsers.add_parser('matgen',
                                                    help='This command is used to generate matrix for entropy and beta')
-    parser_matrix_generate.add_argument('-i', '--input', required=True, help='This is a text, with each line being the'
+    parser_matrix_generate.add_argument('-i', '--input', required=True, help='This is a text, with each line being the '
                                                                              'path to each entropy or beta file')
     parser_matrix_generate.add_argument('-o', '--out', required=True, help='The output is a standard bed format file')
     parser_matrix_generate.add_argument('-c', '--coordinate', required=True,
