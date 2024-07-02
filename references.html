@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Introduction &#8212; Pattools Document</title>
+    <title>References &#8212; Pattools Document</title>
   
   
   
@@ -57,12 +57,10 @@
     <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'intro';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'references';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Beta value" href="beta.html" />
+    <link rel="prev" title="Methylation Vector" href="vector.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -125,8 +123,6 @@
       
       
       
-        
-      
       <div class="bd-sidebar-primary bd-sidebar">
         
 
@@ -145,7 +141,7 @@
     
   
 
-<a class="navbar-brand logo" href="#">
+<a class="navbar-brand logo" href="intro.html">
   
   
   
@@ -176,17 +172,17 @@
     <div class="bd-toc-item navbar-nav active">
         
         <ul class="nav bd-sidenav bd-sidenav__home-link">
-            <li class="toctree-l1 current active">
-                <a class="reference internal" href="#">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
                     Introduction
                 </a>
             </li>
         </ul>
-        <ul class="nav bd-sidenav">
+        <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="beta.html">Beta value</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vector.html">Methylation Vector</a></li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">References</a></li>
 </ul>
 
     </div>
@@ -258,7 +254,7 @@
       
       
       
-      <li><a href="https://github.com/hcyvan/pattools/issues/new?title=Issue%20on%20page%20%2Fintro.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/hcyvan/pattools/issues/new?title=Issue%20on%20page%20%2Freferences.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -288,7 +284,7 @@
       
       
       
-      <li><a href="_sources/intro.md" target="_blank"
+      <li><a href="_sources/references.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -359,9 +355,7 @@ document.write(`
   </button>
 `);
 </script>
-<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="fa-solid fa-list"></span>
-</button>
+
 </div></div>
       
     </div>
@@ -372,19 +366,11 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Introduction</h1>
+    <h1>References</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
             
-            <div>
-                <h2> Contents </h2>
-            </div>
-            <nav aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-pat-format">The PAT format</a></li>
-</ul>
-            </nav>
         </div>
     </div>
 </div>
@@ -394,47 +380,23 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="introduction">
-<h1>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">#</a></h1>
-<p>The PAT format was first proposed in wgbstools (<a class="reference external" href="https://github.com/nloyfer/wgbs_tools">Github</a>) <span id="id1">[<a class="reference internal" href="references.html#id2" title="Netanel Loyfer, Jonathan Rosenski, and Tommy Kaplan. Wgbstools: a computational suite for dna methylation sequencing data representation, visualization, and analysis. bioRxiv, 2024. doi:10.1101/2024.05.08.593132.">Loyfer <em>et al.</em>, 2024</a>]</span>.
-This format is compressed and indexed, providing comprehensive information about methylation patterns while excluding
-the subjects’ private DNA sequence data. Therefore, the pat format can effectively facilitate the transmission and
-sharing of methylation data.</p>
-<p>To this end, we developed pattools, a supplementary extension of wgbstools, to support the analysis of pat format data.
-Pattools currently offers the following functionalities:</p>
-<ul class="simple">
-<li><p>Multiple methylation deconvolution algorithms</p></li>
-<li><p>Methylation beta value analysis</p></li>
-<li><p>Methylation entropy analysis</p></li>
-<li><p>Methylation vector analysis</p></li>
-</ul>
-<section id="the-pat-format">
-<h2>The PAT format<a class="headerlink" href="#the-pat-format" title="Link to this heading">#</a></h2>
-<p>The PAT format encompasses 4 columns:</p>
-<ol class="arabic simple">
-<li><p>Chromosome Number: This column specifies the chromosome number.</p></li>
-<li><p>Consecutive CpG Positions: This column lists the successive genomic positions of CpG sites. The positions
-are continuous across chromosomes, maintaining a 1-based index. It indicates the position of the first
-CpG in the column 3.</p></li>
-<li><p>Methylation Motif: This column denotes the methylation status of the CpG site</p>
-<ul class="simple">
-<li><p>‘C’: methylated CpG</p></li>
-<li><p>‘T’: unmethylated CpG</p></li>
-<li><p>‘.’: unknown methylation status.</p></li>
-</ul>
-</li>
-<li><p>Motif Occurrence Count: This column records the frequency of each motif described in the third column.</p></li>
-</ol>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">chr1</span>    <span class="mi">755</span>     <span class="n">CCCTCCCCTCTTCCT</span> <span class="mi">1</span>
-<span class="n">chr1</span>    <span class="mi">755</span>     <span class="n">TTTT</span>    <span class="mi">1</span>
-<span class="n">chr1</span>    <span class="mi">756</span>     <span class="n">CCCCCTC</span> <span class="mi">1</span>
-<span class="n">chr1</span>    <span class="mi">756</span>     <span class="n">CCCCCT</span><span class="o">....</span><span class="n">CCCC</span>  <span class="mi">1</span>
-<span class="n">chr1</span>    <span class="mi">758</span>     <span class="n">CCCCCCCCCCCC</span>    <span class="mi">1</span>
-<span class="n">chr1</span>    <span class="mi">758</span>     <span class="n">CCTTCCCTCCC</span>     <span class="mi">1</span>
-</pre></div>
+  <section class="tex2jax_ignore mathjax_ignore" id="references">
+<h1>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h1>
+<div class="docutils container" id="id1">
+<div role="list" class="citation-list">
+<div class="citation" id="id2" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>LRK24<span class="fn-bracket">]</span></span>
+<p>Netanel Loyfer, Jonathan Rosenski, and Tommy Kaplan. Wgbstools: a computational suite for dna methylation sequencing data representation, visualization, and analysis. <em>bioRxiv</em>, 2024. <a class="reference external" href="https://doi.org/10.1101/2024.05.08.593132">doi:10.1101/2024.05.08.593132</a>.</p>
 </div>
-</section>
-<div class="toctree-wrapper compound">
+<div class="citation" id="id4" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>MMN+18<span class="fn-bracket">]</span></span>
+<p>Joshua Moss, Judith Magenheim, Daniel Neiman, Hai Zemmour, Netanel Loyfer, Amit Korach, Yaacov Samet, Myriam Maoz, Henrik Druid, Peter Arner, Keng-Yeh Fu, Endre Kiss, Kirsty L. Spalding, Giora Landesberg, Aviad Zick, Albert Grinshpun, A. M. James Shapiro, Markus Grompe, Avigail Dreazan Wittenberg, Benjamin Glaser, Ruth Shemer, Tommy Kaplan, and Yuval Dor. Comprehensive human cell-type methylation atlas reveals origins of circulating cell-free DNA in health and disease. <em>Nature Communications</em>, 9(1):5068, November 2018. Number: 1 Publisher: Nature Publishing Group. URL: <a class="reference external" href="https://www.nature.com/articles/s41467-018-07466-6">https://www.nature.com/articles/s41467-018-07466-6</a> (visited on 2024-02-22), <a class="reference external" href="https://doi.org/10.1038/s41467-018-07466-6">doi:10.1038/s41467-018-07466-6</a>.</p>
+</div>
+<div class="citation" id="id3" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>SJC+15<span class="fn-bracket">]</span></span>
+<p>Kun Sun, Peiyong Jiang, K. C. Allen Chan, John Wong, Yvonne K. Y. Cheng, Raymond H. S. Liang, Wai-kong Chan, Edmond S. K. Ma, Stephen L. Chan, Suk Hang Cheng, Rebecca W. Y. Chan, Yu K. Tong, Simon S. M. Ng, Raymond S. M. Wong, David S. C. Hui, Tse Ngong Leung, Tak Y. Leung, Paul B. S. Lai, Rossa W. K. Chiu, and Yuk Ming Dennis Lo. Plasma DNA tissue mapping by genome-wide methylation sequencing for noninvasive prenatal, cancer, and transplantation assessments. <em>Proceedings of the National Academy of Sciences of the United States of America</em>, 112(40):E5503–E5512, October 2015. URL: <a class="reference external" href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4603482/">https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4603482/</a> (visited on 2024-05-21), <a class="reference external" href="https://doi.org/10.1073/pnas.1508736112">doi:10.1073/pnas.1508736112</a>.</p>
+</div>
+</div>
 </div>
 </section>
 
@@ -468,14 +430,14 @@ CpG in the column 3.</p></li>
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
-    <a class="right-next"
-       href="beta.html"
-       title="next page">
+    <a class="left-prev"
+       href="vector.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Beta value</p>
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Methylation Vector</p>
       </div>
-      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>
@@ -483,21 +445,6 @@ CpG in the column 3.</p></li>
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> Contents
-  </div>
-  <nav class="bd-toc-nav page-toc">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-pat-format">The PAT format</a></li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>
