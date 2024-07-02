@@ -25,7 +25,14 @@ pip install -r requirements.txt
 ```
 
 3. *Deprecated* Copy config.yaml.tpl to config.yaml and complete the configuration according to the local environment
-
+## Unit test
+```shell
+python -m unittest discover -s tests
+```
+or
+```shell
+python setup.py test
+```
 ## Installation
 ### PyPI
 ```

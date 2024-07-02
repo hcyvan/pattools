@@ -13,3 +13,4 @@ tmp
 _build
 build
 dist
+.eggs
