@@ -27,18 +27,15 @@ pip install -r requirements.txt
 3. *Deprecated* Copy config.yaml.tpl to config.yaml and complete the configuration according to the local environment
 
 ## Installation
-
-### Source code
-
-Download the source code and execute the following commands
-
-``` 
-cd /path/to/source/code
-python ./setup.py install
-```
 ### PyPI
 ```
 pip install pattools-methy
+```
+### Source code
+Download the source code from the public repository [Github](https://github.com/hcyvan/pattools)
+``` 
+cd /path/to/source/code
+python ./setup.py install
 ```
 ### Install from private repository (Deprecated)
 #### Install from the master branch

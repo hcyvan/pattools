@@ -1,4 +1,6 @@
 from setuptools import setup, find_packages
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
 
 setup(
     name="pattools-methy",
@@ -7,6 +9,8 @@ setup(
     author="Department of research and development, Zhejiang Gaomei Genomics",
     author_email="it@gomicsgene.com",
     description="pattools is a BS-seq analysis tool suite based on pat format",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     url='https://hcyvan.github.io/pattools/index.html',
     license='MIT',
     classifiers=[
