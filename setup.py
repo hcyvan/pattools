@@ -31,4 +31,5 @@ setup(
     },
     py_modules=[],
     python_requires='>=3.10, <4',
+    test_suite='tests'
 )
