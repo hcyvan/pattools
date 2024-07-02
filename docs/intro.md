@@ -16,7 +16,27 @@ Pattools currently offers the following functionalities:
 + Methylation vector analysis
 
 
+## The PAT format
 
+The PAT format encompasses 4 columns:
 
-```{bibliography}
+1. Chromosome Number: This column specifies the chromosome number.
+2. Consecutive CpG Positions: This column lists the successive genomic positions of CpG sites. The positions
+   are continuous across chromosomes, maintaining a 1-based index. It indicates the position of the first
+   CpG in the column 3.
+3. Methylation Motif: This column denotes the methylation status of the CpG site
+   - 'C': methylated CpG
+   - 'T': unmethylated CpG
+   - '.': unknown methylation status.
+4. Motif Occurrence Count: This column records the frequency of each motif described in the third column.
+
 ```
+chr1    755     CCCTCCCCTCTTCCT 1
+chr1    755     TTTT    1
+chr1    756     CCCCCTC 1
+chr1    756     CCCCCT....CCCC  1
+chr1    758     CCCCCCCCCCCC    1
+chr1    758     CCTTCCCTCCC     1
+```
+
+
