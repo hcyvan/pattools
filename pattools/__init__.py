@@ -41,7 +41,9 @@ def main():
                                help='The optimization algorithm for deconvolution.')
     parser_deconv.add_argument('-g', '--genome-version', choices=['hg38', 'hg19'], default='hg38',
                                help='The genome version.')
-    parser_deconv.add_argument('-f', '--markerfile', default='Atlas.U25.l4.hg38.tsv',
+    parser_deconv.add_argument( '--panel', choices=['U25', 'U250'], default='U25',
+                               help='The panel of the markers. Only works when --method loyfer is used')
+    parser_deconv.add_argument('-f', '--markerfile', default='Atlas.U25.l4.hg38.full.tsv',
                                help='markerfile for loyfer method')
     parser_deconv.add_argument('-c', '--cpg-bed', required=True, help='The cpg_bed file of the selected genome.')
     parser_deconv.add_argument('-o', '--out', required=True, help='The output file')
@@ -140,7 +142,8 @@ def main():
             deconvolution_moss(args.pat, args.out, args.genome_version, cpg_bed=args.cpg_bed,
                                optimization=args.optimization_algorithm)
         if args.method == 'loyfer':
-            deconvolution_loyfer(args.pat, args.out, args.markerfile, args.genome_version, cpg_bed=args.cpg_bed,
+            deconvolution_loyfer(args.pat, args.out, args.markerfile, args.genome_version, args.panel,
+                                 cpg_bed=args.cpg_bed,
                                  optimization=args.optimization_algorithm, include=args.include, ignore=args.ignore)
     if args.sub == 'entropy':
         extract_entropy(args.input, args.depth, args.window, args.out)
