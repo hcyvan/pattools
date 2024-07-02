@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setup(
     name="pattools-methy",
     packages=find_packages(),
-    version="0.1.0",
+    version="0.1.1",
     author="Department of research and development, Zhejiang Gaomei Genomics",
     author_email="it@gomicsgene.com",
     description="pattools is a BS-seq analysis tool suite based on pat format",
