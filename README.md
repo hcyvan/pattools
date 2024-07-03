@@ -69,6 +69,7 @@ sun
 pattools deconv -m sun -g hg38 \
     -c /mnt/d/project/wgbs_tools/references/hg38/CpG.bed.gz \
     -p /mnt/d/data/cacLung/raw/pat/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.pat.gz \
+    --include  T-cells B-cells \
     -o /mnt/d/project/pattools/tmp/out.csv
 ```
 

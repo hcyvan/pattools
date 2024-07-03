@@ -43,8 +43,7 @@ def main():
                                help='The genome version.')
     parser_deconv.add_argument('--panel', choices=['U25', 'U250'], default='U25',
                                help='The panel of the markers. Only works when --method loyfer is used')
-    parser_deconv.add_argument('-f', '--markerfile', default='Atlas.U25.l4.hg38.full.tsv',
-                               help='markerfile for loyfer method')
+    parser_deconv.add_argument('-f', '--markerfile', help='markerfile for loyfer method')
     parser_deconv.add_argument('-c', '--cpg-bed', required=True, help='The cpg_bed file of the selected genome.')
     parser_deconv.add_argument('-o', '--out', required=True, help='The output file')
     parser_deconv.add_argument('-in', '--include', nargs='+',
@@ -150,14 +149,14 @@ def main():
     if args.sub == 'deconv':
         if args.method == 'sun':
             deconvolution_sun(args.pat, args.out, args.genome_version, cpg_bed=args.cpg_bed,
-                              optimization=args.optimization_algorithm)
+                              optimization=args.optimization_algorithm, include=args.include, exclude=args.ignore)
         if args.method == 'moss':
             deconvolution_moss(args.pat, args.out, args.genome_version, cpg_bed=args.cpg_bed,
-                               optimization=args.optimization_algorithm)
+                               optimization=args.optimization_algorithm, include=args.include, exclude=args.ignore)
         if args.method == 'loyfer':
             deconvolution_loyfer(args.pat, args.out, args.markerfile, args.genome_version, args.panel,
                                  cpg_bed=args.cpg_bed,
-                                 optimization=args.optimization_algorithm, include=args.include, ignore=args.ignore)
+                                 optimization=args.optimization_algorithm, include=args.include, exclude=args.ignore)
     if args.sub == 'deconv-helper':
         print_cell_type_helper(args.method)
     if args.sub == 'entropy':
