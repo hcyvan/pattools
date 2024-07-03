@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from typing import List, Dict, Optional
 import pandas as pd
 
 
@@ -12,8 +12,17 @@ class Markers(ABC):
         self.exclude = exclude
 
     @abstractmethod
+    def get_cell_type_info(self) -> Dict[str, str]:
+        """
+        The function is used to set the cell type information of this deconvolution algorithm.
+        :return: A dictionary of cell type information, such as:
+                    cellType1 => cellTypeInfo1
+                    cellType2 => cellTypeInfo2
+        """
+        return dict()
+
     def get_cell_types(self):
-        pass
+        return list(self.get_cell_type_info().keys())
 
     def get_final_cell_types(self):
         final_types = self.get_cell_types()

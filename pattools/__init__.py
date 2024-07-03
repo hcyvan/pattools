@@ -1,6 +1,6 @@
 import argparse
 from pathlib import Path
-from pattools.deconv import deconvolution_sun, deconvolution_moss, deconvolution_loyfer
+from pattools.deconv import deconvolution_sun, deconvolution_moss, deconvolution_loyfer, print_cell_type_helper
 from pattools.entropy import extract_entropy
 from pattools.beta import extract_beta
 from pattools.format import pat2motif
@@ -41,16 +41,29 @@ def main():
                                help='The optimization algorithm for deconvolution.')
     parser_deconv.add_argument('-g', '--genome-version', choices=['hg38', 'hg19'], default='hg38',
                                help='The genome version.')
-    parser_deconv.add_argument( '--panel', choices=['U25', 'U250'], default='U25',
+    parser_deconv.add_argument('--panel', choices=['U25', 'U250'], default='U25',
                                help='The panel of the markers. Only works when --method loyfer is used')
     parser_deconv.add_argument('-f', '--markerfile', default='Atlas.U25.l4.hg38.full.tsv',
                                help='markerfile for loyfer method')
     parser_deconv.add_argument('-c', '--cpg-bed', required=True, help='The cpg_bed file of the selected genome.')
     parser_deconv.add_argument('-o', '--out', required=True, help='The output file')
     parser_deconv.add_argument('-in', '--include', nargs='+',
-                               help='Columns in the atlas to include. Complementary to --ignore')
+                               help='Cell/Tissue types to include. Complementary to --ignore. Use `pattools '
+                                    'deconv-helper` to see supported cell/tissue types.')
     parser_deconv.add_argument('-ig', '--ignore', nargs='+',
-                               help='Columns in the atlas to remove, along with their corresponding marker lines')
+                               help='Cell/Tissue types to remove. Use `pattools deconv-helper` to see supported '
+                                    'cell/tissue types.')
+    # --------------------------------------------------------------------
+    parser_deconv_helper = subparsers.add_parser('deconv-helper',
+                                                 help='print the cell types support by pattools deconv')
+    parser_deconv_helper.add_argument('-m', '--method', choices=['sun', 'moss', 'loyfer'], default='sun',
+                                      help='The deconvolution method.'
+                                           'sun: Sun et al. Plasma DNA tissue mapping by genome-wide methylation sequencing'
+                                           ' for noninvasive prenatal, cancer, and transplantation assessments. '
+                                           'moss: Moss et al. Comprehensive human cell-type methylation atlas reveals origins'
+                                           ' of circulating cell-free DNA in health and disease. '
+                                           'loyfer: Loyfer et al. A DNA methylation atlas of normal human cell types.'
+                                      )
     # =====================================================================
     parser_entropy = subparsers.add_parser('entropy',
                                            help='This command performs entropy analysis on the sample')
@@ -145,6 +158,8 @@ def main():
             deconvolution_loyfer(args.pat, args.out, args.markerfile, args.genome_version, args.panel,
                                  cpg_bed=args.cpg_bed,
                                  optimization=args.optimization_algorithm, include=args.include, ignore=args.ignore)
+    if args.sub == 'deconv-helper':
+        print_cell_type_helper(args.method)
     if args.sub == 'entropy':
         extract_entropy(args.input, args.depth, args.window, args.out)
     if args.sub == 'beta':

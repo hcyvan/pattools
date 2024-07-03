@@ -4,14 +4,27 @@ from pattools.deconv.optimization import opt_qp, opt_nnls
 from pattools.deconv.utils import get_methylation_density_from_pat_by_cpg_idx
 from pattools.deconv.base import Markers
 from importlib import resources
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 
 class SunMarkers(Markers):
-    def get_cell_types(self):
-        return ['Liver', 'Lungs', 'Colon', 'SmallIntestines', 'Pancreas', 'AdrenalGlands', 'Esophagus',
-                'AdiposeTissues',
-                'Heart', 'Brain', 'T-cells', 'B-cells', 'Neutrophils', 'Placenta']
+    def get_cell_type_info(self) -> Dict[str, str]:
+        return {
+            "Liver": "Liver",
+            "Lungs": "Lungs",
+            "Colon": "Colon",
+            "SmallIntestines": "Small intestines",
+            "Pancreas": "Pancreas",
+            "AdrenalGlands": "Adrenal glands",
+            "Esophagus": "Esophagus",
+            "AdiposeTissues": "Adipose tissues",
+            "Heart": "Heart",
+            "Brain": "Brain",
+            "T-cells": "T cells",
+            "B-cells": "B cells",
+            "Neutrophils": "Neutrophils",
+            "Placenta": "Placenta",
+        }
 
     def __init__(self, genome_version='hg38', include: Optional[List[str]] = None, exclude: Optional[List[str]] = None):
         super(SunMarkers, self).__init__(resources.path('pattools.deconv.sun', 'markerType1.csv'), genome_version,
