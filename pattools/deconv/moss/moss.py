@@ -4,22 +4,42 @@ from pattools.deconv.utils import get_methylation_density_from_pat_by_cpg_idx
 from pattools.deconv.optimization import opt_qp, opt_nnls
 from pattools.deconv.base import Markers
 from importlib import resources
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 
 class MossMarkers(Markers):
-    def get_cell_types(self):
-        return ['Monocytes', 'BCells', 'Cd4tCells', 'NkCells',
-                'Cd8tCells', 'Neutrophils', 'ErythrocyteProgenitors', 'Adipocytes',
-                'CorticalNeurons', 'Hepatocytes', 'LungCells', 'PancreaticBetaCells',
-                'PancreaticAcinarCells', 'PancreaticDuctCells',
-                'VascularEndothelialCells', 'ColonEpithelialCells', 'LeftAtrium',
-                'Bladder', 'Breast', 'HeadAndNeckLarynx', 'Kidney', 'Prostate',
-                'Thyroid', 'UpperGI', 'UterusCervix']
+    def get_cell_type_info(self) -> Dict[str, str]:
+        return {
+            "Monocytes": "Monocytes",
+            "BCells": "B cells",
+            "Cd4tCells": "T helper(CD4+) cells",
+            "NkCells": "NK cells",
+            "Cd8tCells": "T cytotoxic (CD8+) cells",
+            "Neutrophils": "Neutrophils",
+            "ErythrocyteProgenitors": "Erythrocyte progenitors",
+            "Adipocytes": "Adipocytes",
+            "CorticalNeurons": "Cortical neurons",
+            "Hepatocytes": "Hepatocytes",
+            "LungCells": "Lung cells",
+            "PancreaticBetaCells": "Pancreatic beta cells",
+            "PancreaticAcinarCells": "Pancreatic acinar cells",
+            "PancreaticDuctCells": "Pancreatic duct cells",
+            "VascularEndothelialCells": "Vascular endothelial cells",
+            "ColonEpithelialCells": "Colon epithelial cells",
+            "LeftAtrium": "Left atrium",
+            "Bladder": "Bladder",
+            "Breast": "Breast",
+            "HeadAndNeckLarynx": "Head and neck larynx",
+            "Kidney": "Kidney",
+            "Prostate": "Prostate",
+            "Thyroid": "Thyroid",
+            "UpperGI": "Upper Gastrointestinal",
+            "UterusCervix": "Uterus cervix",
+        }
 
     def __init__(self, genome_version='hg38', include: Optional[List[str]] = None, exclude: Optional[List[str]] = None):
         super(MossMarkers, self).__init__(resources.path('pattools.deconv.moss', 'marker.csv'), genome_version, include,
-                                         exclude)
+                                          exclude)
 
 
 def ge_source_matrix_and_methylation_density(pat_file, genome_version, cpg_bed):
