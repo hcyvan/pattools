@@ -41,8 +41,8 @@ class SunMarkers(Markers):
         return marker
 
 
-def ge_tissue_matrix_and_methylation_density(pat_file, genome_version, cpg_bed):
-    marker_obj = SunMarkers(genome_version)
+def ge_tissue_matrix_and_methylation_density(pat_file, genome_version, cpg_bed, include=None, exclude=None):
+    marker_obj = SunMarkers(genome_version, include=include, exclude=exclude)
     marker = marker_obj.get_markers()
     gr = GenomicRegion(cpg_bed)
     genome_cpg_idx = gr.genomic_to_cpg_idx(marker[genome_version].to_list())
@@ -51,11 +51,12 @@ def ge_tissue_matrix_and_methylation_density(pat_file, genome_version, cpg_bed):
     methy['methylation_density'] = methy['methylation_density'] * 100
     data = pd.merge(marker, methy, on=genome_version, how='left')
     data = data[~data['methylation_density'].isna()]
-    return data.loc[:, marker_obj.get_cell_types()], data.loc[:, 'methylation_density']
+    return data.loc[:, marker_obj.get_final_cell_types()], data.loc[:, 'methylation_density']
 
 
-def deconvolution_sun(pat_file, out_file, genome_version, cpg_bed, optimization='nnls'):
-    tissue_matrix, methy_density = ge_tissue_matrix_and_methylation_density(pat_file, genome_version, cpg_bed)
+def deconvolution_sun(pat_file, out_file, genome_version, cpg_bed, optimization='nnls', exclude=None, include=None):
+    tissue_matrix, methy_density = ge_tissue_matrix_and_methylation_density(pat_file, genome_version, cpg_bed,
+                                                                            include=include, exclude=exclude)
     if optimization == 'QP':
         opt_func = opt_qp
     else:

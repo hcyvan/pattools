@@ -63,22 +63,19 @@ class LoyferMarkers(Markers):
 
 
 def ge_tissue_matrix_and_methylation_density(pat_file, marker, genome_version, cpg_bed):
-    TISSUE = list(Counter(marker['target']).keys())
-    TISSUE = sorted(TISSUE, reverse=False)
+    TISSUE = marker.columns[1:].tolist()
     marker = marker[~np.any(marker[TISSUE].isna(), axis=1)]
     gr = GenomicRegion(cpg_bed)
-    genome_cpg_idx = gr.genomic_to_cpg_idx(marker['name'].to_list())
-
+    genome_cpg_idx = gr.genomic_to_cpg_idx(marker[genome_version].to_list())
     methy = get_uxm_ratio_from_pat_by_cpg_idx(pat_file, genome_cpg_idx)
-    methy.columns = ['name', 'cpg', 'uxm_ratio', 'depth']
-    data = pd.merge(marker, methy, on='name', how='left')
+    methy.columns = [genome_version, 'cpg', 'uxm_ratio', 'depth']
+    data = pd.merge(marker, methy, on=genome_version, how='left')
     data = data[~data['uxm_ratio'].isna()]
     return data.loc[:, TISSUE] * data['depth'].values[:, np.newaxis], data.loc[:, 'uxm_ratio'] * data['depth']
 
 
 def deconvolution_loyfer(pat_file, out_file, marker_file, genome_version, panel, cpg_bed, optimization='nnls',
-                         exclude=None,
-                         include=None):
+                         exclude=None, include=None):
     marker_obj = LoyferMarkers(genome_version, panel, marker_file, include=include, exclude=exclude)
     marker = marker_obj.get_markers()
     tissue_matrix, methy_density = ge_tissue_matrix_and_methylation_density(pat_file, marker, genome_version, cpg_bed)
