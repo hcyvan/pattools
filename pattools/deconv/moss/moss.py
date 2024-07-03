@@ -62,7 +62,7 @@ def deconvolution_moss(pat_file, out_file, genome_version, cpg_bed, optimization
     else:
         opt_func = opt_nnls
     proportion = opt_func(source_matrix.values, methy_density.values)
-    out = pd.DataFrame({'source': source_matrix.columns, 'proportion': proportion})
+    out = pd.DataFrame({'tissue': source_matrix.columns, 'proportion': proportion})
     out.to_csv(out_file, sep='\t', index=False)
 
 
