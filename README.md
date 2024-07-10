@@ -124,7 +124,7 @@ pattools vector-multi -i ./tmp/input.list.txt -c /mnt/d/project/wgbs_tools/refer
 #### vector-diff
 
 ```
-pattools vector-diff -i /mnt/d/data/cacLung/raw/yixing/20240612/merge.motif.gz -g 1
+pattools vector-diff -i /mnt/d/data/epiLungCancer/intermediate/vector/20240612/merge.motif.gz -g 2
 ```
 
 #### pat2motif
@@ -141,6 +141,9 @@ genome index coordinates or CpG index coordinates.
 
 ```
 pattools region -t cpg2genome -i chr1:266762-266762 -c /mnt/d/project/wgbs_tools/references/hg38/CpG.bed.gz
+```
+```
+pattools region-file -t cpg2genome --column col2 -c /mnt/d/project/wgbs_tools/references/hg38/CpG.bed.gz -i LUAD_1.0_0.txt -o LUAD_1.0_0.t.txt
 ```
 ## License
 Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
