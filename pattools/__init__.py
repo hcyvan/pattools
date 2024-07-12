@@ -118,7 +118,8 @@ def main():
     parser_vector_multi.add_argument('-r', '--region', default=None,
                                      help='TThe region to be processed. If not set, the entire genome is processed.'
                                           ' eg: -r chr1:10000-15000')
-    parser_vector_multi.add_argument('-m', '--cluster-method', choices=['HDBSCAN', 'DBSCAN'], default='HDBSCAN',
+    parser_vector_multi.add_argument('-m', '--cluster-method', choices=['HDBSCAN', 'DBSCAN', 'MRESC'],
+                                     default='HDBSCAN',
                                      help='Algorithm for classifying all motifs in a window')
     parser_vector_multi.add_argument('-o', '--out', default=None,
                                      help='The output file, If not set, output is sent to standard output.')
