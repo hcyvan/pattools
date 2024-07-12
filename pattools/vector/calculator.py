@@ -228,13 +228,14 @@ class VectorCalculator(object):
         return f"{self._chr}\t{self._start}\t{self.get_clusters_number()}\t{dist_top_0_1_tag:.3f}\t{dist_top_0_base_tag:.3f}\t{len(self._vectors)}\t{motif_tag}"
 
     def _do_cluster(self):
-        sample_idx = self._get_sample_idx()
-        if sample_idx is not None:
-            _vectors = self._vectors[sample_idx, :]
-            _group = self._group[sample_idx]
-        else:
-            _vectors = self._vectors
-            _group = self._group
+        _vectors = self._vectors
+        _group = self._group
+        sample_idx = None
+        if self._cluster != 'MRESC':
+            sample_idx = self._get_sample_idx()
+            if sample_idx is not None:
+                _vectors = self._vectors[sample_idx, :]
+                _group = self._group[sample_idx]
 
         if self._cluster == 'HDBSCAN':
             _labels = self._do_cluster_hdbscan(_vectors, _group)
@@ -244,7 +245,6 @@ class VectorCalculator(object):
             _labels = self._do_cluster_mresc(_vectors)
         else:
             raise Exception(f"Unknown cluster method {self._cluster}")
-
         if sample_idx is not None:
             _label_map = dict()
             for v, l in zip(_vectors, _labels):
