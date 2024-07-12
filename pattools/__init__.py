@@ -6,7 +6,8 @@ from pattools.beta import extract_beta
 from pattools.format import pat2motif
 from pattools.vector import extract_vector, extract_vector_from_multi_motif_file, vector_diff
 from pattools.matrixgenerate import matrix_generate
-from pattools.region import region_cpg2genome, region_genome2cpg
+from pattools.region import region_cpg2genome, region_genome2cpg, trans_region_file
+from collections import OrderedDict
 
 
 def main():
@@ -24,6 +25,16 @@ def main():
     parser_region.add_argument('-c', '--cpg-bed', required=True, help='The cpg_bed file of the selected genome.')
     parser_region.add_argument('-i', '--input', required=True,
                                help='The input can be: 1) region string, eg: chr1:250-300, 2) a file where each line is a region string.')
+    # =====================================================================
+    parser_region_file = subparsers.add_parser('region-file',
+                                               help='This command is used to convert a region between different coordinate systems, such as genome index coordinates or CpG index coordinates.')
+    parser_region_file.add_argument('-t', '--transform', choices=['cpg2genome', 'genome2cpg'], default='cpg2genome',
+                                    help='Conversion direction of genomic coordinates')
+    parser_region_file.add_argument('--column', choices=['col2', 'col3'], default='col3',
+                                    help='col2: chrom\tstart\tend; col3: chrom\tstart\tend')
+    parser_region_file.add_argument('-c', '--cpg-bed', required=True, help='The cpg_bed file of the selected genome.')
+    parser_region_file.add_argument('-i', '--input', required=True, help='The input file')
+    parser_region_file.add_argument('-o', '--out', help='The output file')
     # =====================================================================
     parser_deconv = subparsers.add_parser('deconv',
                                           help='This command is used to calculate the cellular composition of the '
@@ -187,3 +198,5 @@ def main():
             region_cpg2genome(regions, args.cpg_bed)
         elif args.transform == 'genome2cpg':
             region_genome2cpg(regions, args.cpg_bed)
+    if args.sub == 'region-file':
+        trans_region_file(args.input, out_put=args.out, cpg_bed=args.cpg_bed, transform=args.transform, col=args.column)

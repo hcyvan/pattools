@@ -1,7 +1,9 @@
 import sys
-import pysam
-from typing import List
+from pathlib import Path
 from collections import OrderedDict
+from typing import List
+import pysam
+from .io import Output
 
 
 class GenomicRegion:
@@ -71,15 +73,48 @@ class GenomicRegion:
         return cpg_gr_map
 
 
-def region_cpg2genome(regions, cpg, cpg_index=None):
+def region_cpg2genome(regions, cpg, cpg_index=None, show=True):
     gr = GenomicRegion(cpg, csi_cpg=cpg_index)
     regions_map = gr.cpg_to_genomic_idx(regions)
-    for k, v in regions_map.items():
-        print(v)
+    if show is True:
+        for k, v in regions_map.items():
+            print(v)
+    return regions_map
 
 
-def region_genome2cpg(regions, cpg):
+def region_genome2cpg(regions, cpg, show=True):
     gr = GenomicRegion(cpg)
     regions_map = gr.genomic_to_cpg_idx(regions)
-    for k, v in regions_map.items():
-        print(v)
+    if show is True:
+        for k, v in regions_map.items():
+            print(v)
+    return regions_map
+
+
+def trans_region_file(input, out_put, cpg_bed, transform="cpg2genome", col='col3'):
+    regions = []
+    file_path = Path(input)
+    with file_path.open(mode='r') as f:
+        for line in f:
+            line = line.strip()
+            items = line.split()
+            if col == 'col2':
+                regions.append(f"{items[0]}:{items[1]}-{items[1]}")
+            else:
+                regions.append(f"{items[0]}:{items[1]}-{items[2]}")
+    region_map = OrderedDict()
+    if transform == 'cpg2genome':
+        region_map = region_cpg2genome(regions, cpg_bed, show=False)
+    elif transform == 'genome2cpg':
+        region_map = region_genome2cpg(regions, cpg_bed, show=False)
+    with file_path.open(mode='r') as f, Output(out_put, bgzip=False) as fo:
+        for line in f:
+            line = line.strip()
+            items = line.split()
+            region_cpg = f"{items[0]}:{items[1]}-{items[1]}"
+            region_genome = region_map[region_cpg]
+            items[0] = region_genome.split(':')[0]
+            items[1] = region_genome.split(':')[1].split('-')[0]
+            if col != 'col2':
+                items[2] = region_genome.split(':')[1].split('-')[1]
+            fo.write('\t'.join(items)+'\n')
