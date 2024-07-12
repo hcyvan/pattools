@@ -1,11 +1,12 @@
 from setuptools import setup, find_packages
+
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
     name="pattools-methy",
     packages=find_packages(),
-    version="0.1.4",
+    version="0.1.5",
     author="Department of research and development, Zhejiang Gaomei Genomics",
     author_email="it@gomicsgene.com",
     description="pattools is a BS-seq analysis tool suite based on pat format",
@@ -23,7 +24,7 @@ setup(
         'pattools.deconv.sun': ['*.csv'],
         'pattools.deconv.loyfer': ['*.tsv']
     },
-    install_requires=['pysam', 'cvxpy', 'scipy', 'pandas', 'matplotlib', 'scikit-learn', 'mpi4py', 'hdbscan'],
+    install_requires=['pysam', 'cvxpy', 'scipy', 'pandas', 'matplotlib', 'plotly', 'scikit-learn', 'mpi4py', 'hdbscan'],
     entry_points={
         'console_scripts': [
             'pattools=pattools:main',

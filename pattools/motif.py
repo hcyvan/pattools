@@ -1,5 +1,5 @@
 import itertools
-from typing import Dict
+from typing import Dict, List, Union
 import numpy as np
 from collections import OrderedDict
 
@@ -14,6 +14,9 @@ class Motif:
     def __init__(self, count: int = 4):
         self.count = count
         self.motifs = self._get_motif_array()
+        self.vectors = []
+        for k, v in self.motif2vector().items():
+            self.vectors.append(v)
 
     def motif2vector(self):
         motif_vector = OrderedDict()
@@ -33,7 +36,7 @@ class Motif:
             motif_order[m] = 0
         return motif_order
 
-    def count_motifs(self, motifs: Dict[str, int]) -> OrderedDict[str, int]:
+    def count_motifs(self, motifs: Union[Dict[str, int], List[str]]) -> OrderedDict[str, int]:
         """
         :param motifs: a dictionary of motif => motif_count
         :return: an ordered dictionary of motif => motif_count. Only motifs including C/T are retained,
@@ -41,9 +44,15 @@ class Motif:
                     such as: ['CCC', 'TCC', 'CTC', 'CCT', 'TTC', 'TCT', 'CTT', 'TTT']
         """
         order_counter = self.motif2order_counter()
-        for k, v in motifs.items():
-            if k in order_counter:
-                order_counter[k] += v
+
+        if isinstance(motifs, Dict):
+            for k, v in motifs.items():
+                if k in order_counter:
+                    order_counter[k] += v
+        if isinstance(motifs, List):
+            for k in motifs:
+                if k in order_counter:
+                    order_counter[k] += 1
         return order_counter
 
     def motif_count2vectors(self, counter: dict):
@@ -63,6 +72,22 @@ class Motif:
         for k, v in counter.items():
             vectors.extend([motif2vector_map[k]] * v)
         return np.array(vectors)
+
+    def vectors2motif_count(self, vectors):
+        motifs = self.vectors2motifs(vectors)
+        return self.count_motifs(motifs)
+
+    def vectors2motifs(self, vectors):
+        motifs = []
+        for vector in vectors:
+            motif_str = ""
+            for v in vector:
+                if v == 1:
+                    motif_str = motif_str + "C"
+                else:
+                    motif_str = motif_str + "T"
+            motifs.append(motif_str)
+        return motifs
 
     def _get_motif_array(self):
         motifs = ["C" * self.count]
