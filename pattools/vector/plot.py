@@ -1,12 +1,13 @@
-import pandas as pd
 import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
+from matplotlib import pyplot as plt
+import seaborn as sns
+import pandas as pd
 
 from pattools.vector.calculator import VectorCalculator
+from pattools.vector.cluster import MRESC
 
 
 class VectorPlot:
@@ -115,3 +116,17 @@ class VectorPlot:
         for l in np.unique(labels):
             labels_map[l] = colors_map[l]
         return labels_map
+
+
+class ClusterMrescPlot:
+    def __init__(self, cluster: MRESC):
+        self._cluster: MRESC = cluster
+
+    def plot_cluster_heatmap(self, out=None):
+        data = self._cluster.m_dist.astype(int)
+        df = pd.DataFrame(data, columns=self._cluster.motif.motifs, index=self._cluster.motif.motifs)
+        plt.figure(figsize=(8 * 0.75, 6 * 0.75))
+        sns.heatmap(df, annot=True, fmt='d', cmap="Reds")
+        if out:
+            plt.savefig(out, dpi=300)
+        plt.show()
