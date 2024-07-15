@@ -28,6 +28,8 @@ class GenomicRegion:
 
     def genomic_to_cpg_idx(self, g_idx_regions: List[str]) -> OrderedDict[str, str]:
         """
+        TODO: If the number of regions is excessively large (for instance, reaching 100,000), performance will be
+         significantly degraded, necessitating the consideration of alternative approaches.
         :param g_idx_regions: Genomic index region string array: such as: ['chr1:20000-20050', 'chr1:30000-30050']
         :return: Ordered dictionary from Genomic index regions to CpG index regions
         """
@@ -52,6 +54,10 @@ class GenomicRegion:
         return gr_cpg_map
 
     def cpg_to_genomic_idx(self, cpg_idx_regions: List[str]) -> OrderedDict[str, str]:
+        """
+        TODO: If the number of regions is excessively large (for instance, reaching 100,000), performance will be
+         significantly degraded, necessitating the consideration of alternative approaches.
+        """
         cpg_gr_map = OrderedDict()
         with pysam.TabixFile(self.cpg_bed, index=self.cpg_bed_cpg_csi) as tbx:
             for region in cpg_idx_regions:
@@ -117,4 +123,4 @@ def trans_region_file(input, out_put, cpg_bed, transform="cpg2genome", col='col3
             items[1] = region_genome.split(':')[1].split('-')[0]
             if col != 'col2':
                 items[2] = region_genome.split(':')[1].split('-')[1]
-            fo.write('\t'.join(items)+'\n')
+            fo.write('\t'.join(items) + '\n')
