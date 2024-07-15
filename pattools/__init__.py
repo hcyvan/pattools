@@ -7,7 +7,7 @@ from pattools.format import pat2motif
 from pattools.vector import extract_vector, extract_vector_from_multi_motif_file, vector_diff
 from pattools.matrixgenerate import matrix_generate
 from pattools.region import region_cpg2genome, region_genome2cpg, trans_region_file
-from collections import OrderedDict
+from pattools.cmd import CmdFactory
 
 
 def main():
@@ -17,6 +17,7 @@ def main():
     parser.add_argument('-q', '--quiet', action='store_true', help='print run details to stderr')
     subparsers = parser.add_subparsers(dest='sub', required=True, title='command', description='The available commands',
                                        help='select a sub command to use')
+    CmdFactory.set_subparser(subparsers)
     # =====================================================================
     parser_region = subparsers.add_parser('region',
                                           help='This command is used to convert a region between different coordinate systems, such as genome index coordinates or CpG index coordinates.')
@@ -206,3 +207,4 @@ def main():
     if args.sub == 'region-file':
         trans_region_file(args.input, out_put=args.out, cpg_bed=args.cpg_bed, transform=args.transform,
                           col=args.column, out_format=args.out_format,end_offset=args.offset_col2_start_and_end)
+    CmdFactory.run(args)

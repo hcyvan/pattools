@@ -126,6 +126,11 @@ pattools vector-multi -i ./tmp/input.list.txt -c /mnt/d/project/wgbs_tools/refer
 ```
 pattools vector-diff -i /mnt/d/data/epiLungCancer/intermediate/vector/20240612/merge.motif.gz -g 2
 ```
+#### vector-region
+
+```
+pattools vector-region -i ./tmp/input.list.txt -r chr1:54106-54106 -o ./tmp/motif.group
+```
 
 #### pat2motif
 

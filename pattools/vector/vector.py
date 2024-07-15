@@ -7,6 +7,7 @@ from typing import List
 from pattools.motif import Motif
 from pattools.vector.calculator import VectorCalculator
 from pattools.io import Output, CpGTabix, MotifTabix
+from pattools.vector.utils import parse_file_list
 from mpi4py import MPI
 
 
@@ -60,16 +61,7 @@ def extract_vector(input_file, outfile=None, window: int = 4, regions=None):
 
 
 def extract_vector_multi(file_list, cpg_bed, outfile, window: int = 4, regions=None, cluster='HDBSCAN'):
-    input_files = []
-    groups = []
-    samples = []
-    with open(file_list, 'r') as f:
-        for line in f:
-            line = line.strip().split('\t')
-            input_files.append(line[0])
-            groups.append(line[1])
-            samples.append(line[2])
-
+    input_files, groups, samples = parse_file_list(file_list)
     motif = Motif(window)
     tabix_arr: List[MotifTabix] = []
     lines = []
