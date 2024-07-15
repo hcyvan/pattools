@@ -1,5 +1,5 @@
 import pandas as pd
-from pattools.region import GenomicRegion
+from pattools.region.region import GenomicRegion
 from pattools.deconv.optimization import opt_qp, opt_nnls
 from pattools.deconv.utils import get_methylation_density_from_pat_by_cpg_idx
 from pattools.deconv.base import Markers

@@ -5,6 +5,19 @@ from .support import extract_motif_from_region
 from pattools.cmd import command, Cmd
 
 
+@command('vector', 'This command performs vector analysis on the sample')
+class VectorCmd(Cmd):
+    def add_argument(self, parser):
+        parser.add_argument('-i', '--input', required=True, help='Input file, *.motif.gz')
+        parser.add_argument('-w', '--window', type=int, default='4',
+                            help='Define the length of motif, such as ''3:CCT; 4: CCTT; 5:CCTTT'' ')
+        parser.add_argument('-o', '--out', default=None,
+                            help='The output file, If not set, output is sent to standard output.')
+
+    def do(self, args):
+        extract_vector(args.input, args.out, window=args.window)
+
+
 @command('vector-region', 'extract vectors')
 class VectorRegionCmd(Cmd):
     def add_argument(self, parser):
@@ -17,4 +30,44 @@ class VectorRegionCmd(Cmd):
         extract_motif_from_region(args.input, args.region, args.out)
 
 
-__all__ = ['extract_vector', 'extract_vector_from_multi_motif_file', 'vector_diff']
+@command('vector-multi',
+         'Extract vectors from multiple samples from different groups and analyze them. This command supports '
+         'MPI, which can accelerate calculations in HPC')
+class VectorMultiCmd(Cmd):
+    def add_argument(self, parser):
+        parser.add_argument('-c', '--cpg-bed', required=True,
+                            help='The cpg_bed file of the selected genome.')
+        parser.add_argument('-i', '--input', required=True,
+                            help='a list file in tsv format, which contains multiple sample files,'
+                                 ' sample grouping, etc. eg: <MOTIF_FILE>  <GROUP_LABEL>')
+        parser.add_argument('-w', '--window', type=int, default='4',
+                            help='Define the length of motif, such as ''3:CCT; 4: CCTT; 5:CCTTT'' ')
+        parser.add_argument('-p', '--process', type=int, default=1,
+                            help='The number of processes used for processing')
+        parser.add_argument('-r', '--region', default=None,
+                            help='TThe region to be processed. If not set, the entire genome is processed.'
+                                 ' eg: -r chr1:10000-15000')
+        parser.add_argument('-m', '--cluster-method', choices=['HDBSCAN', 'DBSCAN', 'MRESC'],
+                            default='HDBSCAN',
+                            help='Algorithm for classifying all motifs in a window')
+        parser.add_argument('-o', '--out', default=None,
+                            help='The output file, If not set, output is sent to standard output.')
+
+    def do(self, args):
+        extract_vector_from_multi_motif_file(args.input, args.cpg_bed, args.out, window=args.window,
+                                             process=args.process, region=args.region, cluster=args.cluster_method)
+
+
+@command('vector-diff', 'Identify the window of the differential vector within the merged file. '
+                        '(generate by vector-multi)')
+class VectorDiffCmd(Cmd):
+    def add_argument(self, parser):
+        parser.add_argument('-i', '--input', required=True, help='The input merged vector files.'
+                                                                 ' (generate by vector-multi)')
+        parser.add_argument('-o', '--out', default=None,
+                            help='The output file, If not set, output is sent to standard output.')
+        parser.add_argument('-g', '--group', required=True, help='Output group-specific '
+                                                                 'differential vector window')
+
+    def do(self, args):
+        vector_diff(args.input, args.group, args.out)

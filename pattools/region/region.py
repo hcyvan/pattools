@@ -3,7 +3,7 @@ from pathlib import Path
 from collections import OrderedDict
 from typing import List
 import pysam
-from .io import Output
+from pattools.io import Output
 
 
 class GenomicRegion:
