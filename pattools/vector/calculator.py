@@ -5,12 +5,12 @@ import numpy as np
 from collections import Counter, OrderedDict
 from sklearn.cluster import DBSCAN
 import hdbscan
-from sklearn.manifold import TSNE
+
 from scipy.spatial.distance import pdist, squareform
-import matplotlib.pyplot as plt
-import plotly.graph_objects as go
+
 from pattools.motif import Motif
 from pattools.vector.cluster import MRESC
+
 
 Array2D = np.typing.NDArray[Tuple[int, int]]
 Array1D = np.typing.NDArray[Tuple[int]]
@@ -21,7 +21,7 @@ np.random.seed(1000)
 class VectorCalculator(object):
     def __init__(self, window: int = 4, cluster='HDBSCAN'):
         """
-        :param cluster: HDBSCAN, DBSCAN
+        :param cluster: HDBSCAN, DBSCAN, MRESC
         """
         self._window = None
         self._base_vector = None
@@ -310,67 +310,3 @@ class VectorCalculator(object):
         distance_matrix = distance_matrix / scale
         return distance_matrix
 
-
-class VectorPlot:
-    def __init__(self, vector_calculator: VectorCalculator):
-        self._vector_calculator: VectorCalculator = vector_calculator
-
-    def plot_vector_cluster(self):
-        vectors = self._vector_calculator.get_vectors()
-        labels = self._vector_calculator.get_labels()
-        colorsMap = {-1: 'gray', 0: '#1f77b4', 1: '#ff7f0e', 2: '#2ca02c', 3: "#d62728", 4: "#9467bd", 5: "#8c564b",
-                     6: "#e377c2", 7: "#7f7f7f", 8: "#bcbd22", 9: "#17becf"}
-        labels_color = np.vectorize(lambda x: colorsMap[x])(labels)
-        print(vectors)
-        tsne = TSNE(n_components=2, perplexity=30)
-        X_2d = tsne.fit_transform(vectors)
-
-        plt.figure(figsize=(4.2, 4))
-        plt.scatter(X_2d[:, 0], X_2d[:, 1], c=labels_color, s=15)
-        plt.title('Cluster Plot after t-SNE')
-        plt.xlabel('t-SNE Dimension 1')
-        plt.ylabel('t-SNE Dimension 2')
-        plt.show()
-
-    def plot_vectors_cluster3d(self):
-        vectors = self._vector_calculator.get_vectors()
-        labels = self._vector_calculator.get_labels()
-        colorsMap = {-1: 'gray', 0: '#1f77b4', 1: '#ff7f0e', 2: '#2ca02c', 3: "#d62728", 4: "#9467bd", 5: "#8c564b",
-                     6: "#e377c2", 7: "#7f7f7f", 8: "#bcbd22", 9: "#17becf"}
-        labels_color = np.vectorize(lambda x: colorsMap[x])(labels)
-        print(vectors)
-        tsne = TSNE(n_components=3, perplexity=30)
-        X = tsne.fit_transform(vectors)
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-        ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=labels_color, s=15)
-        ax.set_xlabel('t-SNE Dimension 1')
-        ax.set_ylabel('t-SNE Dimension 2')
-        ax.set_zlabel('t-SNE Dimension 3')
-        plt.show()
-
-    def plot_vectors_cluster3d_inter(self):
-        vectors = self._vector_calculator.get_vectors()
-        labels = self._vector_calculator.get_labels()
-        colorsMap = {-1: 'gray', 0: '#1f77b4', 1: '#ff7f0e', 2: '#2ca02c', 3: "#d62728", 4: "#9467bd", 5: "#8c564b",
-                     6: "#e377c2", 7: "#7f7f7f", 8: "#bcbd22", 9: "#17becf"}
-        labels_color = np.vectorize(lambda x: colorsMap[x])(labels)
-        tsne = TSNE(n_components=3, perplexity=30)
-        X = tsne.fit_transform(vectors)
-        fig = go.Figure(data=[go.Scatter3d(
-            x=X[:, 0], y=X[:, 1], z=X[:, 2],
-            mode='markers',
-            marker=dict(
-                size=5,
-                color=labels_color,
-                opacity=0.8
-            )
-        )])
-        fig.update_layout(scene=dict(
-            xaxis_title='t-SNE Dimension 1',
-            yaxis_title='t-SNE Dimension 2',
-            zaxis_title='t-SNE Dimension 3'),
-            width=1200,
-            height=900,
-            title="3D Scatter Plot")
-        fig.show()

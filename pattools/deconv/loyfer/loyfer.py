@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
-from collections import Counter
-from pattools.region import GenomicRegion
+from pattools.region.region import GenomicRegion
 from pattools.deconv.optimization import opt_qp, opt_nnls
 from pattools.deconv.utils import get_uxm_ratio_from_pat_by_cpg_idx
 from importlib import resources
