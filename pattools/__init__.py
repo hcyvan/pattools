@@ -31,7 +31,11 @@ def main():
     parser_region_file.add_argument('-t', '--transform', choices=['cpg2genome', 'genome2cpg'], default='cpg2genome',
                                     help='Conversion direction of genomic coordinates')
     parser_region_file.add_argument('--column', choices=['col2', 'col3'], default='col3',
-                                    help='col2: chrom\tstart\tend; col3: chrom\tstart\tend')
+                                    help='col2: chrom\ts; col3: chrom\tstart\tend')
+    parser_region_file.add_argument('--out-format', choices=['bed', 'none'], default='none',
+                                    help='bed: 0-base,end-exclude; none: not change')
+    parser_region_file.add_argument('--offset-col2-start-and-end', type=int,default=0, help='If --column is set to col2, end is calculated based on this parameter. end=start+offset')
+
     parser_region_file.add_argument('-c', '--cpg-bed', required=True, help='The cpg_bed file of the selected genome.')
     parser_region_file.add_argument('-i', '--input', required=True, help='The input file')
     parser_region_file.add_argument('-o', '--out', help='The output file')
@@ -200,4 +204,5 @@ def main():
         elif args.transform == 'genome2cpg':
             region_genome2cpg(regions, args.cpg_bed)
     if args.sub == 'region-file':
-        trans_region_file(args.input, out_put=args.out, cpg_bed=args.cpg_bed, transform=args.transform, col=args.column)
+        trans_region_file(args.input, out_put=args.out, cpg_bed=args.cpg_bed, transform=args.transform,
+                          col=args.column, out_format=args.out_format,end_offset=args.offset_col2_start_and_end)

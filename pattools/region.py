@@ -97,7 +97,7 @@ def region_genome2cpg(regions, cpg, show=True):
     return regions_map
 
 
-def trans_region_file(input, out_put, cpg_bed, transform="cpg2genome", col='col3'):
+def trans_region_file(input, out_put, cpg_bed, transform="cpg2genome", col='col3', out_format='bed', end_offset=0):
     regions = []
     file_path = Path(input)
     with file_path.open(mode='r') as f:
@@ -105,7 +105,7 @@ def trans_region_file(input, out_put, cpg_bed, transform="cpg2genome", col='col3
             line = line.strip()
             items = line.split()
             if col == 'col2':
-                regions.append(f"{items[0]}:{items[1]}-{items[1]}")
+                regions.append(f"{items[0]}:{items[1]}-{int(items[1]) + end_offset}")
             else:
                 regions.append(f"{items[0]}:{items[1]}-{items[2]}")
     region_map = OrderedDict()
@@ -117,10 +117,22 @@ def trans_region_file(input, out_put, cpg_bed, transform="cpg2genome", col='col3
         for line in f:
             line = line.strip()
             items = line.split()
-            region_cpg = f"{items[0]}:{items[1]}-{items[1]}"
+            if col == 'col2':
+                region_cpg = f"{items[0]}:{items[1]}-{int(items[1]) + end_offset}"
+            else:
+                region_cpg = f"{items[0]}:{items[1]}-{items[2]}"
             region_genome = region_map[region_cpg]
-            items[0] = region_genome.split(':')[0]
-            items[1] = region_genome.split(':')[1].split('-')[0]
-            if col != 'col2':
-                items[2] = region_genome.split(':')[1].split('-')[1]
-            fo.write('\t'.join(items) + '\n')
+            chrom = region_genome.split(':')[0]
+            start = int(region_genome.split(':')[1].split('-')[0])
+            end = int(region_genome.split(':')[1].split('-')[1])
+            if col == 'col2':
+                coli = 2
+            else:
+                coli = 3
+            if out_format == 'bed':
+                fo.write(f"{chrom}\t{start - 1}\t{end}\t" + "\t".join(items[coli:]) + "\n")
+            else:
+                if col == 'col2':
+                    fo.write(f"{chrom}\t{start}\t" + "\t".join(items[coli:]) + "\n")
+                else:
+                    fo.write(f"{chrom}\t{start}\t{end}\t" + "\t".join(items[coli:]) + "\n")
