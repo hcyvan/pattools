@@ -57,6 +57,10 @@ class Output:
 
 class Tabix:
     def __init__(self, filename: str, region: str | List[str] = None):
+        """
+        TODO: The conversion between CpG and genome indices necessitates the specification of distinct index files
+         or coordinate files in conjunction with index files.
+        """
         self._filename = filename
         self._filename_csi = filename + '.csi'
         self._regions = region
