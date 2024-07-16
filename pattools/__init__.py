@@ -1,4 +1,5 @@
 import argparse
+from pattools.config import CONFIG
 from pattools.entropy import extract_entropy
 from pattools.beta import extract_beta
 from pattools.format import pat2motif
@@ -12,7 +13,7 @@ from pattools.deconv import *
 def main():
     parser = argparse.ArgumentParser(prog='pattools',
                                      description='pattools is a BS-seq analysis tool suite based on pat format')
-    parser.add_argument('-v', '--version', action='version', version='0.0.17')
+    parser.add_argument('-v', '--version', action='version', version=CONFIG.VERSION)
     parser.add_argument('-q', '--quiet', action='store_true', help='print run details to stderr')
     subparsers = parser.add_subparsers(dest='sub', required=True, title='command', description='The available commands',
                                        help='select a sub command to use')

@@ -1,12 +1,17 @@
+import yaml
 from setuptools import setup, find_packages
 
-with open("README.md", "r", encoding="utf-8") as fh:
-    long_description = fh.read()
+with open("README.md", "r", encoding="utf-8") as f:
+    long_description = f.read()
+
+with open("pattools/INFO.yaml", "r") as f:
+    data = yaml.safe_load(f)
+    VERSION = data.get('VERSION', '')
 
 setup(
     name="pattools-methy",
     packages=find_packages(),
-    version="0.1.11",
+    version=VERSION,
     author="Department of research and development, Zhejiang Gaomei Genomics",
     author_email="it@gomicsgene.com",
     description="pattools is a BS-seq analysis tool suite based on pat format",
@@ -22,7 +27,8 @@ setup(
     package_data={
         'pattools.deconv.moss': ['*.csv'],
         'pattools.deconv.sun': ['*.csv'],
-        'pattools.deconv.loyfer': ['*.tsv']
+        'pattools.deconv.loyfer': ['*.tsv'],
+        'pattools': ['INFO.yaml'],
     },
     install_requires=['pysam', 'cvxpy', 'scipy', 'pandas', 'matplotlib', 'plotly', 'scikit-learn', 'mpi4py', 'hdbscan'],
     entry_points={
