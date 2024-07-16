@@ -1,5 +1,7 @@
 import math
-from typing import Tuple, Dict, Any, Union, List
+from typing import Tuple, Dict, Any, Union, List, Optional
+
+import pandas as pd
 from numpy.typing import NDArray
 import numpy as np
 from collections import Counter, OrderedDict
@@ -10,7 +12,6 @@ from scipy.spatial.distance import pdist, squareform
 
 from pattools.motif import Motif
 from pattools.vector.cluster import MRESC
-
 
 Array2D = np.typing.NDArray[Tuple[int, int]]
 Array1D = np.typing.NDArray[Tuple[int]]
@@ -54,12 +55,17 @@ class VectorCalculator(object):
         self._motif: Motif = Motif(self._window)
         self._scale = np.sqrt(np.sum((np.ones(window)) ** 2))
 
-    def set_motif_count(self, chrom: str, start: int, motif_count: Dict[str, int], sample: Union[Any, List] = None,
+    def set_motif_count(self, chrom: str, start: int,
+                        motif_count: Optional[Dict[str, int]] = None,
+                        vectors: Union[Any, List] = None,
+                        sample: Union[Any, List] = None,
                         group: Union[Any, List] = None):
         """
         :param chrom:
         :param start:
-        :param motif_count:
+        :param motif_count: the number of each type of methylation vectors. Will be overwritten by the parameter vectors
+        :param vectors: the methylation vectors. If vectors is set, motif_count will be invalid. If you want to add two
+                    VectorCalculator, you need to use vectors to avoid sample and group errors.
         :param sample: the sample of vectors. If sample is a list, it specifies the sample assignment for each
                     corresponding vector. Conversely, if the input is a scalar, it denotes that all vectors
                     are assigned to a single sample.
@@ -69,8 +75,14 @@ class VectorCalculator(object):
         """
         self._chr = chrom
         self._start = start
-        self._motif_count = motif_count
-        self._vectors = self._motif.motif_count2vectors(self._motif_count)
+        if vectors is not None:
+            self._vectors = vectors
+            self._motif_count = self._motif.vectors2motif_count(vectors)
+        elif motif_count is not None:
+            self._motif_count = motif_count
+            self._vectors = self._motif.motif_count2vectors(self._motif_count)
+        else:
+            raise Exception("At least one of vectors and motif_count needs to be set")
         if group is not None:
             if isinstance(group, (np.ndarray, list, tuple)):
                 self._group = np.append(self._group, group)
@@ -161,10 +173,13 @@ class VectorCalculator(object):
     def __add__(self, other):
         if isinstance(other, VectorCalculator):
             vc = VectorCalculator(self._window, self._cluster)
-            counter2 = Counter(self._motif_count) + Counter(other._motif_count)
+            if self._vectors.size ==0:
+                _vectors = other._vectors
+            else:
+                _vectors = np.concatenate((self._vectors, other._vectors), axis=0)
             _group = np.append(self._group, other._group)
             _sample = np.append(self._sample, other._sample)
-            vc.set_motif_count(self._chr, self._start, dict(counter2), sample=_sample, group=_group)
+            vc.set_motif_count(self._chr, self._start, vectors=_vectors, sample=_sample, group=_group)
             return vc
         return NotImplemented
 
@@ -195,8 +210,11 @@ class VectorCalculator(object):
             return self._distance_matrix[0, k + 1]
         return None
 
-    def get_vectors(self):
-        return self._vectors
+    def get_vectors(self, label=None):
+        if label is None:
+            return self._vectors
+        else:
+            return self._vectors[self._labels == label]
 
     def get_labels(self):
         return self._labels
@@ -309,4 +327,3 @@ class VectorCalculator(object):
         distance_matrix = squareform(distances)
         distance_matrix = distance_matrix / scale
         return distance_matrix
-
