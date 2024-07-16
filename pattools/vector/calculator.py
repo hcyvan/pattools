@@ -173,8 +173,10 @@ class VectorCalculator(object):
     def __add__(self, other):
         if isinstance(other, VectorCalculator):
             vc = VectorCalculator(self._window, self._cluster)
-            if self._vectors.size ==0:
+            if self._vectors.size == 0:
                 _vectors = other._vectors
+            elif other._vectors.size == 0:
+                _vectors = self._vectors
             else:
                 _vectors = np.concatenate((self._vectors, other._vectors), axis=0)
             _group = np.append(self._group, other._group)
