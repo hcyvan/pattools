@@ -27,6 +27,8 @@ class MRESC:
         clusters = [0] * len(counts)
         for i in range(len(motif_count)):
             for j in self.find_neighbors(i):
+                if counts[i] < counts[j]:
+                    continue
                 max_nb = self.find_neighbor_max(j, counts)
                 if counts[i] >= max_nb:
                     self.set_cluster(i, j, clusters)
