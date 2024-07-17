@@ -118,7 +118,7 @@ pattools vector -i /mnt/d/data/cacLung/raw/pat/GSM5652289_Blood-T-Eff-CD8-Z00000
 This command is used to merge all samples and find different vector
 
 ```
-pattools vector-multi -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -c /mnt/d/project/wgbs_tools/references/hg38/CpG.bed.cpg.gz > ./tmp/ddd.txt
+pattools vector-multi -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -c /mnt/d/project/wgbs_tools/references/hg38/CpG.bed.cpg.gz -m MRESC --out-version v2
 ```
 
 #### vector-diff
