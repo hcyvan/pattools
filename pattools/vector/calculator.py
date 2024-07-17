@@ -20,23 +20,20 @@ np.random.seed(1000)
 
 
 class VectorCalculator(object):
+    cache_motif = dict()
+
     def __init__(self, window: int = 4, cluster='HDBSCAN'):
         """
         :param cluster: HDBSCAN, DBSCAN, MRESC
         """
         self._window = None
-        self._base_vector = None
-        self._motif = None
-        self._scale = None
-
         self._chr = None
         self._start = None
         self._motif_count = dict()
-        self._group = np.array([])
-        self._sample = np.array([])
-        self._vectors = np.array([])
-
-        self._labels = np.array([])
+        self._group: List = []
+        self._sample: List = []
+        self._vectors: List = []
+        self._labels: List = []
         # _clusters_labels_count: OrderedDict of cluster_label => label_counts. The dict is ordered
         # from the most label count to the least.
         self._clusters_labels_count: OrderedDict[int, int] = OrderedDict()
@@ -45,27 +42,27 @@ class VectorCalculator(object):
         self._clusters_centroid: OrderedDict[int, Array1D] = OrderedDict()
         self._clusters_labels_group: OrderedDict[int, dict] = OrderedDict()
         self._distance_matrix: Array2D = np.array([[0.0]])
-
-        self.set_param_window(window)
+        self._window = window
         self._cluster = cluster
 
-    def set_param_window(self, window: int):
-        self._window = window
-        self._base_vector = np.zeros(self._window)
-        self._motif: Motif = Motif(self._window)
-        self._scale = np.sqrt(np.sum((np.ones(window)) ** 2))
+    def get_motif(self):
+        motif = self.cache_motif.get(self._window, None)
+        if motif is not None:
+            return motif
+        motif = Motif(self._window)
+        self.cache_motif[self._window] = motif
+        return motif
 
     def set_motif_count(self, chrom: str, start: int,
-                        motif_count: Optional[Dict[str, int]] = None,
+                        motif_count: Dict[str, int],
                         vectors: Union[Any, List] = None,
                         sample: Union[Any, List] = None,
                         group: Union[Any, List] = None):
         """
         :param chrom:
         :param start:
-        :param motif_count: the number of each type of methylation vectors. Will be overwritten by the parameter vectors
-        :param vectors: the methylation vectors. If vectors is set, motif_count will be invalid. If you want to add two
-                    VectorCalculator, you need to use vectors to avoid sample and group errors.
+        :param motif_count: the number of each type of methylation vectors.
+        :param vectors: the methylation vectors. If the vectors are not from the same sample, this parameter must be set
         :param sample: the sample of vectors. If sample is a list, it specifies the sample assignment for each
                     corresponding vector. Conversely, if the input is a scalar, it denotes that all vectors
                     are assigned to a single sample.
@@ -75,37 +72,36 @@ class VectorCalculator(object):
         """
         self._chr = chrom
         self._start = start
-        if vectors is not None:
-            self._vectors = vectors
-            self._motif_count = self._motif.vectors2motif_count(vectors)
-        elif motif_count is not None:
-            self._motif_count = motif_count
-            self._vectors = self._motif.motif_count2vectors(self._motif_count)
-        else:
-            raise Exception("At least one of vectors and motif_count needs to be set")
+        self._motif_count = motif_count
+        total = sum(self._motif_count.values())
+        self._vectors = vectors if vectors is not None else []
         if group is not None:
-            if isinstance(group, (np.ndarray, list, tuple)):
-                self._group = np.append(self._group, group)
+            if isinstance(group, list):
+                self._group = group
             else:
-                self._group = np.array([group] * len(self._vectors))
+                self._group = [group] * total
         if sample is not None:
-            if isinstance(sample, (np.ndarray, list, tuple)):
-                self._sample = np.append(self._sample, sample)
+            if isinstance(sample, list):
+                self._sample = sample
             else:
-                self._sample = np.array([sample] * len(self._vectors))
-        self._labels = np.array([])
+                self._sample = [sample] * total
+        self._labels = []
         self._clusters_labels_count = OrderedDict()
         self._clusters_centroid = OrderedDict()
         return self
 
     def calc(self):
+        if len(self._vectors) == 0:
+            self._vectors = self.get_motif().motif_count2vectors(self._motif_count)
         if len(self._vectors):
+            _base_vector = np.zeros(self._window)
+            _scale = np.sqrt(np.sum((np.ones(self._window)) ** 2))
             self._do_cluster()
             self._count_labels()
             if self.get_clusters_number():
                 self._find_centroids()
-                m = np.vstack([[self._base_vector], list(self._clusters_centroid.values())])
-                self._distance_matrix = self._multi_dist(m, self._scale)
+                m = np.vstack([[_base_vector], list(self._clusters_centroid.values())])
+                self._distance_matrix = self._multi_dist(m, _scale)
         return self
 
     def calc_labels_groups_samples(self):
@@ -127,16 +123,16 @@ class VectorCalculator(object):
         + inter_samples_count [4,(sample1,2,3,4)]: the count of samples contained in the intersection of cluster 0 and group 0
         + group_samples_count [6,(sample1,2,3,4,6,7)]: the count of samples contained in group 0
         """
-        self._group = np.array(self._group)
-        self._labels = np.array(self._labels)
-        self._sample = np.array(self._sample)
+        _group = np.array(self._group)
+        _labels = np.array(self._labels)
+        _sample = np.array(self._sample)
         if len(self._labels) and len(self._group) == len(self._labels):
             for label in self._get_cluster_labels():
-                cluster_groups = self._group[self._labels == label]
-                cluster_samples = self._sample[self._labels == label]
+                cluster_groups = _group[_labels == label]
+                cluster_samples = _sample[_labels == label]
                 target_group, target_group_label_count = Counter(cluster_groups).most_common(1)[0]
-                group_groups = self._group[self._group == target_group]
-                group_samples = self._sample[self._group == target_group]
+                group_groups = _group[_group == target_group]
+                group_samples = _sample[_group == target_group]
 
                 self._clusters_labels_group[label] = dict(
                     target_group=target_group,
@@ -172,16 +168,13 @@ class VectorCalculator(object):
 
     def __add__(self, other):
         if isinstance(other, VectorCalculator):
+            _sample = self._sample + other._sample
+            _group = self._group + other._group
+            _vectors = self._vectors + other._vectors
+            counter2 = Counter(self._motif_count) + Counter(other._motif_count)
             vc = VectorCalculator(self._window, self._cluster)
-            if self._vectors.size == 0:
-                _vectors = other._vectors
-            elif other._vectors.size == 0:
-                _vectors = self._vectors
-            else:
-                _vectors = np.concatenate((self._vectors, other._vectors), axis=0)
-            _group = np.append(self._group, other._group)
-            _sample = np.append(self._sample, other._sample)
-            vc.set_motif_count(self._chr, self._start, vectors=_vectors, sample=_sample, group=_group)
+            vc.set_motif_count(self._chr, self._start, motif_count=dict(counter2), vectors=_vectors, sample=_sample,
+                               group=_group)
             return vc
         return NotImplemented
 
@@ -216,7 +209,7 @@ class VectorCalculator(object):
         if label is None:
             return self._vectors
         else:
-            return self._vectors[self._labels == label]
+            return list(np.array(self._vectors)[np.array(self._labels) == label])
 
     def get_labels(self):
         return self._labels
@@ -236,7 +229,7 @@ class VectorCalculator(object):
 
     def __str__(self):
         self._motif_count.values()
-        motif_count_ordered: OrderedDict[str, int] = self._motif.count_motifs(self._motif_count)
+        motif_count_ordered: OrderedDict[str, int] = self.get_motif().count_motifs(self._motif_count)
         motif_tag = '|'.join([str(x) for x in motif_count_ordered.values()])
         if self.get_clusters_number() >= 2:
             dist_top_0_1_tag = self.distance_between_top_m_and_n(0, 1)
@@ -249,7 +242,7 @@ class VectorCalculator(object):
 
     def base_info(self):
         self._motif_count.values()
-        motif_count_ordered: OrderedDict[str, int] = self._motif.count_motifs(self._motif_count)
+        motif_count_ordered: OrderedDict[str, int] = self.get_motif().count_motifs(self._motif_count)
         motif_tag = '|'.join([str(x) for x in motif_count_ordered.values()])
         centers = []
         for k, v in self._clusters_centroid.items():
@@ -264,14 +257,14 @@ class VectorCalculator(object):
         return f"{self._chr}\t{self._start}\t{self.get_clusters_number()}\t{len(self._vectors)}\t{motif_tag}\t{cluster_labels_count}\t{centers}"
 
     def _do_cluster(self):
-        _vectors = self._vectors
-        _group = self._group
+        _vectors = np.array(self._vectors)
+        _group = np.array(self._group)
         sample_idx = None
         if self._cluster != 'MRESC':
             sample_idx = self._get_sample_idx()
             if sample_idx is not None:
-                _vectors = self._vectors[sample_idx, :]
-                _group = self._group[sample_idx]
+                _vectors = _vectors[sample_idx, :]
+                _group = _group[sample_idx]
 
         if self._cluster == 'HDBSCAN':
             _labels = self._do_cluster_hdbscan(_vectors, _group)
@@ -286,13 +279,13 @@ class VectorCalculator(object):
             for v, l in zip(_vectors, _labels):
                 _label_map[''.join([str(x) for x in v])] = l
             _labels = []
-            for v in self._vectors:
+            for v in _vectors:
                 label = _label_map.get(''.join([str(x) for x in v]), -1)
                 _labels.append(label)
             labels = np.array(_labels)
         else:
             labels = _labels
-        self._labels = labels
+        self._labels = list(labels)
 
     @staticmethod
     def _do_cluster_hdbscan(vectors, vector_group):
@@ -320,18 +313,21 @@ class VectorCalculator(object):
     def _get_sample_idx(self):
         MAX_VECTOR_SIZE = 5000
         if len(self._vectors) > MAX_VECTOR_SIZE:
-            select_idx = np.random.choice(self._vectors.shape[0], MAX_VECTOR_SIZE, replace=False)
+            select_idx = np.random.choice(len(self._vectors), MAX_VECTOR_SIZE, replace=False)
             return select_idx
         return None
 
     def _count_labels(self):
-        _labels = self._labels[self._labels != -1]
+        _labels = np.array(self._labels)
+        _labels = _labels[_labels != -1]
         label_counts = Counter(_labels)
         self._clusters_labels_count = OrderedDict(label_counts.most_common())
 
     def _find_centroids(self):
+        _labels = np.array(self._labels)
+        _vectors = np.array(self._vectors)
         for label, _ in self._clusters_labels_count.items():
-            cluster_vectors = self._vectors[self._labels == label]
+            cluster_vectors = _vectors[_labels == label]
             self._clusters_centroid[label] = np.mean(cluster_vectors, axis=0)
 
     @staticmethod
