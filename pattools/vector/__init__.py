@@ -50,12 +50,15 @@ class VectorMultiCmd(Cmd):
         parser.add_argument('-m', '--cluster-method', choices=['HDBSCAN', 'DBSCAN', 'MRESC'],
                             default='HDBSCAN',
                             help='Algorithm for classifying all motifs in a window')
+        parser.add_argument('--out-version', default='v1',
+                            help='The output version')
         parser.add_argument('-o', '--out', default=None,
                             help='The output file, If not set, output is sent to standard output.')
 
     def do(self, args):
         extract_vector_from_multi_motif_file(args.input, args.cpg_bed, args.out, window=args.window,
-                                             process=args.process, region=args.region, cluster=args.cluster_method)
+                                             process=args.process, region=args.region, cluster=args.cluster_method,
+                                             out_version=args.out_version)
 
 
 @command('vector-diff', 'Identify the window of the differential vector within the merged file. '

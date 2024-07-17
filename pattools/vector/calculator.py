@@ -247,6 +247,22 @@ class VectorCalculator(object):
             dist_top_0_base_tag = -1
         return f"{self._chr}\t{self._start}\t{self.get_clusters_number()}\t{dist_top_0_1_tag:.3f}\t{dist_top_0_base_tag:.3f}\t{len(self._vectors)}\t{motif_tag}"
 
+    def base_info(self):
+        self._motif_count.values()
+        motif_count_ordered: OrderedDict[str, int] = self._motif.count_motifs(self._motif_count)
+        motif_tag = '|'.join([str(x) for x in motif_count_ordered.values()])
+        centers = []
+        for k, v in self._clusters_centroid.items():
+            centers.append(','.join([f'{x:.3f}' for x in v]))
+        centers = '|'.join(centers)
+
+        cluster_labels_count = []
+        for k, v in self._clusters_labels_count.items():
+            cluster_labels_count.append(str(v))
+        cluster_labels_count = '|'.join(cluster_labels_count)
+
+        return f"{self._chr}\t{self._start}\t{self.get_clusters_number()}\t{len(self._vectors)}\t{motif_tag}\t{cluster_labels_count}\t{centers}"
+
     def _do_cluster(self):
         _vectors = self._vectors
         _group = self._group
