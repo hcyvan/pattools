@@ -124,12 +124,13 @@ pattools vector-multi -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample
 #### vector-diff
 
 ```
-pattools vector-diff -i /mnt/d/data/epiLungCancer/intermediate/vector/20240612/merge.motif.gz -g 2
+pattools vector-diff -i /mnt/d/data/epiLungCancer/intermediate/vector/20240612/merge.motif.gz -g 1 -o ./tmp/LUAD.diff.motif 2>/dev/null
 ```
 #### vector-region
 
 ```
-pattools vector-region -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -r chr4:6997041-6997041
+pattools vector-region -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -r chr4:6909897-6909899  2>/dev/null
+pattools vector-region -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -r ./LUAD.diff.motif  2>/dev/null
 ```
 
 #### pat2motif
@@ -148,7 +149,7 @@ genome index coordinates or CpG index coordinates.
 pattools region -t cpg2genome -i chr1:266762-266762 -c /mnt/d/project/wgbs_tools/references/hg38/CpG.bed.gz
 ```
 ```
-pattools region-file -t cpg2genome --column col2 -c /mnt/d/project/wgbs_tools/references/hg38/CpG.bed.gz -i LUAD_1.0_0.txt -o LUAD_1.0_0.t.txt
+pattools region-file -t cpg2genome --column col2  --out-format bed -c /mnt/d/project/wgbs_tools/references/hg38/CpG.bed.gz -i LUAD_1.0_0.txt -o LUAD_1.0_0.t.txt
 ```
 ## License
 Distributed under the MIT License. See [LICENSE](LICENSE) for more information.

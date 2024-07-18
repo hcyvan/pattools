@@ -30,7 +30,8 @@ setup(
         'pattools.deconv.loyfer': ['*.tsv'],
         'pattools': ['INFO.yaml'],
     },
-    install_requires=['pysam', 'cvxpy', 'scipy', 'pandas', 'matplotlib', 'plotly', 'scikit-learn', 'mpi4py', 'hdbscan'],
+    install_requires=['pysam', 'cvxpy', 'scipy', 'pandas', 'matplotlib', 'plotly', 'scikit-learn', 'mpi4py', 'hdbscan',
+                      'pyyaml'],
     entry_points={
         'console_scripts': [
             'pattools=pattools:main',
