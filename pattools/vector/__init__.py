@@ -36,12 +36,14 @@ class VectorRegionCmd(Cmd):
         if Path(args.region).exists():
             with open(Path(args.region), 'r') as f:
                 for line in f:
+                    if line.startswith('#'):
+                        continue
                     line = line.strip()
                     if line:
                         items = line.split('\t')
                         regions.append(f'{items[0]}:{items[1]}-{items[1]}')
         else:
-            regions.append(args.region)
+            regions=args.region
         extract_motif_from_region(args.input, regions, args.out)
 
 

@@ -1,5 +1,6 @@
 import sys
 import pysam
+import gzip
 from typing import List
 
 
@@ -55,7 +56,7 @@ class Output:
         return False
 
 
-class Tabix:
+class _TabixRandom:
     def __init__(self, filename: str, region: str | List[str] = None):
         """
         TODO: The conversion between CpG and genome indices necessitates the specification of distinct index files
@@ -83,7 +84,7 @@ class Tabix:
                     _region = self._regions[self._regions_pointer]
                     self._iterator = self._tabixfile.fetch(region=_region)
                 try:
-                    return self._parse_line(next(self._iterator))
+                    return next(self._iterator)
                 except StopIteration:
                     self._regions_pointer += 1
                     self._iterator = None
@@ -91,7 +92,76 @@ class Tabix:
             else:
                 raise StopIteration
         else:
-            return self._parse_line(next(self._iterator))
+            return next(self._iterator)
+
+    def close(self):
+        if self._tabixfile:
+            self._tabixfile.close()
+
+
+class _TabixSequential:
+    def __init__(self, filename: str, region: str | List[str] = None):
+        self._filename = filename
+        self._regions_pointer = -1
+        self._tabixfile = gzip.open(self._filename, 'rt')
+
+        if region is not None:
+            if isinstance(region, str):
+                region = [region]
+            self._regions = []
+            for reg in region:
+                chr, idx = reg.split(':')
+                start, end = idx.split('-')
+                start = int(start)
+                end = int(end)
+                self._regions.append([chr, start, end])
+                self._regions_pointer = 0
+        else:
+            self._regions = None
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self._regions is None:
+            return next(self._tabixfile)
+        else:
+            line = self._tabixfile.readline()
+            while True:
+                _, s, e = self._regions[self._regions_pointer]
+                if line.startswith('#'):
+                    line = self._tabixfile.readline()
+                    continue
+                line = line.strip()
+                items = line.split('\t')
+                idx_motif = int(items[1])
+                if idx_motif < s:
+                    line = self._tabixfile.readline()
+                    continue
+                elif idx_motif > e:
+                    self._regions_pointer += 1
+                    if self._regions_pointer == len(self._regions):
+                        raise StopIteration()
+                else:
+                    return line
+
+    def close(self):
+        if self._tabixfile:
+            self._tabixfile.close()
+
+
+class Tabix:
+    def __init__(self, filename: str, region: str | List[str] = None):
+        if region is not None and isinstance(region, list) and len(region) > 8000:
+            self._tabix = _TabixSequential(filename, region)
+        else:
+            self._tabix = _TabixRandom(filename, region)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        return self._parse_line(next(self._tabix))
 
     def _parse_line(self, line: str):
         return line
@@ -103,8 +173,7 @@ class Tabix:
             return None
 
     def close(self):
-        if self._tabixfile:
-            self._tabixfile.close()
+        self._tabix.close()
 
     def __enter__(self):
         return self
