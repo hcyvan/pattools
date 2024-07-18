@@ -79,14 +79,16 @@ def extract_vector_multi(file_list, cpg_bed, outfile, window: int = 4, regions=N
                     if line is None:
                         continue
                     vc = VectorCalculator(window=window, cluster=cluster)
-                    vc.set_motif_count(line[0], line[1], line[2], sample=samples[i], group=groups[i])
                     while vector_calculator > vc:
                         line = tabix.readline_and_parse(motif.motifs)
-                        vc.set_motif_count(line[0], line[1], line[2], sample=samples[i], group=groups[i])
+                    vc.set_motif_count(line[0], line[1], line[2], sample=samples[i], group=groups[i])
                     if vector_calculator == vc:
                         vector_calculator = vector_calculator + vc
                         lines[i] = tabix.readline_and_parse(motif.motifs)
-                vector_calculator.calc().calc_labels_groups_samples()
+                vector_calculator.calc()
+                vector_calculator.calc_labels_groups_samples()
+                # for i, v in enumerate(vector_calculator._vectors):
+                #     print(v, vector_calculator._group[i], vector_calculator._labels[i], vector_calculator._sample[i])
                 if out_version == 'v1':
                     of.write(f"{vector_calculator.__str__()}\t{vector_calculator.get_labels_groups_samples_str()}\n")
                 else:

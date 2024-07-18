@@ -74,7 +74,10 @@ class VectorCalculator(object):
         self._start = start
         self._motif_count = motif_count
         total = sum(self._motif_count.values())
-        self._vectors = vectors if vectors is not None else []
+        if vectors is not None:
+            self._vectors = vectors
+        else:
+            self._vectors = self.get_motif().motif_count2vectors(self._motif_count)
         if group is not None:
             if isinstance(group, list):
                 self._group = group
@@ -91,8 +94,6 @@ class VectorCalculator(object):
         return self
 
     def calc(self):
-        if len(self._vectors) == 0:
-            self._vectors = self.get_motif().motif_count2vectors(self._motif_count)
         if len(self._vectors):
             _base_vector = np.zeros(self._window)
             _scale = np.sqrt(np.sum((np.ones(self._window)) ** 2))
