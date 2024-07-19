@@ -10,7 +10,7 @@ def pat2motif(filename: str, outfile: str = None, window: int = 4, bgzip: bool =
     pat_window = PatWindow(filename, window=window)
     motif_pattern = '\t'.join(motif.motifs)
     with Output(filename=outfile, file_format='motif', bgzip=bgzip) as of:
-        of.write(f"##FORMAT: motif\n")
+        of.write(f"##FORMAT: mv\n")
         of.write(f"##WINDOW: {window}\n")
         of.write(f"##COMMAND: {' '.join(sys.argv)}\n")
         comment_header = f'#chr\tCpG_index\t{motif_pattern}\n'

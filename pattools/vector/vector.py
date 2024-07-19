@@ -60,8 +60,8 @@ def extract_vector(input_file, outfile=None, window: int = 4, regions=None):
                 of.write(f"{vector_calculator}\n")
 
 
-def extract_vector_multi(file_list, cpg_bed, outfile, window: int = 4, regions=None, cluster='HDBSCAN',
-                         out_version='v1'):
+def do_mvc(file_list, cpg_bed, outfile, window: int = 4, regions=None, cluster='HDBSCAN',
+           out_version='v1'):
     input_files, groups, samples = parse_file_list(file_list)
     motif = Motif(window)
     tabix_arr: List[MotifTabix] = []
@@ -77,7 +77,7 @@ def extract_vector_multi(file_list, cpg_bed, outfile, window: int = 4, regions=N
             sample_order = sorted(list(set(samples)))
             group = ','.join(group_order)
             sample = ','.join(sample_order)
-            of.write(f"##FORMAT: diff.motif\n")
+            of.write(f"##FORMAT: mvc\n")
             of.write(f"##WINDOW: {window}\n")
             of.write(f"##COMMAND: {' '.join(sys.argv)}\n")
             of.write(f"##GROUP: {group}\n")
@@ -107,10 +107,10 @@ def extract_vector_multi(file_list, cpg_bed, outfile, window: int = 4, regions=N
         tabix.close()
 
 
-def extract_vector_multi_process(queue, process_order, file_list, cpg_bed, outfile, window, regions, cluster='HDBSCAN',
-                                 out_version='v1'):
+def do_mvc_multi_process(queue, process_order, file_list, cpg_bed, outfile, window, regions, cluster='HDBSCAN',
+                         out_version='v1'):
     try:
-        extract_vector_multi(file_list, cpg_bed, outfile, window, regions, cluster, out_version=out_version)
+        do_mvc(file_list, cpg_bed, outfile, window, regions, cluster, out_version=out_version)
         queue.put((process_order, 'success', outfile))
     except Exception as e:
         queue.put((process_order, 'failure', str(e)))
@@ -148,8 +148,8 @@ def merge_split_filenames(outfile, filenames):
         os.remove(file)
 
 
-def extract_vector_from_multi_motif_file(file_list, cpg_bed, outfile, window: int = 4, process=1, region=None,
-                                         cluster='HDBSCAN', out_version='v1'):
+def methylation_vector_cluster(file_list, cpg_bed, outfile, window: int = 4, process=1, region=None,
+                               cluster='HDBSCAN', out_version='v1'):
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     task_count = comm.Get_size()
@@ -163,15 +163,15 @@ def extract_vector_from_multi_motif_file(file_list, cpg_bed, outfile, window: in
             split_regions_and_filenames = None
             outfile = None
         regions_and_filename = comm.scatter(split_regions_and_filenames, root=0)
-        extract_vector_multi(file_list, cpg_bed, regions_and_filename[1], window, regions_and_filename[0],
-                             cluster=cluster, out_version=out_version)
+        do_mvc(file_list, cpg_bed, regions_and_filename[1], window, regions_and_filename[0],
+               cluster=cluster, out_version=out_version)
         tmp_files = comm.gather(regions_and_filename[1], root=0)
         if rank == 0:
             merge_split_filenames(outfile, tmp_files)
     else:
         sys.stderr.write(f"Process: {process}\n")
         if process == 1:
-            extract_vector_multi(file_list, cpg_bed, outfile, window, region, cluster=cluster, out_version=out_version)
+            do_mvc(file_list, cpg_bed, outfile, window, region, cluster=cluster, out_version=out_version)
         else:
             if outfile is None:
                 outfile = f'./merge.{uuid.uuid4()}.motif.gz'
@@ -181,7 +181,7 @@ def extract_vector_from_multi_motif_file(file_list, cpg_bed, outfile, window: in
             queue = multiprocessing.Queue()
             for i, regions in enumerate(split_regions):
                 sys.stderr.write(f"process {i} generating {split_filenames[i]}\n")
-                p = multiprocessing.Process(target=extract_vector_multi_process,
+                p = multiprocessing.Process(target=do_mvc_multi_process,
                                             args=(
                                                 queue, i, file_list, cpg_bed, split_filenames[i], window, regions,
                                                 cluster, out_version))

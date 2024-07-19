@@ -1,23 +1,10 @@
 import gzip
 
-from .vector import extract_vector, extract_vector_from_multi_motif_file
+from .vector import extract_vector, methylation_vector_cluster
 from .diff import vector_diff
 from .support import extract_motif_from_region
 from pattools.cmd import command, Cmd
 from pathlib import Path
-
-
-@command('vector', 'This command performs vector analysis on the sample')
-class VectorCmd(Cmd):
-    def add_argument(self, parser):
-        parser.add_argument('-i', '--input', required=True, help='Input file, *.motif.gz')
-        parser.add_argument('-w', '--window', type=int, default='4',
-                            help='Define the length of motif, such as ''3:CCT; 4: CCTT; 5:CCTTT'' ')
-        parser.add_argument('-o', '--out', default=None,
-                            help='The output file, If not set, output is sent to standard output.')
-
-    def do(self, args):
-        extract_vector(args.input, args.out, window=args.window)
 
 
 @command('vector-region', 'extract vectors')
@@ -43,13 +30,25 @@ class VectorRegionCmd(Cmd):
                         items = line.split('\t')
                         regions.append(f'{items[0]}:{items[1]}-{items[1]}')
         else:
-            regions=args.region
+            regions = args.region
         extract_motif_from_region(args.input, regions, args.out)
 
 
-@command('vector-multi',
-         'Extract vectors from multiple samples from different groups and analyze them. This command supports '
-         'MPI, which can accelerate calculations in HPC')
+@command('mv-vectorization', 'Methylation vectors vectorization')
+class VectorCmd(Cmd):
+    def add_argument(self, parser):
+        parser.add_argument('-i', '--input', required=True, help='Input file, *.motif.gz')
+        parser.add_argument('-w', '--window', type=int, default='4',
+                            help='Define the length of motif, such as ''3:CCT; 4: CCTT; 5:CCTTT'' ')
+        parser.add_argument('-o', '--out', default=None,
+                            help='The output file, If not set, output is sent to standard output.')
+
+    def do(self, args):
+        extract_vector(args.input, args.out, window=args.window)
+
+
+@command('mv-clustering',
+         'Methylation vectors clustering. This command supports MPI, which can accelerate calculations in HPC')
 class VectorMultiCmd(Cmd):
     def add_argument(self, parser):
         parser.add_argument('-c', '--cpg-bed', required=True,
@@ -73,13 +72,12 @@ class VectorMultiCmd(Cmd):
                             help='The output file, If not set, output is sent to standard output.')
 
     def do(self, args):
-        extract_vector_from_multi_motif_file(args.input, args.cpg_bed, args.out, window=args.window,
-                                             process=args.process, region=args.region, cluster=args.cluster_method,
-                                             out_version=args.diff_motif_version)
+        methylation_vector_cluster(args.input, args.cpg_bed, args.out, window=args.window,
+                                   process=args.process, region=args.region, cluster=args.cluster_method,
+                                   out_version=args.diff_motif_version)
 
 
-@command('vector-diff', 'Identify the window of the differential vector within the merged file. '
-                        '(generate by vector-multi)')
+@command('mv-separating', 'Identify and separate distinct MVs clusters. (generate by mv-cluster)')
 class VectorDiffCmd(Cmd):
     def add_argument(self, parser):
         parser.add_argument('-i', '--input', required=True, help='The input merged vector files.'

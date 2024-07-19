@@ -107,24 +107,24 @@ pattools ratio -d 3\
     -o /mnt/d/project/pattools/tmp/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.ratio
 ```
 
-#### vector
+#### mv-vectorization
 
 ```
-pattools vector -i /mnt/d/data/cacLung/raw/pat/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.motif.gz
+pattools mv-vectorization -i /mnt/d/data/cacLung/raw/pat/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.motif.gz
 ```
 
-#### vector-multi
+#### mv-clustering
 
 This command is used to merge all samples and find different vector
 
 ```
-pattools vector-multi -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -c /mnt/d/project/wgbs_tools/references/hg38/CpG.bed.cpg.gz -m MRESC --out-version v2
+pattools mv-clustering -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -c /mnt/d/project/wgbs_tools/references/hg38/CpG.bed.cpg.gz -m MRESC --out-version v2
 ```
 
-#### vector-diff
+#### mv-separating
 
 ```
-pattools vector-diff -i /mnt/d/data/epiLungCancer/intermediate/vector/20240612/merge.motif.gz -g 1 -o ./tmp/LUAD.diff.motif 2>/dev/null
+pattools mv-separating -i /mnt/d/data/epiLungCancer/intermediate/vector/20240612/merge.motif.gz -g 1 -o ./tmp/LUAD.diff.motif 2>/dev/null
 ```
 #### vector-region
 
