@@ -71,10 +71,21 @@ def extract_vector_multi(file_list, cpg_bed, outfile, window: int = 4, regions=N
         tabix_arr.append(tabix)
         lines.append(tabix.readline_and_parse(motif.motifs))
     with Output(filename=outfile, file_format='motif', bgzip=False) as of:
+        group_order = None
+        if out_version == 'v2':
+            group_order = sorted(list(set(groups)))
+            sample_order = sorted(list(set(samples)))
+            group = ','.join(group_order)
+            sample = ','.join(sample_order)
+            of.write(f"##FORMAT: diff.motif\n")
+            of.write(f"##WINDOW: {window}\n")
+            of.write(f"##COMMAND: {' '.join(sys.argv)}\n")
+            of.write(f"##GROUP: {group}\n")
+            of.write(f"##SAMPLE: {sample}\n")
         with CpGTabix(cpg_bed, regions) as cpg:
-            for chrom, _, start in cpg:
+            for chrom, genome_idx, cpg_idx in cpg:
                 vector_calculator = VectorCalculator(window=window, cluster=cluster)
-                vector_calculator.set_motif_count(chrom, start, dict())
+                vector_calculator.set_motif_count(chrom, cpg_idx, dict())
                 for i, (tabix, line) in enumerate(zip(tabix_arr, lines)):
                     if line is None:
                         continue
@@ -87,12 +98,10 @@ def extract_vector_multi(file_list, cpg_bed, outfile, window: int = 4, regions=N
                         lines[i] = tabix.readline_and_parse(motif.motifs)
                 vector_calculator.calc()
                 vector_calculator.calc_labels_groups_samples()
-                # for i, v in enumerate(vector_calculator._vectors):
-                #     print(v, vector_calculator._group[i], vector_calculator._labels[i], vector_calculator._sample[i])
                 if out_version == 'v1':
                     of.write(f"{vector_calculator.__str__()}\t{vector_calculator.get_labels_groups_samples_str()}\n")
                 else:
-                    of.write(f"{vector_calculator.base_info()}\n")
+                    of.write(f"{vector_calculator.info_v2(group_order, genome_idx)}\n")
 
     for tabix in tabix_arr:
         tabix.close()

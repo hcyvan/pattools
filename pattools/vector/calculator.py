@@ -1,7 +1,6 @@
 import math
 from typing import Tuple, Dict, Any, Union, List, Optional
 
-import pandas as pd
 from numpy.typing import NDArray
 import numpy as np
 from collections import Counter, OrderedDict
@@ -241,21 +240,51 @@ class VectorCalculator(object):
             dist_top_0_base_tag = -1
         return f"{self._chr}\t{self._start}\t{self.get_clusters_number()}\t{dist_top_0_1_tag:.3f}\t{dist_top_0_base_tag:.3f}\t{len(self._vectors)}\t{motif_tag}"
 
-    def base_info(self):
+    def info_v2(self, group_order, genome_idx):
         self._motif_count.values()
         motif_count_ordered: OrderedDict[str, int] = self.get_motif().count_motifs(self._motif_count)
         motif_tag = '|'.join([str(x) for x in motif_count_ordered.values()])
         centers = []
         for k, v in self._clusters_centroid.items():
-            centers.append(','.join([f'{x:.3f}' for x in v]))
+            centers.append(f"({','.join([f'{x:.3f}' for x in v])})")
         centers = '|'.join(centers)
 
-        cluster_labels_count = []
-        for k, v in self._clusters_labels_count.items():
-            cluster_labels_count.append(str(v))
-        cluster_labels_count = '|'.join(cluster_labels_count)
+        _group = np.array(self._group)
+        _labels = np.array(self._labels)
+        _sample = np.array(self._sample)
 
-        return f"{self._chr}\t{self._start}\t{self.get_clusters_number()}\t{len(self._vectors)}\t{motif_tag}\t{cluster_labels_count}\t{centers}"
+        cluster_group_label_count = []
+        for k, v in self._clusters_labels_count.items():
+            idx = _labels == k
+            counter = Counter(_group[idx])
+            group_count = []
+            for g in group_order:
+                group_count.append(str(counter[g]))
+            cluster_group_label_count.append(','.join(group_count))
+        cluster_group_label_count = '|'.join(cluster_group_label_count)
+
+        cluster_group_sample_count = []
+        for k, v in self._clusters_labels_count.items():
+            idx = _labels == k
+            sample_count = []
+            for g in group_order:
+                idx2 = _group == g
+                samples = sorted(set(_sample[idx & idx2]))
+                sample_count.append(str(len(samples)))
+            cluster_group_sample_count.append(','.join(sample_count))
+        cluster_group_sample_count = '|'.join(cluster_group_sample_count)
+
+        cluster_group_samples = []
+        for k, v in self._clusters_labels_count.items():
+            idx = _labels == k
+            samples_ = []
+            for g in group_order:
+                idx2 = _group == g
+                samples = sorted(set(_sample[idx & idx2]))
+                samples_.append(':'.join([str(x) for x in samples]))
+            cluster_group_samples.append(','.join(samples_))
+        cluster_group_samples = '|'.join(cluster_group_samples)
+        return f"{self._chr}\t{self._start}\t{genome_idx - 1}\t{genome_idx + self._window}\t{self.get_clusters_number()}\t{motif_tag}\t{centers}\t{cluster_group_label_count}\t{cluster_group_sample_count}\t{cluster_group_samples}"
 
     def _do_cluster(self):
         _vectors = np.array(self._vectors)
