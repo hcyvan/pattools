@@ -6,6 +6,7 @@ root: intro
 chapters:
 - file: installation
 - file: beta
+- file: matgen
 - file: deconvolution
 - file: vector
 - file: references
