@@ -130,7 +130,9 @@ pattools vector-diff -i /mnt/d/data/epiLungCancer/intermediate/vector/20240612/m
 
 ```
 pattools vector-region -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -r chr4:6909897-6909899  2>/dev/null
-pattools vector-region -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -r ./LUAD.diff.motif  2>/dev/null
+pattools vector-region -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -r chr1:92408-92410  2>/dev/null > ./tmp/aaa.txt
+pattools vector-region -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -r chr1:340719-340719  2>/dev/null > ./tmp/aaa.txt
+pattools vector-region -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -r ./LUAD_0.3.diff.motif  2>/dev/null
 ```
 
 #### pat2motif

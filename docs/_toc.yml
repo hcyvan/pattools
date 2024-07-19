@@ -4,9 +4,13 @@
 format: jb-book
 root: intro
 chapters:
+- file: installation
 - file: beta
 - file: deconvolution
 - file: vector
 - file: references
+- file: how_to_contribute
+- file: changelog
+
 
 
