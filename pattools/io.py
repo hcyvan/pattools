@@ -152,7 +152,11 @@ class _TabixSequential:
 
 class Tabix:
     def __init__(self, filename: str, region: str | List[str] = None):
-        if region is not None and isinstance(region, list) and len(region) > 8000:
+        RANDOM_READ_LIMIT = 8000
+        # TODO: Here, we conducted a preliminary comparison. In the WSL environment on Windows, sequential
+        #  read performance surpasses random read when requests exceed 8000 intervals, though more precise
+        #  thresholds need to be tested across different platforms and environments.
+        if region is not None and isinstance(region, list) and len(region) > RANDOM_READ_LIMIT:
             self._tabix = _TabixSequential(filename, region)
         else:
             self._tabix = _TabixRandom(filename, region)
