@@ -60,8 +60,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'beta';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Deconvolution" href="deconvolution.html" />
-    <link rel="prev" title="Introduction" href="intro.html" />
+    <link rel="next" title="Matrix generate" href="matgen.html" />
+    <link rel="prev" title="Installation" href="installation.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -180,10 +180,14 @@
             </li>
         </ul>
         <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Beta value</a></li>
+<li class="toctree-l1"><a class="reference internal" href="matgen.html">Matrix generate</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution</a></li>
-<li class="toctree-l1"><a class="reference internal" href="vector.html">Methylation Vector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vector.html">Methylation vector</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="how_to_contribute.html">How to contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
 </ul>
 
     </div>
@@ -356,7 +360,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -372,6 +378,16 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usage">Usage:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example">Example:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#options">Options:</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -383,6 +399,56 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="beta-value">
 <h1>Beta value<a class="headerlink" href="#beta-value" title="Link to this heading">#</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">beta</span></code> This command performs methylation ratio analysis on the sample</p>
+<section id="usage">
+<h2>Usage:<a class="headerlink" href="#usage" title="Link to this heading">#</a></h2>
+<p>pattools beta [-h] -i INPUT [-d DEPTH] -o OUT</p>
+</section>
+<section id="example">
+<h2>Example:<a class="headerlink" href="#example" title="Link to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pattools</span> <span class="n">beta</span> <span class="o">-</span><span class="n">d</span> <span class="mi">3</span> \
+    <span class="o">-</span><span class="n">i</span> <span class="o">/</span><span class="n">PUBLIC</span><span class="o">/</span><span class="n">rd</span><span class="o">/</span><span class="n">lung_cac</span><span class="o">/</span><span class="n">public</span><span class="o">/</span><span class="n">shichengguo</span><span class="o">/</span><span class="n">test</span><span class="o">.</span><span class="n">pat</span><span class="o">.</span><span class="n">gz</span> \
+    <span class="o">-</span><span class="n">o</span> <span class="o">/</span><span class="n">PUBLIC</span><span class="o">/</span><span class="n">rd</span><span class="o">/</span><span class="n">lung_cac</span><span class="o">/</span><span class="n">public</span><span class="o">/</span><span class="n">shichengguo</span><span class="o">/</span><span class="n">test</span><span class="o">.</span><span class="n">beta</span>
+</pre></div>
+</div>
+<p>input</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">zcat</span> <span class="n">test</span><span class="o">.</span><span class="n">pat</span><span class="o">.</span><span class="n">gz</span> <span class="o">|</span> <span class="n">head</span>
+
+<span class="n">chr1</span>	<span class="mi">5930</span>	<span class="n">C</span>	<span class="mi">1</span>
+<span class="n">chr1</span>	<span class="mi">7420</span>	<span class="n">CTTTTT</span>	<span class="mi">2</span>
+<span class="n">chr1</span>	<span class="mi">7420</span>	<span class="n">TTTTTT</span>	<span class="mi">6</span>
+<span class="n">chr1</span>	<span class="mi">7442</span>	<span class="n">CT</span>	<span class="mi">1</span>
+<span class="n">chr1</span>	<span class="mi">7442</span>	<span class="n">TT</span>	<span class="mi">14</span>
+<span class="n">chr1</span>	<span class="mi">7454</span>	<span class="n">TT</span>	<span class="mi">2</span>
+<span class="n">chr1</span>	<span class="mi">7454</span>	<span class="n">TT</span>	<span class="mi">1</span>
+<span class="n">chr1</span>	<span class="mi">7553</span>	<span class="n">TT</span>	<span class="mi">1</span>
+<span class="n">chr1</span>	<span class="mi">7553</span>	<span class="n">TTT</span>	<span class="mi">2</span>
+<span class="n">chr1</span>	<span class="mi">7574</span>	<span class="n">CCCCC</span>	<span class="mi">2</span>
+</pre></div>
+</div>
+<p>output</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">zcat</span> <span class="n">test</span><span class="o">.</span><span class="n">beta</span><span class="o">.</span><span class="n">gz</span> <span class="o">|</span> <span class="n">head</span>
+
+<span class="n">chr1</span>	<span class="mi">5930</span>	<span class="o">-</span><span class="mi">1</span>	<span class="mi">1</span>
+<span class="n">chr1</span>	<span class="mi">7420</span>	<span class="mf">0.25</span>	<span class="mi">8</span>
+<span class="n">chr1</span>	<span class="mi">7421</span>	<span class="mf">0.0</span>	<span class="mi">8</span>
+<span class="n">chr1</span>	<span class="mi">7422</span>	<span class="mf">0.0</span>	<span class="mi">8</span>
+<span class="n">chr1</span>	<span class="mi">7423</span>	<span class="mf">0.0</span>	<span class="mi">8</span>
+<span class="n">chr1</span>	<span class="mi">7424</span>	<span class="mf">0.0</span>	<span class="mi">8</span>
+<span class="n">chr1</span>	<span class="mi">7425</span>	<span class="mf">0.0</span>	<span class="mi">8</span>
+<span class="n">chr1</span>	<span class="mi">7442</span>	<span class="mf">0.0667</span>	<span class="mi">15</span>
+<span class="n">chr1</span>	<span class="mi">7443</span>	<span class="mf">0.0</span>	<span class="mi">15</span>
+<span class="n">chr1</span>	<span class="mi">7454</span>	<span class="mf">0.0</span>	<span class="mi">3</span>
+</pre></div>
+</div>
+</section>
+<section id="options">
+<h2>Options:<a class="headerlink" href="#options" title="Link to this heading">#</a></h2>
+<p>-h, –help | Show this help message and exit</p>
+<p>-i INPUT, –input INPUT | Input file, *.pat.gz format</p>
+<p>-d DEPTH, –depth DEPTH | The minimum total count required to calculate methylation ratio</p>
+<p>-o OUT, –out OUT | The output file, *.gz format. There are four columns in total, representing chromosome, index, methylation ratio, and total sequencing depth of loci</p>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -416,20 +482,20 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="intro.html"
+       href="installation.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Introduction</p>
+        <p class="prev-next-title">Installation</p>
       </div>
     </a>
     <a class="right-next"
-       href="deconvolution.html"
+       href="matgen.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Deconvolution</p>
+        <p class="prev-next-title">Matrix generate</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -439,6 +505,23 @@ document.write(`
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usage">Usage:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example">Example:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#options">Options:</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

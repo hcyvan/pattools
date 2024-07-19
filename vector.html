@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Methylation Vector &#8212; Pattools Document</title>
+    <title>Methylation vector &#8212; Pattools Document</title>
   
   
   
@@ -182,10 +182,14 @@
             </li>
         </ul>
         <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="beta.html">Beta value</a></li>
+<li class="toctree-l1"><a class="reference internal" href="matgen.html">Matrix generate</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Methylation Vector</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Methylation vector</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="how_to_contribute.html">How to contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
 </ul>
 
     </div>
@@ -369,7 +373,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Methylation Vector</h1>
+    <h1>Methylation vector</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -384,7 +388,7 @@ document.write(`
                 <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="methylation-vector">
-<h1>Methylation Vector<a class="headerlink" href="#methylation-vector" title="Link to this heading">#</a></h1>
+<h1>Methylation vector<a class="headerlink" href="#methylation-vector" title="Link to this heading">#</a></h1>
 <p>In the PAT format file, methylated CpG sites are denoted by ‘C’, and unmethylated CpG sites are denoted by ‘T’. In the vector representation of methylation, a ‘1’ corresponds to a methylated site, while a ‘0’ corresponds to an unmethylated site. Consequently, the sequence ‘CCTTCT’ in the PAT format can be represented by the vector [1, 1, 0, 0, 1, 0]. Continuous CpG sites of length <span class="math notranslate nohighlight">\(n\)</span> are used as a window, which contains several CpG motifs of the same length. These motifs can be converted into vector format. For instance, in a window of length 3, the following motif is included:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
