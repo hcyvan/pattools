@@ -1,5 +1,3 @@
-import gzip
-
 from .vector import extract_vector, methylation_vector_cluster
 from .diff import vector_diff
 from .support import extract_motif_from_region
@@ -66,7 +64,7 @@ class VectorMultiCmd(Cmd):
         parser.add_argument('-m', '--cluster-method', choices=['HDBSCAN', 'DBSCAN', 'MRESC'],
                             default='HDBSCAN',
                             help='Algorithm for classifying all motifs in a window')
-        parser.add_argument('--diff-motif-version', default='v2',
+        parser.add_argument('--out-version', default='v2',
                             help='The output version')
         parser.add_argument('-o', '--out', default=None,
                             help='The output file, If not set, output is sent to standard output.')
@@ -74,7 +72,7 @@ class VectorMultiCmd(Cmd):
     def do(self, args):
         methylation_vector_cluster(args.input, args.cpg_bed, args.out, window=args.window,
                                    process=args.process, region=args.region, cluster=args.cluster_method,
-                                   out_version=args.diff_motif_version)
+                                   out_version=args.out_version)
 
 
 @command('mv-separating', 'Identify and separate distinct MVs clusters. (generate by mv-cluster)')

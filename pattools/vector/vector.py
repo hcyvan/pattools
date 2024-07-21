@@ -61,7 +61,7 @@ def extract_vector(input_file, outfile=None, window: int = 4, regions=None):
 
 
 def do_mvc(file_list, cpg_bed, outfile, window: int = 4, regions=None, cluster='HDBSCAN',
-           out_version='v1'):
+           out_version='v1', out_gzip=False):
     input_files, groups, samples = parse_file_list(file_list)
     motif = Motif(window)
     tabix_arr: List[MotifTabix] = []
@@ -70,18 +70,25 @@ def do_mvc(file_list, cpg_bed, outfile, window: int = 4, regions=None, cluster='
         tabix = MotifTabix(motif_file, regions)
         tabix_arr.append(tabix)
         lines.append(tabix.readline_and_parse(motif.motifs))
-    with Output(filename=outfile, file_format='motif', bgzip=False) as of:
+    with Output(filename=outfile, file_format='mvc', bgzip=out_gzip) as of:
         group_order = None
         if out_version == 'v2':
             group_order = sorted(list(set(groups)))
             sample_order = sorted(list(set(samples)))
-            group = ','.join(group_order)
-            sample = ','.join(sample_order)
+
             of.write(f"##FORMAT: mvc\n")
             of.write(f"##WINDOW: {window}\n")
             of.write(f"##COMMAND: {' '.join(sys.argv)}\n")
-            of.write(f"##GROUP: {group}\n")
-            of.write(f"##SAMPLE: {sample}\n")
+            of.write(f"##GROUP: {','.join(group_order)}\n")
+            of.write(f"##SAMPLE: {','.join(sample_order)}\n")
+            for group in group_order:
+                group_sample = []
+                for s, g in zip(samples, groups):
+                    if group == g:
+                        group_sample.append(s)
+                of.write(f"##GROUP_SAMPLE: {group}_{','.join(group_sample)}\n")
+            of.write(
+                f"#chr\tcpg\tstart\tend\tmvs\tc_num\tc_center\tc_group_mvs_num\tc_group_samples_num\tc_group_samples\n")
         with CpGTabix(cpg_bed, regions) as cpg:
             for chrom, genome_idx, cpg_idx in cpg:
                 vector_calculator = VectorCalculator(window=window, cluster=cluster)
@@ -171,7 +178,7 @@ def methylation_vector_cluster(file_list, cpg_bed, outfile, window: int = 4, pro
     else:
         sys.stderr.write(f"Process: {process}\n")
         if process == 1:
-            do_mvc(file_list, cpg_bed, outfile, window, region, cluster=cluster, out_version=out_version)
+            do_mvc(file_list, cpg_bed, outfile, window, region, cluster=cluster, out_version=out_version, out_gzip=True)
         else:
             if outfile is None:
                 outfile = f'./merge.{uuid.uuid4()}.motif.gz'
