@@ -284,7 +284,7 @@ class VectorCalculator(object):
                 samples_.append(':'.join([str(x) for x in samples]))
             cluster_group_samples.append(','.join(samples_))
         cluster_group_samples = '|'.join(cluster_group_samples)
-        return f"{self._chr}\t{self._start}\t{genome_idx - 1}\t{genome_idx + self._window}\t{self.get_clusters_number()}\t{motif_tag}\t{centers}\t{cluster_group_label_count}\t{cluster_group_sample_count}\t{cluster_group_samples}"
+        return f"{self._chr}\t{self._start}\t{genome_idx - 1}\t{genome_idx + self._window}\t{motif_tag}\t{self.get_clusters_number()}\t{centers}\t{cluster_group_label_count}\t{cluster_group_sample_count}\t{cluster_group_samples}"
 
     def _do_cluster(self):
         _vectors = np.array(self._vectors)
