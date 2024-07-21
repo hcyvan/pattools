@@ -146,10 +146,14 @@ def get_filename_by_split_regions(split_regions, outfile):
 
 def merge_split_filenames(outfile, filenames):
     with Output(filename=outfile, file_format='motif', bgzip=True) as out:
-        for file in filenames:
+        with open(filenames[0]) as infile:
+            for line in infile:
+                out.write(line)
+        for file in filenames[1:]:
             with open(file) as infile:
                 for line in infile:
-                    out.write(line)
+                    if not line.startswith("#"):
+                        out.write(line)
     for file in filenames:
         sys.stderr.write(f"Remove {file}\n")
         os.remove(file)
