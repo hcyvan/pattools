@@ -4,6 +4,50 @@ import gzip
 from typing import List
 
 
+class Open:
+    def __init__(self, file_name, is_zip=None):
+        if is_zip is None:
+            if file_name.endswith('.gz'):
+                self.__is_zip = True
+            else:
+                self.__is_zip = False
+        else:
+            self.__is_zip = is_zip
+        if self.__is_zip:
+            self._f = gzip.open(file_name, 'rt')
+        else:
+            self._f = open(file_name, 'rt')
+
+    def readline(self):
+        line = self._f.readline()
+        if line:
+            return line
+        return None
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        line = self._f.readline()
+        if line:
+            if self.__is_zip:
+                return line
+            else:
+                return line
+        else:
+            raise StopIteration
+
+    def close(self):
+        self._f.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+        return False
+
+
 class Output:
     """
     This class is used to control file output
@@ -45,7 +89,7 @@ class Output:
         if self.filename is not None:
             self.of.close()
             if self.bgzip:
-                if self.file_format == 'motif':
+                if self.file_format == 'mvc':
                     pysam.tabix_index(self.filename, csi=True, seq_col=0, start_col=1, end_col=1, force=True)
 
     def __enter__(self):

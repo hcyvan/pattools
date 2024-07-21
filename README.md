@@ -118,13 +118,13 @@ pattools mv-vectorization -i /mnt/d/data/cacLung/raw/pat/GSM5652289_Blood-T-Eff-
 This command is used to merge all samples and find different vector
 
 ```
-pattools mv-clustering -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -c /mnt/d/project/wgbs_tools/references/hg38/CpG.bed.cpg.gz -m MRESC --out-version v2
+pattools mv-clustering -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -c /mnt/d/project/wgbs_tools/references/hg38/CpG.bed.cpg.gz -m MRESC --out-version v2 -r chr1:1-100 -o ./tmp/lung.w4.mvc.gz 2>/dev/null
 ```
 
 #### mv-separating
 
 ```
-pattools mv-separating -i /mnt/d/data/epiLungCancer/intermediate/vector/20240612/merge.motif.gz -g 1 -o ./tmp/LUAD.diff.motif 2>/dev/null
+pattools mv-separating -i /mnt/d/data/epiLungCancer/intermediate/vector/20240612/lung.w4.mvc.gz -g 1 --frac-mvs 1.0 --frac-samples 0.5 -o ./tmp/LUAD.diff.motif 2>/dev/null
 ```
 #### vector-region
 
