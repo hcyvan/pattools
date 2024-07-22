@@ -75,8 +75,8 @@ class VectorMultiCmd(Cmd):
                                    out_version=args.mvc_version)
 
 
-@command('mv-separating', 'Identify and separate distinct MVs clusters. (generate by mv-cluster)')
-class VectorDiffCmd(Cmd):
+@command('mv-separating', 'Identify and separate distinct MVs clusters. (generate by mv-clustering)')
+class VectorSeparatingCmd(Cmd):
     def add_argument(self, parser):
         parser.add_argument('-i', '--input', required=True, help='The input merged vector files.'
                                                                  ' (generate by vector-multi)')
@@ -87,9 +87,11 @@ class VectorDiffCmd(Cmd):
                                                                  'differential vector window')
         parser.add_argument('--frac-mvs', default=1.0, type=float, help='')
         parser.add_argument('--frac-samples', default=0.9, type=float, help='')
+        parser.add_argument('--with-meta', action='store_true', help='')
 
     def do(self, args):
         if args.mvc_version == 'v2':
-            mv_separating(args.input, args.group, args.frac_mvs, args.frac_samples, output_file=args.out)
+            mv_separating(args.input, args.group, args.frac_mvs, args.frac_samples, output_file=args.out,
+                          with_meta=args.with_meta)
         else:
             vector_diff(args.input, args.group, args.out)

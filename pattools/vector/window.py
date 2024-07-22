@@ -155,9 +155,7 @@ class MvcWindow:
 
     def satisfied(self, target, min_mvs_in_cluster_frac=1.0, min_samples_in_group_frac=0.9, min_mvs_num=80):
         if self._cluster_num < 2 or self._mvs_num < min_mvs_num:
-            return False
-        # print(self._cluster_group_mvs_num_counter)
-        # print(self._cluster_group_samples_num_counter)
+            return None
         _target_group_samples_total = self._group_samples_counter[target]
         for i in range(self._cluster_num):
             _mvs_counter = self._cluster_group_mvs_num_counter[i]
@@ -166,10 +164,16 @@ class MvcWindow:
             _samples_counter = self._cluster_group_samples_num_counter[i]
             _samples_counter_total = sum(_samples_counter.values())
             _samples_counter_target = _samples_counter[target]
-            if _mvs_counter_target / _mvs_counter_total >= min_mvs_in_cluster_frac:
-                if _samples_counter_target / _target_group_samples_total >= min_samples_in_group_frac:
-                    return True
-        return False
+            mvs_in_cluster_frac = _mvs_counter_target / _mvs_counter_total
+            samples_in_group_frac = _samples_counter_target / _target_group_samples_total
+            if mvs_in_cluster_frac >= min_mvs_in_cluster_frac and samples_in_group_frac >= min_samples_in_group_frac:
+                return mvs_in_cluster_frac, samples_in_group_frac
+        return None
+
+    def calc_meta(self):
+        if self._cluster_num < 2 or self._mvs_num < 80:
+            return ""
+        return "meta"
 
 
 class MvcHeader:
@@ -238,18 +242,20 @@ class MvcFormat:
         self.header = MvcHeader()
         self.mvw = None
 
-    def filter(self, mvc_file, f_out, group, min_mvs_in_cluster_frac=1, min_samples_in_group_frac=0.9):
+    def filter(self, mvc_file, f_out, group, min_mvs_in_cluster_frac=1, min_samples_in_group_frac=0.9, with_meta=False):
         with Open(mvc_file) as f:
-            i = 0
             for line in f:
-                i += 1
-                if i % 2000000 == 0:
-                    sys.stderr.write(str(i) + "\n")
                 line = line.strip("\n")
                 if line.startswith('#'):
                     self.header.decode(line)
                 else:
                     if self.mvw is None:
                         self.mvw = MvcWindow(self.header.groups, self.header.group_samples)
-                    if self.mvw.decode(line).satisfied(group, min_mvs_in_cluster_frac, min_samples_in_group_frac):
-                        f_out.write(line + '\n')
+                    self.mvw.decode(line)
+                    _satisfied = self.mvw.satisfied(group, min_mvs_in_cluster_frac, min_samples_in_group_frac)
+                    if _satisfied:
+                        if with_meta:
+                            mvs_in_cluster_frac, samples_in_group_frac = _satisfied
+                            f_out.write(f"{line}\t{mvs_in_cluster_frac}\t{samples_in_group_frac}\n")
+                        else:
+                            f_out.write(line + '\n')

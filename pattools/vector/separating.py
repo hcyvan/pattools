@@ -14,7 +14,7 @@ def vector_diff(input_file, group='0', output_file=None):
                         fo.write(vw.__str__() + '\n')
 
 
-def mv_separating(input_file, group, mvs_frac=1.0, samples_frac=0.9, output_file=None):
+def mv_separating(input_file, group, mvs_frac=1.0, samples_frac=0.9, output_file=None, with_meta=False):
     with Output(filename=output_file) as of:
         mvc = MvcFormat()
-        mvc.filter(input_file, of, group, mvs_frac, samples_frac)
+        mvc.filter(input_file, of, group, mvs_frac, samples_frac, with_meta=with_meta)
