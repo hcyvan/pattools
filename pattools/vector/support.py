@@ -2,7 +2,7 @@ from pattools.io import Output, MotifTabix
 from pattools.vector.utils import parse_file_list
 
 
-def extract_motif_from_region(file_list, region, outfile=None):
+def extract_mvs(file_list, region, outfile=None):
     input_files, groups, samples = parse_file_list(file_list)
     with Output(filename=outfile, bgzip=False) as of:
         of.write(f'#chrom\tCpG_index\tgroup\tsample\tmotif\n')

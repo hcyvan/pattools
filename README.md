@@ -126,13 +126,11 @@ pattools mv-clustering -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sampl
 ```
 pattools mv-separating -i /mnt/d/data/epiLungCancer/intermediate/vector/20240612/lung.w4.mvc.gz -g 1 --frac-mvs 1.0 --frac-samples 0.5 -o ./tmp/LUAD.diff.motif 2>/dev/null
 ```
-#### vector-region
+#### mv-extract
 
 ```
-pattools vector-region -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -r chr4:6909897-6909899  2>/dev/null
-pattools vector-region -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -r chr1:92408-92410  2>/dev/null > ./tmp/aaa.txt
-pattools vector-region -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -r chr1:340719-340719  2>/dev/null > ./tmp/aaa.txt
-pattools vector-region -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -r ./LUAD_0.3.diff.motif  2>/dev/null
+pattools mv-extract -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -r chr4:6909897-6909899  2>/dev/null
+pattools mv-extract -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -r ./LUAD_0.3.diff.mvc  2>/dev/null
 ```
 
 #### pat2motif

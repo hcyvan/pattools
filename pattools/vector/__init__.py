@@ -1,11 +1,11 @@
 from .vector import extract_vector, methylation_vector_cluster
 from .separating import vector_diff, mv_separating
-from .support import extract_motif_from_region
+from .support import extract_mvs
 from pattools.cmd import command, Cmd
 from pathlib import Path
 
 
-@command('vector-region', 'extract vectors')
+@command('mv-extract', 'extract mvs')
 class VectorRegionCmd(Cmd):
     def add_argument(self, parser):
         parser.add_argument('-i', '--input', required=True, help='Input file list')
@@ -29,7 +29,8 @@ class VectorRegionCmd(Cmd):
                         regions.append(f'{items[0]}:{items[1]}-{items[1]}')
         else:
             regions = args.region
-        extract_motif_from_region(args.input, regions, args.out)
+        print(args.input, regions, args.out)
+        extract_mvs(args.input, regions, args.out)
 
 
 @command('mv-vectorization', 'Methylation vectors vectorization')
