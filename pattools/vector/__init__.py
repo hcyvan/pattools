@@ -1,6 +1,7 @@
 from .vector import extract_vector, methylation_vector_cluster
 from .separating import vector_diff, mv_separating
 from .support import extract_mvs
+from .pat2mv import pat2mv
 from pattools.cmd import command, Cmd
 from pathlib import Path
 
@@ -29,12 +30,11 @@ class VectorRegionCmd(Cmd):
                         regions.append(f'{items[0]}:{items[1]}-{items[1]}')
         else:
             regions = args.region
-        print(args.input, regions, args.out)
         extract_mvs(args.input, regions, args.out)
 
 
-@command('mv-vectorization', 'Methylation vectors vectorization')
-class VectorCmd(Cmd):
+@command('mv-calculate', 'Methylation vectors calculate')
+class VectorExtractCmd(Cmd):
     def add_argument(self, parser):
         parser.add_argument('-i', '--input', required=True, help='Input file, *.motif.gz')
         parser.add_argument('-w', '--window', type=int, default='4',
@@ -44,6 +44,21 @@ class VectorCmd(Cmd):
 
     def do(self, args):
         extract_vector(args.input, args.out, window=args.window)
+
+
+@command('mv-vectorization', 'Methylation vectors vectorization')
+class VectorizationCmd(Cmd):
+    def add_argument(self, parser):
+        parser.add_argument('-i', '--input', required=True, help='The input file')
+        parser.add_argument('-o', '--out', default=None,
+                            help='The output file, If not set, output is sent to standard output.')
+        parser.add_argument('--text', action='store_true', help='If set, files are not '
+                                                                'compressed with bgzip')
+        parser.add_argument('-w', '--window', type=int, default='4',
+                            help='Define the length of motif, such as ''3:CCT; 4: CCTT; 5:CCTTT'' ')
+
+    def do(self, args):
+        pat2mv(args.input, args.out, window=args.window, bgzip=(not args.text))
 
 
 @command('mv-clustering',

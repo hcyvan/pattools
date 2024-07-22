@@ -5,7 +5,7 @@ from pattools.motif import Motif
 from pattools.io import Output
 
 
-def pat2motif(filename: str, outfile: str = None, window: int = 4, bgzip: bool = True):
+def pat2mv(filename: str, outfile: str = None, window: int = 4, bgzip: bool = True):
     motif = Motif(window)
     pat_window = PatWindow(filename, window=window)
     motif_pattern = '\t'.join(motif.motifs)

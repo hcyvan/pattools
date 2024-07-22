@@ -2,7 +2,6 @@ import argparse
 from pattools.config import CONFIG
 from pattools.entropy import extract_entropy
 from pattools.beta import extract_beta
-from pattools.format import pat2motif
 from pattools.matrixgenerate import matrix_generate
 from pattools.cmd import CmdFactory
 from pattools.vector import *
@@ -39,16 +38,6 @@ def main():
     parser_beta.add_argument('-o', '--out', required=True,
                              help='The output file, *.gz format. There are four columns in total,'
                                   'representing chromosome, index, methylation ratio, and total sequencing depth of loci')
-    # =====================================================================
-    parser_pat2motif = subparsers.add_parser('pat2motif',
-                                             help='This command is used to convert pat file to motif file')
-    parser_pat2motif.add_argument('-i', '--input', required=True, help='The input file')
-    parser_pat2motif.add_argument('-o', '--out', default=None,
-                                  help='The output file, If not set, output is sent to standard output.')
-    parser_pat2motif.add_argument('--text', action='store_true', help='If set, files are not '
-                                                                      'compressed with bgzip')
-    parser_pat2motif.add_argument('-w', '--window', type=int, default='4',
-                                  help='Define the length of motif, such as ''3:CCT; 4: CCTT; 5:CCTTT'' ')
     # ======================================================================
     parser_matrix_generate = subparsers.add_parser('matgen',
                                                    help='This command is used to generate matrix for entropy and beta')
