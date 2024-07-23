@@ -8,7 +8,8 @@ from pattools.vector.format import MvFormat
 from pattools.log import logger
 
 
-def do_clustering(file_list, cpg_bed, outfile, window: int = None, regions=None, cluster='HDBSCAN', out_gzip=False):
+def do_clustering(file_list, cpg_bed, outfile, window: int = None, regions=None, cluster='HDBSCAN', out_gzip=False,
+                  target_groups=None):
     """
     This is the core function to do methylation vectors clustering
     @param file_list:
@@ -18,8 +19,10 @@ def do_clustering(file_list, cpg_bed, outfile, window: int = None, regions=None,
     @param regions:
     @param cluster:
     @param out_gzip:
+    @param target_groups: The groups selected from the MV list file should be separated by commas ','. If not set, all
+                        groups will be used.
     """
-    input_files, groups, samples = parse_file_list(file_list)
+    input_files, groups, samples = parse_file_list(file_list, target_groups)
     _window = window
     for motif_file in input_files:
         mvf = MvFormat().parse_header(motif_file)
