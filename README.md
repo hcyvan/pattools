@@ -143,7 +143,7 @@ pattools mv-vectorization -i GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.pat.gz -o
 This command is used to merge all samples and find different vector
 
 ```
-pattools mv-clustering -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -c /mnt/d/project/wgbs_tools/references/hg38/CpG.bed.cpg.gz -m MRESC --out-version v2 -r chr1:1-100 -o ./tmp/lung.w4.mvc.gz 2>/dev/null
+pattools mv-clustering -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -c /mnt/d/project/wgbs_tools/references/hg38/CpG.bed.cpg.gz -m MRESC --mvc-version v2 -r chr1:1-100 -o ./tmp/lung.w4.mvc.gz 2>/dev/null
 ```
 
 #### mv-separating

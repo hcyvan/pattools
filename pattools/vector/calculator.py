@@ -1,5 +1,5 @@
 import math
-from typing import Tuple, Dict, Any, Union, List, Optional
+from typing import Tuple, Dict, Any, Union, List
 
 from numpy.typing import NDArray
 import numpy as np
@@ -10,7 +10,7 @@ import hdbscan
 from scipy.spatial.distance import pdist, squareform
 
 from pattools.motif import Motif
-from pattools.vector.cluster import MRESC
+from pattools.vector.clustering.cluster import MRESC
 
 Array2D = np.typing.NDArray[Tuple[int, int]]
 Array1D = np.typing.NDArray[Tuple[int]]

@@ -7,7 +7,7 @@ import seaborn as sns
 import pandas as pd
 
 from pattools.vector.calculator import VectorCalculator
-from pattools.vector.cluster import MRESC
+from pattools.vector.clustering.cluster import MRESC
 
 
 class VectorPlot:

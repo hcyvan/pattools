@@ -107,6 +107,7 @@ class VectorWindow:
         return self._expression
 
 
+# ---------------------------------------------------------------------------------------------------------------------
 class MvcWindow:
     def __init__(self, groups, group_samples):
         self._groups = groups
@@ -176,12 +177,9 @@ class MvcWindow:
         return "meta"
 
 
-class MvcHeader:
+class BaseHeader:
     def __init__(self):
         self.window = None
-        self.groups = None
-        self.samples = None
-        self.group_samples = None
         self.header = None
         self.headers = []
 
@@ -192,6 +190,24 @@ class MvcHeader:
         if m:
             return int(m.group(1))
         return None
+
+    def decode(self, line):
+        self.headers.append(line)
+        if line.startswith('##'):
+            if self.window is None:
+                self.window = self.parse_header_window(line)
+        elif line.startswith('#'):
+            self.header = line[1:].split('\t')
+        else:
+            raise Exception('Not Header Info')
+
+
+class MvcHeader(BaseHeader):
+    def __init__(self):
+        super().__init__()
+        self.groups = None
+        self.samples = None
+        self.group_samples = None
 
     @staticmethod
     def parse_header_group(header_str):
@@ -218,10 +234,8 @@ class MvcHeader:
         return None, None
 
     def decode(self, line):
-        self.headers.append(line)
+        super().decode(line)
         if line.startswith('##'):
-            if self.window is None:
-                self.window = self.parse_header_window(line)
             if self.groups is None:
                 self.groups = self.parse_header_group(line)
             if self.samples is None:
@@ -231,8 +245,6 @@ class MvcHeader:
             _group, _sample = self.parse_header_group_sample(line)
             if _group:
                 self.group_samples[_group] = _sample
-        elif line.startswith('#'):
-            self.header = line[1:].split('\t')
         else:
             raise Exception('Not MVC Header Info')
 
@@ -259,3 +271,21 @@ class MvcFormat:
                             f_out.write(f"{line}\t{mvs_in_cluster_frac}\t{samples_in_group_frac}\n")
                         else:
                             f_out.write(line + '\n')
+
+
+class MvHeader(BaseHeader):
+    pass
+
+
+class MvFormat:
+    def __init__(self):
+        self.header = MvHeader()
+
+    def parse_header(self, mv_file):
+        with Open(mv_file) as f:
+            for line in f:
+                line = line.strip("\n")
+                if line.startswith('#'):
+                    self.header.decode(line)
+                else:
+                    break

@@ -1,11 +1,28 @@
-from .vector import extract_vector, methylation_vector_cluster
+from abc import ABC
+
+from pattools.vector.clustering import methylation_vector_cluster
 from .separating import vector_diff, mv_separating
-from .support import extract_mvs
+from pattools.vector.support import extract_mvs, extract_vector
 from .pat2mv import pat2mv
 from pattools.cmd import command, Cmd
 from pathlib import Path
 
 
+class MultiCmd(Cmd, ABC):
+    def add_argument(self, parser):
+        parser.add_argument('-c', '--cpg-bed', required=True,
+                            help='The cpg_bed file of the selected genome.')
+        parser.add_argument('-i', '--input', required=True,
+                            help='a list file in tsv format, which contains multiple mv files,'
+                                 ' group info and sample info, etc. eg: <MV_FILE>  <GROUP_LABEL> <SAMPLE_LABEL>')
+        parser.add_argument('-r', '--region', default=None,
+                            help='TThe region to be processed. If not set, the entire genome is processed.'
+                                 ' eg: -r chr1:10000-15000')
+        parser.add_argument('-o', '--out', default=None,
+                            help='The output file, If not set, output is sent to standard output.')
+
+
+# --------------------------------------------------------------------------------------------------------------------
 @command('mv-extract', 'extract mvs')
 class VectorRegionCmd(Cmd):
     def add_argument(self, parser):
@@ -63,26 +80,17 @@ class VectorizationCmd(Cmd):
 
 @command('mv-clustering',
          'Methylation vectors clustering. This command supports MPI, which can accelerate calculations in HPC')
-class VectorMultiCmd(Cmd):
+class VectorClusteringCmd(MultiCmd):
     def add_argument(self, parser):
-        parser.add_argument('-c', '--cpg-bed', required=True,
-                            help='The cpg_bed file of the selected genome.')
-        parser.add_argument('-i', '--input', required=True,
-                            help='a list file in tsv format, which contains multiple sample files,'
-                                 ' sample grouping, etc. eg: <MOTIF_FILE>  <GROUP_LABEL>')
+        super(VectorClusteringCmd, self).add_argument(parser)
         parser.add_argument('-w', '--window', type=int, default='4',
                             help='Define the length of motif, such as ''3:CCT; 4: CCTT; 5:CCTTT'' ')
         parser.add_argument('-p', '--process', type=int, default=1,
                             help='The number of processes used for processing')
-        parser.add_argument('-r', '--region', default=None,
-                            help='TThe region to be processed. If not set, the entire genome is processed.'
-                                 ' eg: -r chr1:10000-15000')
         parser.add_argument('-m', '--cluster-method', choices=['HDBSCAN', 'DBSCAN', 'MRESC'],
                             default='HDBSCAN',
                             help='Algorithm for classifying all motifs in a window')
         parser.add_argument('--mvc-version', default='v2', help='The mvc version')
-        parser.add_argument('-o', '--out', default=None,
-                            help='The output file, If not set, output is sent to standard output.')
 
     def do(self, args):
         methylation_vector_cluster(args.input, args.cpg_bed, args.out, window=args.window,
