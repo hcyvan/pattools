@@ -9,7 +9,7 @@ def pat2mv(filename: str, outfile: str = None, window: int = 4, bgzip: bool = Tr
     motif = Motif(window)
     pat_window = PatWindow(filename, window=window)
     motif_pattern = '\t'.join(motif.motifs)
-    with Output(filename=outfile, file_format='motif', bgzip=bgzip) as of:
+    with Output(filename=outfile, file_format='mv', bgzip=bgzip) as of:
         of.write(f"##FORMAT: mv\n")
         of.write(f"##WINDOW: {window}\n")
         of.write(f"##COMMAND: {' '.join(sys.argv)}\n")

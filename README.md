@@ -8,12 +8,14 @@
 [![Packagist License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 ## Introduction
+
 Pat format toolkit
 <img src="notebook/framework.png" alt="pattools framework" width="500"/>
 
 + [Pattools Document Website](https://hcyvan.github.io/pattools/intro.html)
 + [Github](https://github.com/hcyvan/pattools)
 + [Open Issues](https://github.com/hcyvan/pattools/issues/)
+
 ## Development
 
 1. Create a python 3.10+ environment, you can use conda, virtualenv, docker, etc. Or a local python environment (not
@@ -25,32 +27,48 @@ pip install -r requirements.txt
 ```
 
 3. *Deprecated* Copy config.yaml.tpl to config.yaml and complete the configuration according to the local environment
+
 ## Unit test
+
 ```shell
 python -m unittest discover -s tests
 ```
+
 or
+
 ```shell
 python setup.py test
 ```
+
 ## Installation
+
 ### PyPI
+
 ```
 pip install pattools-methy
 ```
+
 ### Source code
+
 Download the source code from the public repository [Github](https://github.com/hcyvan/pattools)
+
 ``` 
 cd /path/to/source/code
 python ./setup.py install
 ```
+
 ### Install from private repository (Deprecated)
+
 #### Install from the master branch
+
 ```
 pip install git+https://e.coding.net/gomicsgene2/lung_cancer_yixing/pattools.git
 ```
+
 #### Install from a feature branch
+
 For example: install from dev-xxx branch
+
 ```
 pip install git+https://e.coding.net/gomicsgene2/lung_cancer_yixing/pattools.git@dev-xxx
 ```
@@ -110,7 +128,14 @@ pattools ratio -d 3\
 #### mv-vectorization
 
 ```
-pattools mv-vectorization -i /mnt/d/data/cacLung/raw/pat/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.motif.gz
+pattools mv-calcutation -i /mnt/d/data/cacLung/raw/pat/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.motif.gz
+```
+
+#### mv-vectorization
+
+```
+pattools mv-vectorization -i /mnt/d/data/cacLung/raw/pat/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.pat.gz \
+                    -o /mnt/d/data/cacLung/raw/pat/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.motif.gz
 ```
 
 #### mv-clustering
@@ -126,18 +151,12 @@ pattools mv-clustering -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sampl
 ```
 pattools mv-separating -i /mnt/d/data/epiLungCancer/intermediate/vector/20240612/lung.w4.mvc.gz -g 1 --frac-mvs 1.0 --frac-samples 0.5 -o ./tmp/LUAD.diff.motif 2>/dev/null
 ```
+
 #### mv-extract
 
 ```
 pattools mv-extract -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -r chr4:6909897-6909899  2>/dev/null
 pattools mv-extract -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -r ./LUAD_0.3.diff.mvc  2>/dev/null
-```
-
-#### pat2motif
-
-```
-pattools pat2motif -i /mnt/d/data/cacLung/raw/pat/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.pat.gz \
-                    -o /mnt/d/data/cacLung/raw/pat/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.motif.gz
 ```
 
 #### region
@@ -148,13 +167,17 @@ genome index coordinates or CpG index coordinates.
 ```
 pattools region -t cpg2genome -i chr1:266762-266762 -c /mnt/d/project/wgbs_tools/references/hg38/CpG.bed.gz
 ```
+
 ```
 pattools region-file -t cpg2genome --column col2  --out-format bed -c /mnt/d/project/wgbs_tools/references/hg38/CpG.bed.gz -i LUAD_1.0_0.txt -o LUAD_1.0_0.t.txt
 ```
+
 ## License
+
 Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
 ## Acknowledgements
+
 + [wgbstools](https://github.com/nloyfer/wgbs_tools)
 + [pysam](https://github.com/pysam-developers/pysam)
 + [samtools](http://www.htslib.org/)
