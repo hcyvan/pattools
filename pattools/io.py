@@ -147,7 +147,7 @@ class _TabixSequential:
     def __init__(self, filename: str, region: str | List[str] = None):
         self._filename = filename
         self._regions_pointer = -1
-        self._tabixfile = gzip.open(self._filename, 'rt')
+        self._gz = gzip.open(self._filename, 'rt')
 
         if region is not None:
             if isinstance(region, str):
@@ -168,19 +168,19 @@ class _TabixSequential:
 
     def __next__(self):
         if self._regions is None:
-            return next(self._tabixfile)
+            return next(self._gz)
         else:
-            line = self._tabixfile.readline()
+            line = self._gz.readline()
             while True:
                 _, s, e = self._regions[self._regions_pointer]
                 if line.startswith('#'):
-                    line = self._tabixfile.readline()
+                    line = self._gz.readline()
                     continue
                 line = line.strip()
                 items = line.split('\t')
                 idx_motif = int(items[1])
                 if idx_motif < s:
-                    line = self._tabixfile.readline()
+                    line = self._gz.readline()
                     continue
                 elif idx_motif > e:
                     self._regions_pointer += 1
@@ -190,8 +190,8 @@ class _TabixSequential:
                     return line
 
     def close(self):
-        if self._tabixfile:
-            self._tabixfile.close()
+        if self._gz:
+            self._gz.close()
 
 
 class Tabix:
@@ -233,23 +233,55 @@ class Tabix:
 
 class CpGTabix(Tabix):
     def __init__(self, filename, region=None):
-        super(CpGTabix, self).__init__(filename, region)
+        super().__init__(filename, region)
 
     def _parse_line(self, line):
         row = line.split('\t')
         return row[0], int(row[1]), int(row[2])
 
 
-class MotifTabix(Tabix):
-    def __init__(self, filename, region=None):
-        super(MotifTabix, self).__init__(filename, region)
+class PatTabix:
+    """
+    [chr]\t[cpg_idx]\t[others]
+    tabix -C -b 2 -e 2 -s 1 xxxx.pat.gz/mv.gz/mvc.gz
+    """
+    def __init__(self, filename: str, region: str | List[str] = None):
+        RANDOM_READ_LIMIT = 8000
+        # TODO: Here, we conducted a preliminary comparison. In the WSL environment on Windows, sequential
+        #  read performance surpasses random read when requests exceed 8000 intervals, though more precise
+        #  thresholds need to be tested across different platforms and environments.
+        if region is not None and isinstance(region, list) and len(region) > RANDOM_READ_LIMIT:
+            self._tabix = _TabixSequential(filename, region)
+        else:
+            self._tabix = _TabixRandom(filename, region)
 
-    def _parse_line(self, line: str):
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        line = next(self._tabix)
         row = line.strip().split('\t')
         chrom = row[0]
         cpg_idx = int(row[1])
+        # TODO: use a more general format
         motif_count_arr = [int(x) for x in row[2:]]
         return chrom, cpg_idx, motif_count_arr
+
+    def readline(self):
+        try:
+            return self.__next__()
+        except StopIteration:
+            return None
+
+    def close(self):
+        self._tabix.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+        return False
 
     def readline_and_parse(self, motifs):
         items = self.readline()

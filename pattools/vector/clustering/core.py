@@ -2,7 +2,7 @@ import sys
 from typing import List
 from pattools.motif import Motif
 from pattools.vector.calculator import VectorCalculator
-from pattools.io import Output, CpGTabix, MotifTabix
+from pattools.io import Output, CpGTabix, PatTabix
 from pattools.vector.utils import parse_file_list
 from pattools.vector.format import MvFormat
 from pattools.log import logger
@@ -34,10 +34,10 @@ def do_clustering(file_list, cpg_bed, outfile, window: int = None, regions=None,
     window = _window
     logger.info(f"Window size: {window}")
     motif = Motif(window)
-    tabix_arr: List[MotifTabix] = []
+    tabix_arr: List[PatTabix] = []
     lines = []
     for motif_file in input_files:
-        tabix = MotifTabix(motif_file, regions)
+        tabix = PatTabix(motif_file, regions)
         tabix_arr.append(tabix)
         lines.append(tabix.readline_and_parse(motif.motifs))
     with Output(filename=outfile, file_format='mvc', bgzip=out_gzip) as of:

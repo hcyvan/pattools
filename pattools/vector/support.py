@@ -1,7 +1,7 @@
 from pattools.vector.utils import parse_file_list
 from pattools.motif import Motif
 from pattools.vector.calculator import VectorCalculator
-from pattools.io import Output, MotifTabix
+from pattools.io import Output, PatTabix
 
 
 def extract_mvs(file_list, region, outfile=None):
@@ -9,7 +9,7 @@ def extract_mvs(file_list, region, outfile=None):
     with Output(filename=outfile, bgzip=False) as of:
         of.write(f'#chrom\tCpG_index\tgroup\tsample\tmotif\n')
         for i, motif_file in enumerate(input_files):
-            with MotifTabix(motif_file, region) as tabix:
+            with PatTabix(motif_file, region) as tabix:
                 for line in tabix:
                     chrom, cpg_idx, motif_count = line
                     of.write(
@@ -19,7 +19,7 @@ def extract_mvs(file_list, region, outfile=None):
 def extract_vector(input_file, outfile=None, window: int = 4, regions=None):
     motif = Motif(window)
     with Output(filename=outfile, file_format='motif', bgzip=False) as of:
-        with MotifTabix(input_file, regions) as tabix:
+        with PatTabix(input_file, regions) as tabix:
             vector_calculator = VectorCalculator(window=window)
             while True:
                 line = tabix.readline_and_parse(motif.motifs)
