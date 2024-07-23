@@ -134,8 +134,8 @@ pattools mv-calcutation -i /mnt/d/data/cacLung/raw/pat/GSM5652289_Blood-T-Eff-CD
 #### mv-vectorization
 
 ```
-pattools mv-vectorization -i /mnt/d/data/cacLung/raw/pat/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.pat.gz \
-                    -o /mnt/d/data/cacLung/raw/pat/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.motif.gz
+cd /mnt/d/data/cacLung/raw/pat/
+pattools mv-vectorization -i GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.pat.gz -o GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.motif.gz
 ```
 
 #### mv-clustering

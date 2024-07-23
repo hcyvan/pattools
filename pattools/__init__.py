@@ -57,8 +57,6 @@ def main():
         extract_entropy(args.input, args.depth, args.window, args.out)
     if args.sub == 'beta':
         extract_beta(args.input, args.depth, args.out)
-    if args.sub == 'pat2motif':
-        pat2motif(args.input, args.out, args.window, not args.text)
     if args.sub == 'matgen':
         matrix_generate(args.input, args.coordinate, args.depth, args.exclude_mode, args.out)
     CmdFactory.run(args)
