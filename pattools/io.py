@@ -2,6 +2,7 @@ import sys
 import pysam
 import gzip
 from typing import List
+from collections import deque
 
 
 class Open:
@@ -100,6 +101,67 @@ class Output:
         return False
 
 
+class _CpG2TabixRandom:
+    def __init__(self, filename: str, region: str | List[str] = None, window=1):
+        """
+        TODO: The conversion between CpG and genome indices necessitates the specification of distinct index files
+         or coordinate files in conjunction with index files.
+        """
+        self._filename = filename
+        self._filename_csi = filename + '.csi'
+        self._regions = region
+        self._regions_pointer = -1
+        self._iterator = None
+        self._tabixfile = pysam.TabixFile(self._filename, index=self._filename_csi)
+        self._is_multi_region = not (self._regions is None or isinstance(self._regions, str))
+        if self._is_multi_region:
+            self._regions_pointer = 0
+        else:
+            self._iterator = self._tabixfile.fetch(region=self._regions)
+
+        self._queue = deque()
+        for i in range(window):
+            self._queue.append(self._next())
+
+    def __iter__(self):
+        return self
+
+    def _next(self):
+        if self._is_multi_region:
+            if self._regions_pointer < len(self._regions):
+                if self._iterator is None:
+                    _region = self._regions[self._regions_pointer]
+                    self._iterator = self._tabixfile.fetch(region=_region)
+                try:
+                    return next(self._iterator)
+                except StopIteration:
+                    self._regions_pointer += 1
+                    self._iterator = None
+                    return self._next()
+            else:
+                return None
+        else:
+            try:
+                return next(self._iterator)
+            except StopIteration:
+                return None
+
+    def __next__(self):
+        latest_line = self._queue[-1]
+        if latest_line is None:
+            raise StopIteration()
+        item_latest = latest_line.split('\t')
+        line = self._queue.popleft()
+        items = line.split('\t')
+        line2 = self._next()
+        self._queue.append(line2)
+        return items[0], int(items[1]), int(item_latest[1]), int(items[2])
+
+    def close(self):
+        if self._tabixfile:
+            self._tabixfile.close()
+
+
 class _TabixRandom:
     def __init__(self, filename: str, region: str | List[str] = None):
         """
@@ -194,25 +256,21 @@ class _TabixSequential:
             self._gz.close()
 
 
-class Tabix:
-    def __init__(self, filename: str, region: str | List[str] = None):
-        RANDOM_READ_LIMIT = 8000
-        # TODO: Here, we conducted a preliminary comparison. In the WSL environment on Windows, sequential
-        #  read performance surpasses random read when requests exceed 8000 intervals, though more precise
-        #  thresholds need to be tested across different platforms and environments.
-        if region is not None and isinstance(region, list) and len(region) > RANDOM_READ_LIMIT:
-            self._tabix = _TabixSequential(filename, region)
-        else:
-            self._tabix = _TabixRandom(filename, region)
+class CpG2Tabix:
+    """
+    [chr]\t[genome_idx]\t[cpg_idx]
+    CpG1 index: tabix -C -b 2 -e 2 -s 1 xxxx.pat.gz/mv.gz/mvc.gz
+    CpG2 index: tabix -C -b 3 -e 3 -s 1 xxxx.pat.gz/mv.gz/mvc.gz
+    """
+
+    def __init__(self, filename: str, region: str | List[str] = None, window=1):
+        self._tabix = _CpG2TabixRandom(filename, region, window=window)
 
     def __iter__(self):
         return self
 
     def __next__(self):
-        return self._parse_line(next(self._tabix))
-
-    def _parse_line(self, line: str):
-        return line
+        return next(self._tabix)
 
     def readline(self):
         try:
@@ -231,20 +289,12 @@ class Tabix:
         return False
 
 
-class CpGTabix(Tabix):
-    def __init__(self, filename, region=None):
-        super().__init__(filename, region)
-
-    def _parse_line(self, line):
-        row = line.split('\t')
-        return row[0], int(row[1]), int(row[2])
-
-
 class PatTabix:
     """
     [chr]\t[cpg_idx]\t[others]
     tabix -C -b 2 -e 2 -s 1 xxxx.pat.gz/mv.gz/mvc.gz
     """
+
     def __init__(self, filename: str, region: str | List[str] = None):
         RANDOM_READ_LIMIT = 8000
         # TODO: Here, we conducted a preliminary comparison. In the WSL environment on Windows, sequential

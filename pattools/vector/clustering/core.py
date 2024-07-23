@@ -2,13 +2,13 @@ import sys
 from typing import List
 from pattools.motif import Motif
 from pattools.vector.calculator import VectorCalculator
-from pattools.io import Output, CpGTabix, PatTabix
+from pattools.io import Output, CpG2Tabix, PatTabix
 from pattools.vector.utils import parse_file_list
 from pattools.vector.format import MvFormat
 from pattools.log import logger
 
 
-def do_clustering(file_list, cpg_bed, outfile, window: int = None, regions=None, cluster='HDBSCAN', out_gzip=False,
+def do_clustering(file_list, cpg_bed, outfile, window: int = None, regions=None, cluster='MRESC', out_gzip=False,
                   target_groups=None):
     """
     This is the core function to do methylation vectors clustering
@@ -56,8 +56,8 @@ def do_clustering(file_list, cpg_bed, outfile, window: int = None, regions=None,
             of.write(f"##GROUP_SAMPLE: {group}_{','.join(group_sample)}\n")
         of.write(
             f"#chr\tcpg\tstart\tend\tmvs\tc_num\tc_center\tc_group_mvs_num\tc_group_samples_num\tc_group_samples\n")
-        with CpGTabix(cpg_bed, regions) as cpg:
-            for chrom, genome_idx, cpg_idx in cpg:
+        with CpG2Tabix(cpg_bed, regions, window=window) as cpg:
+            for chrom, genome_start, genome_end, cpg_idx in cpg:
                 vector_calculator = VectorCalculator(window=window, cluster=cluster)
                 vector_calculator.set_motif_count(chrom, cpg_idx, dict())
                 for i, (tabix, line) in enumerate(zip(tabix_arr, lines)):
@@ -71,7 +71,7 @@ def do_clustering(file_list, cpg_bed, outfile, window: int = None, regions=None,
                         vector_calculator = vector_calculator + vc
                         lines[i] = tabix.readline_and_parse(motif.motifs)
                 vector_calculator.cluster()
-                of.write(f"{vector_calculator.get_mvc(group_order, genome_idx)}\n")
+                of.write(f"{vector_calculator.get_mvc(group_order, genome_start, genome_end)}\n")
 
     for tabix in tabix_arr:
         tabix.close()

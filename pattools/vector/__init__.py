@@ -83,8 +83,8 @@ class VectorClusteringCmd(Cmd):
         parser.add_argument('-p', '--process', type=int, default=1,
                             help='The number of processes used for processing')
         parser.add_argument('-m', '--cluster-method', choices=['HDBSCAN', 'DBSCAN', 'MRESC'],
-                            default='HDBSCAN',
-                            help='Algorithm for classifying all motifs in a window')
+                            default='MRESC',
+                            help='Algorithm for classifying all MVs in a window')
 
     def do(self, args):
         methylation_vector_cluster(args.input, args.cpg_bed, args.out, window=args.window,

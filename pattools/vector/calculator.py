@@ -21,7 +21,7 @@ np.random.seed(1000)
 class VectorCalculator(object):
     cache_motif = dict()
 
-    def __init__(self, window: int = 4, cluster='HDBSCAN'):
+    def __init__(self, window: int = 4, cluster='MRESC'):
         """
         :param cluster: HDBSCAN, DBSCAN, MRESC
         """
@@ -165,7 +165,7 @@ class VectorCalculator(object):
             return self._distance_matrix[m + 1, n + 1]
         return None
 
-    def get_mvc(self, group_order, genome_idx):
+    def get_mvc(self, group_order, start, end):
         """
         MVC will output information about _labels, _group and _sample, such as:
         _labels:    0   0   0   0   0   0   1   1   1   1       => the marker for cluster result
@@ -174,7 +174,8 @@ class VectorCalculator(object):
         The labels show there are two clusters: 0 and 1.
 
         @param group_order:
-        @param genome_idx:
+        @param start: genome index start, 1-base exclude
+        @param end: genome index end, 1-base exclude
         @return:
         """
 
@@ -221,7 +222,7 @@ class VectorCalculator(object):
                 samples_.append(':'.join([str(x) for x in samples]))
             cluster_group_samples.append(','.join(samples_))
         cluster_group_samples = '|'.join(cluster_group_samples)
-        return f"{self._chr}\t{self._start}\t{genome_idx - 1}\t{genome_idx + self._window}\t{motif_tag}\t{self.get_clusters_number()}\t{centers}\t{cluster_group_label_count}\t{cluster_group_sample_count}\t{cluster_group_samples}"
+        return f"{self._chr}\t{self._start}\t{start - 1}\t{end}\t{motif_tag}\t{self.get_clusters_number()}\t{centers}\t{cluster_group_label_count}\t{cluster_group_sample_count}\t{cluster_group_samples}"
 
     def _do_cluster(self):
         _vectors = np.array(self._vectors)

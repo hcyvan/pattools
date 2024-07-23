@@ -5,7 +5,7 @@ import multiprocessing
 from collections import OrderedDict
 from typing import List
 from pattools.vector.clustering.core import do_clustering
-from pattools.io import Output, CpGTabix
+from pattools.io import Output, CpG2Tabix
 from mpi4py import MPI
 
 __all__ = ['methylation_vector_cluster']
@@ -16,7 +16,7 @@ def split_cpg(filename, process=10, region=None):
     This function is used to divide the cpg index into [process] parts.
     """
     total = 0
-    with CpGTabix(filename, region) as tabix:
+    with CpG2Tabix(filename, region) as tabix:
         for _ in tabix:
             total += 1
     batch, remainder = divmod(total, process)
@@ -24,7 +24,7 @@ def split_cpg(filename, process=10, region=None):
     cut = [sum(batches[0:(p + 1)]) for p in range(process)]
     process_regions = []
     od: OrderedDict[str, List[int]] = OrderedDict()
-    with CpGTabix(filename, region) as tabix:
+    with CpG2Tabix(filename, region) as tabix:
         cut_idx = 0
         for i, (chrom, _, start) in enumerate(tabix):
             if chrom in od:
@@ -46,7 +46,7 @@ def split_cpg(filename, process=10, region=None):
     return process_regions
 
 
-def do_mvc_multi_process(queue, process_order, file_list, cpg_bed, outfile, window, regions, cluster='HDBSCAN',
+def do_mvc_multi_process(queue, process_order, file_list, cpg_bed, outfile, window, regions, cluster='MRESC',
                          groups=None):
     try:
         do_clustering(file_list, cpg_bed, outfile, window, regions, cluster, target_groups=groups)
