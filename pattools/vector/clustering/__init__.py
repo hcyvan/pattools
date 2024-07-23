@@ -26,7 +26,7 @@ def split_cpg(filename, process=10, region=None):
     od: OrderedDict[str, List[int]] = OrderedDict()
     with CpG2Tabix(filename, region) as tabix:
         cut_idx = 0
-        for i, (chrom, _, start) in enumerate(tabix):
+        for i, (chrom, _, _, start) in enumerate(tabix):
             if chrom in od:
                 od[chrom][1] = start
             else:
