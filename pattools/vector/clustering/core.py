@@ -4,11 +4,34 @@ from pattools.motif import Motif
 from pattools.vector.calculator import VectorCalculator
 from pattools.io import Output, CpGTabix, MotifTabix
 from pattools.vector.utils import parse_file_list
+from pattools.vector.window import MvFormat
+from pattools.log import logger
 
 
-def do_clustering(file_list, cpg_bed, outfile, window: int = 4, regions=None, cluster='HDBSCAN',
+def do_clustering(file_list, cpg_bed, outfile, window: int = None, regions=None, cluster='HDBSCAN',
                   out_version='v1', out_gzip=False):
+    """
+
+    @param file_list:
+    @param cpg_bed:
+    @param outfile:
+    @param window:[DEPRECATED] The window size of methylation vectors
+    @param regions:
+    @param cluster:
+    @param out_version:
+    @param out_gzip:
+    """
     input_files, groups, samples = parse_file_list(file_list)
+    _window = window
+    for motif_file in input_files:
+        mvf = MvFormat().parse_header(motif_file)
+        if _window is None:
+            _window = mvf.header.window
+        else:
+            if _window != mvf.header.window:
+                logger.error(f'Window size is not the same: {_window} [others] and {mvf.header.window} [{motif_file}]')
+    window = _window
+    logger.info(f"Window size: {window}")
     motif = Motif(window)
     tabix_arr: List[MotifTabix] = []
     lines = []

@@ -289,3 +289,4 @@ class MvFormat:
                     self.header.decode(line)
                 else:
                     break
+        return self
