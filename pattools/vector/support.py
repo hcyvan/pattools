@@ -26,5 +26,5 @@ def extract_vector(input_file, outfile=None, window: int = 4, regions=None):
                 if not line:
                     break
                 chrom, cpg_idx, motif_count = line
-                vector_calculator.set_motif_count(chrom, cpg_idx, motif_count).calc()
+                vector_calculator.set_motif_count(chrom, cpg_idx, motif_count).cluster()
                 of.write(f"{vector_calculator}\n")

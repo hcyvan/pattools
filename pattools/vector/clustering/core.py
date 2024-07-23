@@ -4,21 +4,19 @@ from pattools.motif import Motif
 from pattools.vector.calculator import VectorCalculator
 from pattools.io import Output, CpGTabix, MotifTabix
 from pattools.vector.utils import parse_file_list
-from pattools.vector.window import MvFormat
+from pattools.vector.format import MvFormat
 from pattools.log import logger
 
 
-def do_clustering(file_list, cpg_bed, outfile, window: int = None, regions=None, cluster='HDBSCAN',
-                  out_version='v1', out_gzip=False):
+def do_clustering(file_list, cpg_bed, outfile, window: int = None, regions=None, cluster='HDBSCAN', out_gzip=False):
     """
-
+    This is the core function to do methylation vectors clustering
     @param file_list:
     @param cpg_bed:
     @param outfile:
     @param window:[DEPRECATED] The window size of methylation vectors
     @param regions:
     @param cluster:
-    @param out_version:
     @param out_gzip:
     """
     input_files, groups, samples = parse_file_list(file_list)
@@ -40,23 +38,21 @@ def do_clustering(file_list, cpg_bed, outfile, window: int = None, regions=None,
         tabix_arr.append(tabix)
         lines.append(tabix.readline_and_parse(motif.motifs))
     with Output(filename=outfile, file_format='mvc', bgzip=out_gzip) as of:
-        group_order = None
-        if out_version == 'v2':
-            group_order = sorted(list(set(groups)))
-            sample_order = sorted(list(set(samples)))
-            of.write(f"##FORMAT: mvc\n")
-            of.write(f"##WINDOW: {window}\n")
-            of.write(f"##COMMAND: {' '.join(sys.argv)}\n")
-            of.write(f"##GROUP: {','.join(group_order)}\n")
-            of.write(f"##SAMPLE: {','.join(sample_order)}\n")
-            for group in group_order:
-                group_sample = []
-                for s, g in zip(samples, groups):
-                    if group == g:
-                        group_sample.append(s)
-                of.write(f"##GROUP_SAMPLE: {group}_{','.join(group_sample)}\n")
-            of.write(
-                f"#chr\tcpg\tstart\tend\tmvs\tc_num\tc_center\tc_group_mvs_num\tc_group_samples_num\tc_group_samples\n")
+        group_order = sorted(list(set(groups)))
+        sample_order = sorted(list(set(samples)))
+        of.write(f"##FORMAT: mvc\n")
+        of.write(f"##WINDOW: {window}\n")
+        of.write(f"##COMMAND: {' '.join(sys.argv)}\n")
+        of.write(f"##GROUP: {','.join(group_order)}\n")
+        of.write(f"##SAMPLE: {','.join(sample_order)}\n")
+        for group in group_order:
+            group_sample = []
+            for s, g in zip(samples, groups):
+                if group == g:
+                    group_sample.append(s)
+            of.write(f"##GROUP_SAMPLE: {group}_{','.join(group_sample)}\n")
+        of.write(
+            f"#chr\tcpg\tstart\tend\tmvs\tc_num\tc_center\tc_group_mvs_num\tc_group_samples_num\tc_group_samples\n")
         with CpGTabix(cpg_bed, regions) as cpg:
             for chrom, genome_idx, cpg_idx in cpg:
                 vector_calculator = VectorCalculator(window=window, cluster=cluster)
@@ -71,12 +67,8 @@ def do_clustering(file_list, cpg_bed, outfile, window: int = None, regions=None,
                     if vector_calculator == vc:
                         vector_calculator = vector_calculator + vc
                         lines[i] = tabix.readline_and_parse(motif.motifs)
-                vector_calculator.calc()
-                vector_calculator.calc_labels_groups_samples()
-                if out_version == 'v1':
-                    of.write(f"{vector_calculator.__str__()}\t{vector_calculator.get_labels_groups_samples_str()}\n")
-                else:
-                    of.write(f"{vector_calculator.info_v2(group_order, genome_idx)}\n")
+                vector_calculator.cluster()
+                of.write(f"{vector_calculator.get_mvc(group_order, genome_idx)}\n")
 
     for tabix in tabix_arr:
         tabix.close()

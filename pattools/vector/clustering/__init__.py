@@ -46,10 +46,9 @@ def split_cpg(filename, process=10, region=None):
     return process_regions
 
 
-def do_mvc_multi_process(queue, process_order, file_list, cpg_bed, outfile, window, regions, cluster='HDBSCAN',
-                         out_version='v1'):
+def do_mvc_multi_process(queue, process_order, file_list, cpg_bed, outfile, window, regions, cluster='HDBSCAN'):
     try:
-        do_clustering(file_list, cpg_bed, outfile, window, regions, cluster, out_version=out_version)
+        do_clustering(file_list, cpg_bed, outfile, window, regions, cluster)
         queue.put((process_order, 'success', outfile))
     except Exception as e:
         queue.put((process_order, 'failure', str(e)))
@@ -91,8 +90,7 @@ def merge_split_filenames(outfile, filenames):
         os.remove(file)
 
 
-def methylation_vector_cluster(file_list, cpg_bed, outfile, window: int = 4, process=1, region=None,
-                               cluster='HDBSCAN', out_version='v1'):
+def methylation_vector_cluster(file_list, cpg_bed, outfile, window: int = 4, process=1, region=None, cluster='HDBSCAN'):
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     task_count = comm.Get_size()
@@ -107,15 +105,14 @@ def methylation_vector_cluster(file_list, cpg_bed, outfile, window: int = 4, pro
             outfile = None
         regions_and_filename = comm.scatter(split_regions_and_filenames, root=0)
         do_clustering(file_list, cpg_bed, regions_and_filename[1], window, regions_and_filename[0],
-                      cluster=cluster, out_version=out_version)
+                      cluster=cluster)
         tmp_files = comm.gather(regions_and_filename[1], root=0)
         if rank == 0:
             merge_split_filenames(outfile, tmp_files)
     else:
         sys.stderr.write(f"Process: {process}\n")
         if process == 1:
-            do_clustering(file_list, cpg_bed, outfile, window, region, cluster=cluster, out_version=out_version,
-                          out_gzip=True)
+            do_clustering(file_list, cpg_bed, outfile, window, region, cluster=cluster, out_gzip=True)
         else:
             if outfile is None:
                 outfile = f'./merge.{uuid.uuid4()}.motif.gz'
@@ -128,7 +125,7 @@ def methylation_vector_cluster(file_list, cpg_bed, outfile, window: int = 4, pro
                 p = multiprocessing.Process(target=do_mvc_multi_process,
                                             args=(
                                                 queue, i, file_list, cpg_bed, split_filenames[i], window, regions,
-                                                cluster, out_version))
+                                                cluster))
                 process_jobs.append(p)
                 p.start()
 

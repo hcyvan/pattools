@@ -1,7 +1,7 @@
 from abc import ABC
 
 from pattools.vector.clustering import methylation_vector_cluster
-from .separating import vector_diff, mv_separating
+from .separating import mv_separating
 from pattools.vector.support import extract_mvs, extract_vector
 from .pat2mv import pat2mv
 from pattools.cmd import command, Cmd
@@ -90,12 +90,10 @@ class VectorClusteringCmd(MultiCmd):
         parser.add_argument('-m', '--cluster-method', choices=['HDBSCAN', 'DBSCAN', 'MRESC'],
                             default='HDBSCAN',
                             help='Algorithm for classifying all motifs in a window')
-        parser.add_argument('--mvc-version', default='v2', help='The mvc version')
 
     def do(self, args):
         methylation_vector_cluster(args.input, args.cpg_bed, args.out, window=args.window,
-                                   process=args.process, region=args.region, cluster=args.cluster_method,
-                                   out_version=args.mvc_version)
+                                   process=args.process, region=args.region, cluster=args.cluster_method)
 
 
 @command('mv-separating', 'Identify and separate distinct MVs clusters. (generate by mv-clustering)')
@@ -103,7 +101,6 @@ class VectorSeparatingCmd(Cmd):
     def add_argument(self, parser):
         parser.add_argument('-i', '--input', required=True, help='The input merged vector files.'
                                                                  ' (generate by vector-multi)')
-        parser.add_argument('--mvc-version', default='v2', help='The mvc version')
         parser.add_argument('-o', '--out', default=None,
                             help='The output file, If not set, output is sent to standard output.')
         parser.add_argument('-g', '--group', required=True, help='Output group-specific '
@@ -113,8 +110,5 @@ class VectorSeparatingCmd(Cmd):
         parser.add_argument('--with-meta', action='store_true', help='')
 
     def do(self, args):
-        if args.mvc_version == 'v2':
-            mv_separating(args.input, args.group, args.frac_mvs, args.frac_samples, output_file=args.out,
-                          with_meta=args.with_meta)
-        else:
-            vector_diff(args.input, args.group, args.out)
+        mv_separating(args.input, args.group, args.frac_mvs, args.frac_samples, output_file=args.out,
+                      with_meta=args.with_meta)

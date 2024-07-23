@@ -92,7 +92,7 @@ class VectorCalculator(object):
         self._clusters_centroid = OrderedDict()
         return self
 
-    def calc(self):
+    def cluster(self):
         if len(self._vectors):
             _base_vector = np.zeros(self._window)
             _scale = np.sqrt(np.sum((np.ones(self._window)) ** 2))
@@ -103,68 +103,6 @@ class VectorCalculator(object):
                 m = np.vstack([[_base_vector], list(self._clusters_centroid.values())])
                 self._distance_matrix = self._multi_dist(m, _scale)
         return self
-
-    def calc_labels_groups_samples(self):
-        """
-        labels:     0   0   0   0   0   0   1   1   1   1       => the marker for cluster result
-        groups:     1   0   0   0   0   0   0   0   1   1       => the marker for input group
-        samples:    5   1   1   2   3   4   6   7   8   9       => the marker for each samples
-
-        The labels show there are two clusters: 0 and 1.
-        In cluster 0:
-        + target_group [group 0]: the group to which most labels belong in cluster 0
-        + cluster_groups_label_count [6]: the count of labels contained in cluster 0
-        + inter_groups_label_count [5]: the count of labels contained in the intersection of cluster 0 and group 0
-        + group_groups_label_count [7]: the count of labels contained in group 0
-        + cluster_groups_count [2,(group0,1)]: the count of groups contained in cluster 0
-        + inter_groups_count [1,(always 1)]: the count of groups contained in the intersection of cluster 0 and group 0
-        + group_groups_count [1,(always 1)]: the count of groups contained in group 0
-        + cluster_samples_count [5,(sample1,2,3,4,5)]: the count of samples contained in cluster 0
-        + inter_samples_count [4,(sample1,2,3,4)]: the count of samples contained in the intersection of cluster 0 and group 0
-        + group_samples_count [6,(sample1,2,3,4,6,7)]: the count of samples contained in group 0
-        """
-        _group = np.array(self._group)
-        _labels = np.array(self._labels)
-        _sample = np.array(self._sample)
-        if len(self._labels) and len(self._group) == len(self._labels):
-            for label in self._get_cluster_labels():
-                cluster_groups = _group[_labels == label]
-                cluster_samples = _sample[_labels == label]
-                target_group, target_group_label_count = Counter(cluster_groups).most_common(1)[0]
-                group_groups = _group[_group == target_group]
-                group_samples = _sample[_group == target_group]
-
-                self._clusters_labels_group[label] = dict(
-                    target_group=target_group,
-                    cluster_groups_label_count=len(cluster_groups),
-                    inter_groups_label_count=target_group_label_count,
-                    group_groups_label_count=len(group_groups),
-                    cluster_groups_count=len(set(cluster_groups)),
-                    inter_groups_count=len(set(cluster_groups) & set(group_groups)),
-                    group_groups_count=len(set(group_groups)),
-                    cluster_samples_count=len(set(cluster_samples)),
-                    inter_samples_count=len(set(cluster_samples) & set(group_samples)),
-                    group_samples_count=len(set(group_samples))
-                )
-        return self
-
-    def get_labels_groups_samples_str(self):
-        outs = []
-        for k, v_dict in self._clusters_labels_group.items():
-            v = [
-                v_dict['target_group'],
-                v_dict['cluster_groups_label_count'],
-                v_dict['inter_groups_label_count'],
-                v_dict['group_groups_label_count'],
-                v_dict['cluster_groups_count'],
-                v_dict['inter_groups_count'],
-                v_dict['group_groups_count'],
-                v_dict['cluster_samples_count'],
-                v_dict['inter_samples_count'],
-                v_dict['group_samples_count'],
-            ]
-            outs.append(f'{k}:{v[0]}:[{v[1]}:{v[2]}:{v[3]}][{v[4]}:{v[5]}:{v[6]}][{v[7]}:{v[8]}:{v[9]}]')
-        return '|'.join(outs)
 
     def __add__(self, other):
         if isinstance(other, VectorCalculator):
@@ -227,20 +165,19 @@ class VectorCalculator(object):
             return self._distance_matrix[m + 1, n + 1]
         return None
 
-    def __str__(self):
-        self._motif_count.values()
-        motif_count_ordered: OrderedDict[str, int] = self.get_motif().count_motifs(self._motif_count)
-        motif_tag = '|'.join([str(x) for x in motif_count_ordered.values()])
-        if self.get_clusters_number() >= 2:
-            dist_top_0_1_tag = self.distance_between_top_m_and_n(0, 1)
-        else:
-            dist_top_0_1_tag = -1
-        dist_top_0_base_tag = self.distance_between_top_k_and_base(0)
-        if dist_top_0_base_tag is None:
-            dist_top_0_base_tag = -1
-        return f"{self._chr}\t{self._start}\t{self.get_clusters_number()}\t{dist_top_0_1_tag:.3f}\t{dist_top_0_base_tag:.3f}\t{len(self._vectors)}\t{motif_tag}"
+    def get_mvc(self, group_order, genome_idx):
+        """
+        MVC will output information about _labels, _group and _sample, such as:
+        _labels:    0   0   0   0   0   0   1   1   1   1       => the marker for cluster result
+        _group:     1   0   0   0   0   0   0   0   1   1       => the marker for input group
+        _sample:    5   1   1   2   3   4   6   7   8   9       => the marker for each sample
+        The labels show there are two clusters: 0 and 1.
 
-    def info_v2(self, group_order, genome_idx):
+        @param group_order:
+        @param genome_idx:
+        @return:
+        """
+
         self._motif_count.values()
         motif_count_ordered: OrderedDict[str, int] = self.get_motif().count_motifs(self._motif_count)
         motif_tag = '|'.join([str(x) for x in motif_count_ordered.values()])
