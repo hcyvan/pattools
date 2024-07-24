@@ -130,7 +130,7 @@ class MvcHeader(BaseHeader):
 
     def decode(self, line):
         super().decode(line)
-        if line.startswith('##'):
+        if line.startswith('#'):
             if self.groups is None:
                 self.groups = self.parse_header_group(line)
             if self.samples is None:
