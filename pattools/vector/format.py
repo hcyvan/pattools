@@ -1,4 +1,5 @@
 import re
+import sys
 from collections import Counter
 from pattools.io import Open
 
@@ -7,10 +8,10 @@ class MvcWindow:
     def __init__(self, groups, group_samples):
         self._groups = groups
         self._group_samples = group_samples
-        self._chrom = None
-        self._cpg_idx = None
-        self._genome_start = None
-        self._genome_end = None
+        self.chrom = None
+        self.cpg_idx = None
+        self.genome_start = None
+        self.genome_end = None
         self._mvs = None
         self._mvs_num = None
         self._cluster_num = None
@@ -26,28 +27,43 @@ class MvcWindow:
 
     def decode(self, mvc_str):
         self._mvc_str = mvc_str
-        items = mvc_str.strip("\n").split('\t')
-        self._chrom = items[0]
-        self._cpg_idx = items[1]
-        self._genome_start = items[2]
-        self._genome_end = items[3]
-        self._mvs = items[4]
-        self._cluster_num = int(items[5])
-        self._cluster_center = items[6]
-        self._cluster_group_mvs_num = items[7]
-        self._cluster_group_samples_num = items[8]
-        self._cluster_group_samples = items[9]
-        self._cluster_group_mvs_num_counter = []
-        self._cluster_group_samples_num_counter = []
-        self._mvs_num = sum([int(x) for x in self._mvs.split('|')])
-        if self._mvs_num > 0:
-            for cluster in self._cluster_group_mvs_num.split('|'):
-                counter = Counter(dict(zip(self._groups, [int(x) for x in cluster.split(',')])))
-                self._cluster_group_mvs_num_counter.append(counter)
-            for cluster in self._cluster_group_samples_num.split('|'):
-                counter = Counter(dict(zip(self._groups, [int(x) for x in cluster.split(',')])))
-                self._cluster_group_samples_num_counter.append(counter)
+        if self._mvc_str:
+            items = mvc_str.strip("\n").split('\t')
+            self.chrom = items[0]
+            self.cpg_idx = int(items[1])
+            self.genome_start = int(items[2])
+            self.genome_end = int(items[3])
+            self._mvs = items[4]
+            self._cluster_num = int(items[5])
+            self._cluster_center = items[6]
+            self._cluster_group_mvs_num = items[7]
+            self._cluster_group_samples_num = items[8]
+            self._cluster_group_samples = items[9]
+            self._cluster_group_mvs_num_counter = []
+            self._cluster_group_samples_num_counter = []
+            self._mvs_num = sum([int(x) for x in self._mvs.split('|')])
+            if self._mvs_num > 0:
+                for cluster in self._cluster_group_mvs_num.split('|'):
+                    counter = Counter(dict(zip(self._groups, [int(x) for x in cluster.split(',')])))
+                    self._cluster_group_mvs_num_counter.append(counter)
+                for cluster in self._cluster_group_samples_num.split('|'):
+                    counter = Counter(dict(zip(self._groups, [int(x) for x in cluster.split(',')])))
+                    self._cluster_group_samples_num_counter.append(counter)
+        else:
+            self.chrom = None
+            self.cpg_idx = None
+            self.genome_start = None
+            self.genome_end = None
         return self
+
+    def update(self, genome_start=None, genome_end=None):
+        if genome_start:
+            self.genome_start = genome_start
+        if genome_end:
+            self.genome_end = genome_end
+
+    def encode(self):
+        return f"{self.chrom}\t{self.cpg_idx}\t{self.genome_start}\t{self.genome_end}\t{self._mvs}\t{self._cluster_num}\t{self._cluster_center}\t{self._cluster_group_mvs_num}\t{self._cluster_group_samples_num}\t{self._cluster_group_samples}"
 
     def satisfied(self, target, min_mvs_in_cluster_frac=1.0, min_samples_in_group_frac=0.9, min_mvs_num=80):
         if self._cluster_num < 2 or self._mvs_num < min_mvs_num:
@@ -75,7 +91,7 @@ class MvcWindow:
 class BaseHeader:
     def __init__(self):
         self.window = None
-        self.header = None
+        self.col_names = None
         self.headers = []
 
     @staticmethod
@@ -92,9 +108,16 @@ class BaseHeader:
             if self.window is None:
                 self.window = self.parse_header_window(line)
         elif line.startswith('#'):
-            self.header = line[1:].split('\t')
+            self.col_names = line[1:].split('\t')
         else:
             raise Exception('Not Header Info')
+
+    def add_header(self, line):
+        return self.headers.append(line)
+
+    def encode(self):
+        _headers = self.headers[:-1] + [f"##COMMAND: {' '.join(sys.argv)}"]+self.headers[-1:]
+        return "\n".join(_headers)
 
 
 class MvcHeader(BaseHeader):
@@ -147,17 +170,15 @@ class MvcHeader(BaseHeader):
 class MvcFormat:
     def __init__(self, mvc_file):
         self.header = MvcHeader()
-        self.mvw = None
         self._mvc_file = mvc_file
         self._f = Open(mvc_file)
         self._line = self._f.readline()
         while self._line and self._line.startswith('#'):
             self.header.decode(self._line)
             self._line = self._f.readline()
+        self.mvw = MvcWindow(self.header.groups, self.header.group_samples)
 
     def filter(self, f_out, group, min_mvs_in_cluster_frac=1, min_samples_in_group_frac=0.9, with_meta=False):
-        if self.mvw is None:
-            self.mvw = MvcWindow(self.header.groups, self.header.group_samples)
         while self._line:
             self.mvw.decode(self._line)
             _satisfied = self.mvw.satisfied(group, min_mvs_in_cluster_frac, min_samples_in_group_frac)
@@ -170,8 +191,14 @@ class MvcFormat:
             self._line = self._f.readline()
 
     def readline(self):
+        _line = self._line
         self._line = self._f.readline()
-        return self._line
+        self.mvw.decode(_line)
+        return _line
+
+    def update_and_encode(self, genome_start, genome_end):
+        self.mvw.update(genome_start, genome_end)
+        return self.mvw.encode()
 
 
 class MvHeader(BaseHeader):

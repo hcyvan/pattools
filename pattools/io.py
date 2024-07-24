@@ -58,7 +58,7 @@ class Output:
         of.write("hello Output\n")
     """
 
-    def __init__(self, filename=None, file_format='pat', bgzip=False):
+    def __init__(self, filename=None, file_format='cgs', bgzip=False):
         """
         :param filename: output filename. if filename is None, it will write to standard output.
         :param file_format: pat, pat format. motif, motif format
@@ -91,7 +91,7 @@ class Output:
         if self.filename is not None:
             self.of.close()
             if self.bgzip:
-                if self.file_format == 'mvc' or self.file_format == 'mv':
+                if self.file_format in ['mvc', 'mv', 'pat', 'cgs']:
                     pysam.tabix_index(self.filename, csi=True, seq_col=0, start_col=1, end_col=1, force=True)
 
     def __enter__(self):

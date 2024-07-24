@@ -1,7 +1,8 @@
 from pattools.vector.utils import parse_file_list
 from pattools.motif import Motif
 from pattools.vector.calculator import VectorCalculator
-from pattools.io import Output, PatTabix
+from pattools.io import Output, PatTabix, CpG2Tabix
+from pattools.vector.format import MvcFormat
 
 
 def extract_mvs(file_list, region, outfile=None):
@@ -28,3 +29,21 @@ def extract_vector(input_file, outfile=None, window: int = 4, regions=None):
                 chrom, cpg_idx, motif_count = line
                 vector_calculator.set_motif_count(chrom, cpg_idx, motif_count).cluster()
                 of.write(f"{vector_calculator}\n")
+
+
+def fix_mvc(input_file, cpg_bed=None, out=None):
+    with Output(filename=out, file_format='cgs', bgzip=True) as of:
+        mvc = MvcFormat(input_file)
+        of.write(mvc.header.encode() + "\n")
+        with CpG2Tabix(cpg_bed, window=mvc.header.window) as cpg:
+            _line = mvc.readline()
+            for chrom, genome_start, genome_end, cpg_idx in cpg:
+                if _line is None:
+                    break
+                if mvc.mvw.cpg_idx == cpg_idx:
+                    of.write(mvc.update_and_encode(genome_start - 1, genome_end) + "\n")
+                    _line = mvc.readline()
+                elif mvc.mvw.cpg_idx > cpg_idx:
+                    continue
+                else:
+                    _line = mvc.readline()

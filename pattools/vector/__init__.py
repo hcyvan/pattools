@@ -1,12 +1,11 @@
-from pattools.vector.clustering import methylation_vector_cluster
-from .separating import mv_separating
-from pattools.vector.support import extract_mvs, extract_vector
-from .pat2mv import pat2mv
-from pattools.cmd import command, Cmd
 from pathlib import Path
+from pattools.vector.clustering import methylation_vector_cluster
+from pattools.vector.separating import mv_separating
+from pattools.vector.support import extract_mvs, extract_vector, fix_mvc
+from pattools.vector.pat2mv import pat2mv
+from pattools.cmd import command, Cmd
 
 
-# --------------------------------------------------------------------------------------------------------------------
 @command('mv-extract', 'extract mvs')
 class VectorRegionCmd(Cmd):
     def add_argument(self, parser):
@@ -66,8 +65,7 @@ class VectorizationCmd(Cmd):
          'Methylation vectors clustering. This command supports MPI, which can accelerate calculations in HPC')
 class VectorClusteringCmd(Cmd):
     def add_argument(self, parser):
-        parser.add_argument('-c', '--cpg-bed', required=True,
-                            help='The cpg_bed file of the selected genome.')
+        parser.add_argument('-c', '--cpg-bed', required=True, help='The cpg_bed file of the selected genome.')
         parser.add_argument('-i', '--input', required=True,
                             help='a list file in tsv format, which contains multiple mv files,'
                                  ' group info and sample info, etc. eg: <MV_FILE>  <GROUP_LABEL> <SAMPLE_LABEL>')
@@ -108,3 +106,15 @@ class VectorSeparatingCmd(Cmd):
     def do(self, args):
         mv_separating(args.input, args.group, args.frac_mvs, args.frac_samples, output_file=args.out,
                       with_meta=args.with_meta)
+
+
+@command('mv-mvc-fix', 'fix mvc file')
+class VectorFixCmd(Cmd):
+    def add_argument(self, parser):
+        parser.add_argument('-i', '--input', required=True, help='Input file list')
+        parser.add_argument('-c', '--cpg-bed', required=True, help='The cpg_bed file of the selected genome.')
+        parser.add_argument('-o', '--out', default=None,
+                            help='The output file, If not set, output is sent to standard output.')
+
+    def do(self, args):
+        fix_mvc(args.input, args.cpg_bed, args.out)
