@@ -37,7 +37,7 @@ class VectorRegionCmd(Cmd):
 @command('mv-calculate', 'Methylation vectors calculate')
 class VectorExtractCmd(Cmd):
     def add_argument(self, parser):
-        parser.add_argument('-i', '--input', required=True, help='Input file, *.motif.gz')
+        parser.add_argument('-i', '--input', required=True, help='Input file, *.mvc.gz')
         parser.add_argument('-w', '--window', type=int, default='4',
                             help='Define the length of motif, such as ''3:CCT; 4: CCTT; 5:CCTTT'' ')
         parser.add_argument('-o', '--out', default=None,

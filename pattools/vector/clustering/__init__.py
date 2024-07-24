@@ -68,7 +68,7 @@ def get_label_from_regions(regions):
 
 def get_filename_by_split_regions(split_regions, outfile):
     if outfile is None:
-        outfile = f'./merge.{uuid.uuid4()}.motif.gz'
+        outfile = f'./merge.{uuid.uuid4()}.mvc.gz'
     filenames = []
     for i, regions in enumerate(split_regions):
         tag = get_label_from_regions(regions)
@@ -77,7 +77,7 @@ def get_filename_by_split_regions(split_regions, outfile):
 
 
 def merge_split_filenames(outfile, filenames):
-    with Output(filename=outfile, file_format='motif', bgzip=True) as out:
+    with Output(filename=outfile, file_format='mvc', bgzip=True) as out:
         with open(filenames[0]) as infile:
             for line in infile:
                 out.write(line)
@@ -118,7 +118,7 @@ def methylation_vector_cluster(file_list, cpg_bed, outfile, window: int = 4, pro
                           out_gzip=True)
         else:
             if outfile is None:
-                outfile = f'./merge.{uuid.uuid4()}.motif.gz'
+                outfile = f'./merge.{uuid.uuid4()}.mvc.gz'
             split_regions = split_cpg(cpg_bed, process, region)
             outfile, split_filenames = get_filename_by_split_regions(split_regions, outfile)
             process_jobs = []

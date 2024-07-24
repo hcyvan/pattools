@@ -9,6 +9,7 @@ chapters:
 - file: matgen
 - file: deconvolution
 - file: vector
+- file: file_format
 - file: references
 - file: how_to_contribute
 - file: changelog
