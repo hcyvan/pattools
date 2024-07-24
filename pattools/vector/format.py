@@ -145,27 +145,33 @@ class MvcHeader(BaseHeader):
 
 
 class MvcFormat:
-    def __init__(self):
+    def __init__(self, mvc_file):
         self.header = MvcHeader()
         self.mvw = None
+        self._mvc_file = mvc_file
+        self._f = Open(mvc_file)
+        self._line = self._f.readline()
+        while self._line and self._line.startswith('#'):
+            self.header.decode(self._line)
+            self._line = self._f.readline()
 
-    def filter(self, mvc_file, f_out, group, min_mvs_in_cluster_frac=1, min_samples_in_group_frac=0.9, with_meta=False):
-        with Open(mvc_file) as f:
-            for line in f:
-                line = line.strip("\n")
-                if line.startswith('#'):
-                    self.header.decode(line)
+    def filter(self, f_out, group, min_mvs_in_cluster_frac=1, min_samples_in_group_frac=0.9, with_meta=False):
+        if self.mvw is None:
+            self.mvw = MvcWindow(self.header.groups, self.header.group_samples)
+        while self._line:
+            self.mvw.decode(self._line)
+            _satisfied = self.mvw.satisfied(group, min_mvs_in_cluster_frac, min_samples_in_group_frac)
+            if _satisfied:
+                if with_meta:
+                    mvs_in_cluster_frac, samples_in_group_frac = _satisfied
+                    f_out.write(f"{self._line}\t{mvs_in_cluster_frac}\t{samples_in_group_frac}\n")
                 else:
-                    if self.mvw is None:
-                        self.mvw = MvcWindow(self.header.groups, self.header.group_samples)
-                    self.mvw.decode(line)
-                    _satisfied = self.mvw.satisfied(group, min_mvs_in_cluster_frac, min_samples_in_group_frac)
-                    if _satisfied:
-                        if with_meta:
-                            mvs_in_cluster_frac, samples_in_group_frac = _satisfied
-                            f_out.write(f"{line}\t{mvs_in_cluster_frac}\t{samples_in_group_frac}\n")
-                        else:
-                            f_out.write(line + '\n')
+                    f_out.write(self._line + '\n')
+            self._line = self._f.readline()
+
+    def readline(self):
+        self._line = self._f.readline()
+        return self._line
 
 
 class MvHeader(BaseHeader):

@@ -8,6 +8,7 @@ from collections import deque
 class Open:
     def __init__(self, file_name, is_zip=None):
         if is_zip is None:
+            # TODO: use "1f 8b" to check gz file
             if file_name.endswith('.gz'):
                 self.__is_zip = True
             else:
@@ -22,7 +23,7 @@ class Open:
     def readline(self):
         line = self._f.readline()
         if line:
-            return line
+            return line.strip('\n')
         return None
 
     def __iter__(self):
