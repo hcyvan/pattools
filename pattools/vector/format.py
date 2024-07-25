@@ -4,6 +4,41 @@ from collections import Counter
 from pattools.io import Open
 
 
+class MvWindow:
+    def __init__(self):
+        self.chrom = None
+        self.cpg_idx = None
+        self._mvs = None
+        self._mv_str = None
+
+    def decode(self, mv_str):
+        self._mv_str = mv_str
+        if self._mv_str:
+            items = mv_str.strip("\n").split('\t')
+            if len(items) > 3:
+                return self._decode_motif(items)
+            self.chrom = items[0]
+            self.cpg_idx = int(items[1])
+            self._mvs = items[2]
+        else:
+            self.chrom = None
+            self.cpg_idx = None
+            self._mvs = None
+        return self
+
+    def _decode_motif(self, items):
+        """
+        Deprecated
+        """
+        self.chrom = items[0]
+        self.cpg_idx = int(items[1])
+        self._mvs = '|'.join([str(x) for x in items[2:]])
+        return self
+
+    def encode(self):
+        return f"{self.chrom}\t{self.cpg_idx}\t{self._mvs}"
+
+
 class MvcWindow:
     def __init__(self, groups, group_samples):
         self._groups = groups
@@ -212,12 +247,31 @@ class MvcFormat:
 
 
 class MvHeader(BaseHeader):
-    pass
+    def fix_header(self):
+        for i in range(len(self.headers)):
+            _header = self.headers[i]
+            if _header.startswith('##FORMAT'):
+                _header = '##FORMAT: mv'
+            elif _header.startswith('#chr'):
+                _header = '#chrom\tCpG_index\tmvs'
+            self.headers[i] = _header
+        return self
+
+    def encode(self):
+        _headers = self.headers[:-1] + [f"##COMMAND: {' '.join(sys.argv)}"] + self.headers[-1:]
+        return "\n".join(_headers)
 
 
 class MvFormat:
-    def __init__(self):
+    def __init__(self, mv_file):
         self.header = MvHeader()
+        self._mv_file = mv_file
+        self._f = Open(self._mv_file)
+        self._line = self._f.readline()
+        while self._line and self._line.startswith('#'):
+            self.header.decode(self._line)
+            self._line = self._f.readline()
+        self.mvw = MvWindow()
 
     def parse_header(self, mv_file):
         with Open(mv_file) as f:
@@ -228,3 +282,19 @@ class MvFormat:
                 else:
                     break
         return self
+
+    def readline(self):
+        _line = self._line
+        self._line = self._f.readline()
+        self.mvw.decode(_line)
+        return _line
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        _line = self.readline()
+        if _line:
+            return _line
+        else:
+            raise StopIteration

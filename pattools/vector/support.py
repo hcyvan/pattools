@@ -2,7 +2,7 @@ from pattools.vector.utils import parse_mv_group_sample_file, parse_region_strin
 from pattools.motif import Motif
 from pattools.vector.calculator import VectorCalculator
 from pattools.io import Output, PatTabix, CpG2Tabix
-from pattools.vector.format import MvcFormat
+from pattools.vector.format import MvcFormat, MvFormat
 
 
 def extract_mvs(file_list, region, outfile=None):
@@ -67,3 +67,12 @@ def fix_mvc(mvc_file, cpg_bed=None, out=None):
                     continue
                 else:
                     _line = mvc.readline()
+
+
+def fix_mv(mv_file, out=None):
+    with Output(filename=out, file_format='cgs', bgzip=True) as of:
+        mv = MvFormat(mv_file)
+        mv.header.fix_header()
+        of.write(mv.header.encode() + "\n")
+        for _ in mv:
+            of.write(mv.mvw.encode() + '\n')

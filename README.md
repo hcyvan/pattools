@@ -125,7 +125,7 @@ pattools ratio -d 3\
     -o /mnt/d/project/pattools/tmp/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.ratio
 ```
 
-#### mv-vectorization
+#### mv-calcutation
 
 ```
 pattools mv-calcutation -i /mnt/d/data/cacLung/raw/pat/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.motif.gz

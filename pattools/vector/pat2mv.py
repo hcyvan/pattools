@@ -5,7 +5,7 @@ from pattools.motif import Motif
 from pattools.io import Output
 
 
-def pat2mv(filename: str, outfile: str = None, window: int = 4, bgzip: bool = True):
+def pat2mv(filename: str, outfile: str = None, window: int = 4, bgzip: bool = True, out_version='v2'):
     motif = Motif(window)
     pat_window = PatWindow(filename, window=window)
     motif_pattern = '\t'.join(motif.motifs)
@@ -17,5 +17,8 @@ def pat2mv(filename: str, outfile: str = None, window: int = 4, bgzip: bool = Tr
         of.write(comment_header)
         for i, win in enumerate(pat_window):
             counter: OrderedDict[str, int] = motif.count_motifs(win[2])
-            counts = '\t'.join([str(x) for x in counter.values()])
+            if out_version == 'v1':
+                counts = '\t'.join([str(x) for x in counter.values()])
+            else:
+                counts = '|'.join([str(x) for x in counter.values()])
             of.write(f'{win[0]}\t{win[1]}\t{counts}\n')

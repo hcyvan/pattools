@@ -1,6 +1,6 @@
 from pattools.vector.clustering import methylation_vector_cluster
 from pattools.vector.separating import mv_separating
-from pattools.vector.support import extract_mvs, extract_mvc, extract_vector, fix_mvc
+from pattools.vector.support import extract_mvs, extract_mvc, extract_vector, fix_mvc, fix_mv
 from pattools.vector.pat2mv import pat2mv
 from pattools.cmd import command, Cmd
 from pattools.vector.utils import get_cpg_index_regions
@@ -51,7 +51,8 @@ class VectorExtractCmd(Cmd):
 class VectorizationCmd(Cmd):
     def add_argument(self, parser):
         parser.add_argument('-i', '--input', required=True, help='The input file')
-        parser.add_argument('-o', '--out', default=None,
+        parser.add_argument('-o', '--out-version', default='v2', help='The output file format version')
+        parser.add_argument('--out', default=None,
                             help='The output file, If not set, output is sent to standard output.')
         parser.add_argument('--text', action='store_true', help='If set, files are not '
                                                                 'compressed with bgzip')
@@ -119,3 +120,14 @@ class VectorFixCmd(Cmd):
 
     def do(self, args):
         fix_mvc(args.input, args.cpg_bed, args.out)
+
+
+@command('mv-mv-fix', 'fix mv file')
+class VectorFixCmd(Cmd):
+    def add_argument(self, parser):
+        parser.add_argument('-i', '--input', required=True, help='Input file list')
+        parser.add_argument('-o', '--out', default=None,
+                            help='The output file, If not set, output is sent to standard output.')
+
+    def do(self, args):
+        fix_mv(args.input, args.out)
