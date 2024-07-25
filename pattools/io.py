@@ -3,13 +3,13 @@ import pysam
 import gzip
 from typing import List
 from collections import deque
+from pattools.utils import is_gzip_file
 
 
 class Open:
     def __init__(self, file_name, is_zip=None):
         if is_zip is None:
-            # TODO: use "1f 8b" to check gz file
-            if file_name.endswith('.gz'):
+            if is_gzip_file(file_name):
                 self.__is_zip = True
             else:
                 self.__is_zip = False
