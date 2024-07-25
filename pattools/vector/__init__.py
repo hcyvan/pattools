@@ -51,8 +51,8 @@ class VectorExtractCmd(Cmd):
 class VectorizationCmd(Cmd):
     def add_argument(self, parser):
         parser.add_argument('-i', '--input', required=True, help='The input file')
-        parser.add_argument('-o', '--out-version', default='v2', help='The output file format version')
-        parser.add_argument('--out', default=None,
+        parser.add_argument('--out-version', default='v2', help='The output file format version')
+        parser.add_argument('-o', '--out', default=None,
                             help='The output file, If not set, output is sent to standard output.')
         parser.add_argument('--text', action='store_true', help='If set, files are not '
                                                                 'compressed with bgzip')
@@ -60,7 +60,7 @@ class VectorizationCmd(Cmd):
                             help='Define the length of motif, such as ''3:CCT; 4: CCTT; 5:CCTTT'' ')
 
     def do(self, args):
-        pat2mv(args.input, args.out, window=args.window, bgzip=(not args.text),out_version=args.out_version)
+        pat2mv(args.input, args.out, window=args.window, bgzip=(not args.text), out_version=args.out_version)
 
 
 @command('mv-clustering',
