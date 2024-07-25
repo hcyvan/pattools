@@ -4,9 +4,9 @@
 
 The CpG Start Indexed (CGS) format comprises two mandatory columns along with several informational columns:
 
-- Column 1: chromosome number or sequence names
-- Column 2: 1-based, end-inclusive position of the CpG index
-- Informational columns: column 3 to column *n*
+- chrom: chromosome number or sequence names
+- cpg_index: 1-based, end-inclusive position of the CpG index
+- Informational columns [optional]: column 3 to column *n*, 
 
 ```
 chr1	1	c3	c4

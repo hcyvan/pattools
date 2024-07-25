@@ -3,7 +3,7 @@ from typing import List
 from pattools.motif import Motif
 from pattools.vector.calculator import VectorCalculator
 from pattools.io import Output, CpG2Tabix, PatTabix
-from pattools.vector.utils import parse_file_list
+from pattools.vector.utils import parse_mv_group_sample_file
 from pattools.vector.format import MvFormat
 from pattools.log import logger
 
@@ -22,7 +22,7 @@ def do_clustering(file_list, cpg_bed, outfile, window: int = None, regions=None,
     @param target_groups: The groups selected from the MV list file should be separated by commas ','. If not set, all
                         groups will be used.
     """
-    input_files, groups, samples = parse_file_list(file_list, target_groups)
+    input_files, groups, samples = parse_mv_group_sample_file(file_list, target_groups)
     _window = window
     for motif_file in input_files:
         mvf = MvFormat().parse_header(motif_file)

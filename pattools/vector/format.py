@@ -116,7 +116,7 @@ class BaseHeader:
         return self.headers.append(line)
 
     def encode(self):
-        _headers = self.headers[:-1] + [f"##COMMAND: {' '.join(sys.argv)}"]+self.headers[-1:]
+        _headers = self.headers[:-1] + [f"##COMMAND: {' '.join(sys.argv)}"] + self.headers[-1:]
         return "\n".join(_headers)
 
 
@@ -199,6 +199,16 @@ class MvcFormat:
     def update_and_encode(self, genome_start, genome_end):
         self.mvw.update(genome_start, genome_end)
         return self.mvw.encode()
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        _line = self.readline()
+        if _line:
+            return _line
+        else:
+            raise StopIteration
 
 
 class MvHeader(BaseHeader):
