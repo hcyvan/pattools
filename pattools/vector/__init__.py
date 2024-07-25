@@ -60,7 +60,7 @@ class VectorizationCmd(Cmd):
                             help='Define the length of motif, such as ''3:CCT; 4: CCTT; 5:CCTTT'' ')
 
     def do(self, args):
-        pat2mv(args.input, args.out, window=args.window, bgzip=(not args.text))
+        pat2mv(args.input, args.out, window=args.window, bgzip=(not args.text),out_version=args.out_version)
 
 
 @command('mv-clustering',

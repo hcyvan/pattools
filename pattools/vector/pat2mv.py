@@ -13,7 +13,10 @@ def pat2mv(filename: str, outfile: str = None, window: int = 4, bgzip: bool = Tr
         of.write(f"##FORMAT: mv\n")
         of.write(f"##WINDOW: {window}\n")
         of.write(f"##COMMAND: {' '.join(sys.argv)}\n")
-        comment_header = f'#chr\tCpG_index\t{motif_pattern}\n'
+        if out_version == 'v1':
+            comment_header = f'#chr\tCpG_index\t{motif_pattern}\n'
+        else:
+            comment_header = f'#chrom\tCpG_index\tmvs\n'
         of.write(comment_header)
         for i, win in enumerate(pat_window):
             counter: OrderedDict[str, int] = motif.count_motifs(win[2])
