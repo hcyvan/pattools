@@ -273,16 +273,6 @@ class MvFormat:
             self._line = self._f.readline()
         self.mvw = MvWindow()
 
-    def parse_header(self, mv_file):
-        with Open(mv_file) as f:
-            for line in f:
-                line = line.strip("\n")
-                if line.startswith('#'):
-                    self.header.decode(line)
-                else:
-                    break
-        return self
-
     def readline(self):
         _line = self._line
         self._line = self._f.readline()

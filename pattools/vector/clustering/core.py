@@ -25,7 +25,7 @@ def do_clustering(file_list, cpg_bed, outfile, window: int = None, regions=None,
     input_files, groups, samples = parse_mv_group_sample_file(file_list, target_groups)
     _window = window
     for motif_file in input_files:
-        mvf = MvFormat().parse_header(motif_file)
+        mvf = MvFormat(motif_file)
         if _window is None:
             _window = mvf.header.window
         else:
