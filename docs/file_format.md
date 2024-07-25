@@ -34,3 +34,7 @@ MV (methylation vector) format is a CGS-based format
 ### MVC format
 
 MVC (methylation vector cluster) format is a CGS-based format
+
+### MVM format
+
+MVM (methylation vector matrix) format is a CGS-based format

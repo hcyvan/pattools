@@ -47,7 +47,7 @@ class MvcWindow:
         self.cpg_idx = None
         self.genome_start = None
         self.genome_end = None
-        self._mvs = None
+        self.mvs = None
         self._mvs_num = None
         self._cluster_num = None
         self._cluster_center = None
@@ -68,7 +68,7 @@ class MvcWindow:
             self.cpg_idx = int(items[1])
             self.genome_start = int(items[2])
             self.genome_end = int(items[3])
-            self._mvs = items[4]
+            self.mvs = items[4]
             self._cluster_num = int(items[5])
             self._cluster_center = items[6]
             self._cluster_group_mvs_num = items[7]
@@ -76,7 +76,7 @@ class MvcWindow:
             self._cluster_group_samples = items[9]
             self._cluster_group_mvs_num_counter = []
             self._cluster_group_samples_num_counter = []
-            self._mvs_num = sum([int(x) for x in self._mvs.split('|')])
+            self._mvs_num = sum([int(x) for x in self.mvs.split('|')])
             if self._mvs_num > 0:
                 for cluster in self._cluster_group_mvs_num.split('|'):
                     counter = Counter(dict(zip(self._groups, [int(x) for x in cluster.split(',')])))
@@ -98,7 +98,7 @@ class MvcWindow:
             self.genome_end = genome_end
 
     def encode(self):
-        return f"{self.chrom}\t{self.cpg_idx}\t{self.genome_start}\t{self.genome_end}\t{self._mvs}\t{self._cluster_num}\t{self._cluster_center}\t{self._cluster_group_mvs_num}\t{self._cluster_group_samples_num}\t{self._cluster_group_samples}"
+        return f"{self.chrom}\t{self.cpg_idx}\t{self.genome_start}\t{self.genome_end}\t{self.mvs}\t{self._cluster_num}\t{self._cluster_center}\t{self._cluster_group_mvs_num}\t{self._cluster_group_samples_num}\t{self._cluster_group_samples}"
 
     def satisfied(self, target, min_mvs_in_cluster_frac=1.0, min_samples_in_group_frac=0.9, min_mvs_num=80):
         if self._cluster_num < 2 or self._mvs_num < min_mvs_num:

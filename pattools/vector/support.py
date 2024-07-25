@@ -1,8 +1,11 @@
-from pattools.vector.utils import parse_mv_group_sample_file, parse_region_string
+import sys
+from pattools.vector.utils import *
 from pattools.motif import Motif
 from pattools.vector.calculator import VectorCalculator
 from pattools.io import Output, PatTabix, CpG2Tabix
 from pattools.vector.format import MvcFormat, MvFormat
+from pattools.utils import is_gzip_file
+from pattools.log import logger
 
 
 def extract_mvs(file_list, region, outfile=None):
@@ -17,24 +20,48 @@ def extract_mvs(file_list, region, outfile=None):
                         f'{chrom}\t{cpg_idx}\t{groups[i]}\t{samples[i]}\t{"|".join([str(x) for x in motif_count])}\n')
 
 
-def extract_mvc(file_list, region, outfile=None):
-    # mvc_files, _ = parse_mvc_group_file(file_list)
-    mvc_files = [file_list]
-    for _, mvc_file in enumerate(mvc_files):
+def extract_mvc(file_list, regions, outfile=None):
+    if is_gzip_file(file_list):
+        mvc_files = [file_list]
+        groups = ['group']
+    else:
+        mvc_files, groups = parse_mvc_group_file(file_list)
+    mvc_file_list = []
+    _window = None
+    for mvc_file in mvc_files:
         mvc = MvcFormat(mvc_file)
-        with Output(filename=outfile) as of:
-            # of.write(mvc.header.encode() + "\n")
-            region_string = region.pop(0)
-            chrom, start, end = parse_region_string(region_string)
-            for _ in mvc:
-                if start == mvc.mvw.cpg_idx:
-                    of.write(mvc.mvw.encode() + "\n")
-                    if len(region) == 0:
-                        break
-                    region_string = region.pop(0)
-                    chrom, start, end = parse_region_string(region_string)
-                elif start > mvc.mvw.cpg_idx:
-                    continue
+        if _window is None:
+            _window = mvc.header.window
+        else:
+            if _window != mvc.header.window:
+                logger.error(f'Window size is not the same: {_window} [others] and {mvc.header.window} [{mvc_file}]')
+                raise Exception('Window size error')
+        mvc.readline()
+        mvc_file_list.append(mvc)
+    with Output(filename=outfile) as of:
+        of.write(f"##FORMAT: mvm\n")
+        of.write(f"##WINDOW: {_window}\n")
+        of.write(f"##COMMAND: {' '.join(sys.argv)}\n")
+        group_str = "\t".join(groups)
+        of.write(f'#chrom\tcpg\tstart\tend\t{group_str}\n')
+        for region in regions:
+            chrom, cpg_idx, _ = parse_region_string(region)
+            start = ""
+            end = ""
+            mvs_list = []
+            for i, mvc in enumerate(mvc_file_list):
+                if mvc.mvw.cpg_idx is None or mvc.mvw.cpg_idx > cpg_idx:
+                    mvs_list.append("")
+                else:
+                    while mvc.mvw.cpg_idx < cpg_idx:
+                        mvc.readline()
+                    if mvc.mvw.cpg_idx == cpg_idx:
+                        mvs_list.append(mvc.mvw.mvs)
+                        start = mvc.mvw.genome_start
+                        end = mvc.mvw.genome_end
+                        mvc.readline()
+            mvs_group_str = "\t".join(mvs_list)
+            of.write(f'{chrom}\t{cpg_idx}\t{start}\t{end}\t{mvs_group_str}\n')
 
 
 def extract_vector(input_file, outfile=None, window: int = 4, regions=None):

@@ -31,6 +31,7 @@ def do_clustering(file_list, cpg_bed, outfile, window: int = None, regions=None,
         else:
             if _window != mvf.header.window:
                 logger.error(f'Window size is not the same: {_window} [others] and {mvf.header.window} [{motif_file}]')
+                raise Exception('Window size error')
     window = _window
     logger.info(f"Window size: {window}")
     motif = Motif(window)

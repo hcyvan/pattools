@@ -158,6 +158,9 @@ pattools mv-separating -i /mnt/d/data/epiLungCancer/intermediate/vector/20240612
 pattools mv-extract -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -r chr4:6909897-6909899  2>/dev/null
 pattools mv-extract -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -r ./LUAD_0.3.diff.mvc  2>/dev/null
 ```
+```
+pattools mv-extract-mvc -i mvc_group.input -r ../LUAD.mvc -o ./LUAD.group.mvm
+```
 
 #### region
 
