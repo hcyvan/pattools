@@ -1,12 +1,16 @@
-import yaml
+import re
 from setuptools import setup, find_packages
 
 with open("README.md", "r", encoding="utf-8") as f:
     long_description = f.read()
 
+VERSION = ""
 with open("pattools/INFO.yaml", "r") as f:
-    data = yaml.safe_load(f)
-    VERSION = data.get('VERSION', '')
+    p = re.compile(r'VERSION\s*:\s*(.*)')
+    for line in f:
+        m = p.match(line.strip())
+        if m:
+            VERSION = m.group(1)
 
 setup(
     name="pattools-methy",
