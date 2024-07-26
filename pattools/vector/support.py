@@ -39,7 +39,7 @@ def extract_mvc(file_list, regions, outfile=None):
         mvc.readline()
         mvc_file_list.append(mvc)
     with Output(filename=outfile) as of:
-        of.write(f"##FORMAT: mvm\n")
+        of.write(f"##FORMAT: mvm (methylation vector matrix)\n")
         of.write(f"##WINDOW: {_window}\n")
         of.write(f"##COMMAND: {' '.join(sys.argv)}\n")
         group_str = "\t".join(groups)

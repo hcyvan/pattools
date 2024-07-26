@@ -1,7 +1,7 @@
 from pattools.vector.clustering import methylation_vector_cluster
 from pattools.vector.separating import mv_separating
 from pattools.vector.support import extract_mvs, extract_mvc, extract_vector, fix_mvc, fix_mv
-from pattools.vector.pat2mv import pat2mv
+from pattools.vector.vectorization import pat2mv
 from pattools.cmd import command, Cmd
 from pattools.vector.utils import get_cpg_index_regions
 
