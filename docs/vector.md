@@ -22,6 +22,13 @@ cartesian coordinate system.
 
 ## Usage
 
+```{image} image/vector-flow.png
+:alt: fishy
+:class: bg-primary mb-1
+:width: 600px
+:align: center
+```
+
 ### mv-vectorization
 
 mv-vectorization is used to vectorize .pat files. You can adjust the window sizes based on your specific requirements.

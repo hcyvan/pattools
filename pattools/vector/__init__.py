@@ -22,7 +22,7 @@ class VectorExtractCmd(Cmd):
 
 
 @command('mv-calculate', 'Methylation vectors calculate')
-class VectorExtractCmd(Cmd):
+class VectorCalculateCmd(Cmd):
     def add_argument(self, parser):
         parser.add_argument('-i', '--input', required=True, help='Input file, *.mvc.gz')
         parser.add_argument('-w', '--window', type=int, default='4',
