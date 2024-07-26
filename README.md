@@ -1,4 +1,4 @@
-<img src="docs/image/logo.svg" alt="logo" width="600"/>
+<img src="docs/image/logo.png" alt="logo" width="600"/>
 
 [![Documentation](https://img.shields.io/badge/docs-Github_Page-blue?style=flat-square)](https://hcyvan.github.io/pattools/intro.html)
 [![PyPI](https://img.shields.io/pypi/v/pattools_methy.svg?color=brightgreen)](https://pypi.org/project/pattools-methy/)
@@ -9,8 +9,12 @@
 
 ## Introduction
 
-Pat format toolkit
-<img src="notebook/framework.png" alt="pattools framework" width="500"/>
+Pattools is an advanced toolkit designed for the comprehensive analysis of Bisulfite sequencing (BS-Seq) data.
+This tool enables researchers to seamlessly evaluate a variety of DNA methylation metircs using BS-seq data
+and to implement algorithms developed by other researchers without the need for data format conversion.
+
+
+<img src="docs/image/framework.png" alt="pattools framework" width="500"/>
 
 + [Pattools Document Website](https://hcyvan.github.io/pattools/intro.html)
 + [Github](https://github.com/hcyvan/pattools)
