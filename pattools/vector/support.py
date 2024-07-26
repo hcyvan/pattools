@@ -3,51 +3,38 @@ from pattools.vector.utils import *
 from pattools.motif import Motif
 from pattools.vector.calculator import VectorCalculator
 from pattools.io import Output, PatTabix, CpG2Tabix
-from pattools.vector.format import MvcFormat, MvFormat
+from pattools.vector.format import MvcFormat, MvFormat, BaseHeader
 from pattools.utils import is_gzip_file
 from pattools.log import logger
 
 
-def extract_mvs(file_list, region, outfile=None):
-    input_files, groups, samples = parse_mv_group_sample_file(file_list)
-    with Output(filename=outfile, bgzip=False) as of:
-        of.write(f'#chrom\tCpG_index\tgroup\tsample\tmotif\n')
-        for i, motif_file in enumerate(input_files):
-            with PatTabix(motif_file, region) as tabix:
-                for line in tabix:
-                    chrom, cpg_idx, motif_count = line
-                    of.write(
-                        f'{chrom}\t{cpg_idx}\t{groups[i]}\t{samples[i]}\t{"|".join([str(x) for x in motif_count])}\n')
-
-
-def extract_mvc(file_list, regions, outfile=None):
+def extract_mvs(file_list, regions, outfile=None):
     if is_gzip_file(file_list):
         mvc_files = [file_list]
-        groups = ['group']
+        col_names = ['mvs']
     else:
-        mvc_files, groups = parse_mvc_group_file(file_list)
+        mvc_files, col_names = parse_mvc_group_file(file_list)
+    header_common = BaseHeader.check_file_list_headers(mvc_files)
+
     mvc_file_list = []
-    _window = None
     for mvc_file in mvc_files:
-        mvc = MvcFormat(mvc_file)
-        if _window is None:
-            _window = mvc.header.window
+        if header_common.format == 'mvc':
+            mvc = MvcFormat(mvc_file)
         else:
-            if _window != mvc.header.window:
-                logger.error(f'Window size is not the same: {_window} [others] and {mvc.header.window} [{mvc_file}]')
-                raise Exception('Window size error')
+            mvc = MvFormat(mvc_file)
         mvc.readline()
         mvc_file_list.append(mvc)
     with Output(filename=outfile) as of:
         of.write(f"##FORMAT: mvm (methylation vector matrix)\n")
-        of.write(f"##WINDOW: {_window}\n")
+        of.write(f"##WINDOW: {header_common.window}\n")
         of.write(f"##COMMAND: {' '.join(sys.argv)}\n")
-        group_str = "\t".join(groups)
-        of.write(f'#chrom\tcpg\tstart\tend\t{group_str}\n')
+        _col_names = "\t".join(col_names)
+        if header_common.format == 'mvc':
+            of.write(f'#chrom\tcpg\tstart\tend\t{_col_names}\n')
+        else:
+            of.write(f'#chrom\tcpg\t{_col_names}\n')
         for region in regions:
             chrom, cpg_idx, _ = parse_region_string(region)
-            start = ""
-            end = ""
             mvs_list = []
             for i, mvc in enumerate(mvc_file_list):
                 if mvc.mvw.cpg_idx is None or mvc.mvw.cpg_idx > cpg_idx:
@@ -57,11 +44,10 @@ def extract_mvc(file_list, regions, outfile=None):
                         mvc.readline()
                     if mvc.mvw.cpg_idx == cpg_idx:
                         mvs_list.append(mvc.mvw.mvs)
-                        start = mvc.mvw.genome_start
-                        end = mvc.mvw.genome_end
+
                         mvc.readline()
             mvs_group_str = "\t".join(mvs_list)
-            of.write(f'{chrom}\t{cpg_idx}\t{start}\t{end}\t{mvs_group_str}\n')
+            of.write(f'{chrom}\t{cpg_idx}\t{mvs_group_str}\n')
 
 
 def extract_vector(input_file, outfile=None, window: int = 4, regions=None):

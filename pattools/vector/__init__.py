@@ -1,12 +1,12 @@
 from pattools.vector.clustering import methylation_vector_cluster
 from pattools.vector.separating import mv_separating
-from pattools.vector.support import extract_mvs, extract_mvc, extract_vector, fix_mvc, fix_mv
+from pattools.vector.support import extract_mvs, extract_vector, fix_mvc, fix_mv
 from pattools.vector.vectorization import pat2mv
 from pattools.cmd import command, Cmd
 from pattools.vector.utils import get_cpg_index_regions
 
 
-@command('mv-extract', 'extract methylation vectors from .mv files')
+@command('mv-extract', 'extract methylation vectors from .mv or .mvc files')
 class VectorExtractCmd(Cmd):
     def add_argument(self, parser):
         parser.add_argument('-i', '--input', required=True, help='Input file list')
@@ -19,19 +19,6 @@ class VectorExtractCmd(Cmd):
     def do(self, args):
         regions = get_cpg_index_regions(args.region)
         extract_mvs(args.input, regions, args.out)
-
-
-@command('mv-extract-mvc', 'extract methylation vectors from .mv or mv files')
-class VectorExtractMvcCmd(Cmd):
-    def add_argument(self, parser):
-        parser.add_argument('-i', '--input', required=True, help='Input file list')
-        parser.add_argument('-r', '--region', required=True, help='CGS format file')
-        parser.add_argument('-o', '--out', default=None,
-                            help='The output file, If not set, output is sent to standard output.')
-
-    def do(self, args):
-        regions = get_cpg_index_regions(args.region)
-        extract_mvc(args.input, regions, args.out)
 
 
 @command('mv-calculate', 'Methylation vectors calculate')
@@ -101,8 +88,8 @@ class VectorSeparatingCmd(Cmd):
                             help='The output file, If not set, output is sent to standard output.')
         parser.add_argument('-g', '--group', required=True, help='Output group-specific '
                                                                  'differential vector window')
-        parser.add_argument('--frac-mvs', default=1.0, type=float, help='')
-        parser.add_argument('--frac-samples', default=0.9, type=float, help='')
+        parser.add_argument('--frac-mvs', default=0.8, type=float, help='')
+        parser.add_argument('--frac-samples', default=0.1, type=float, help='')
         parser.add_argument('--with-meta', action='store_true', help='')
 
     def do(self, args):
