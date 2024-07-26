@@ -1,10 +1,10 @@
 # Methylation vector
 
-In the PAT format file, methylated CpG sites are denoted by 'C', and unmethylated CpG sites are 
-denoted by 'T'. In the vector representation of methylation, a '1' corresponds to a methylated 
-site, while a '0' corresponds to an unmethylated site. Consequently, the sequence 'CCTTCT' in the 
-PAT format can be represented by the vector [1, 1, 0, 0, 1, 0]. Continuous CpG sites of length $n$ 
-are used as a window, which contains several CpG motifs of the same length. These motifs can be 
+In the PAT format file, methylated CpG sites are denoted by 'C', and unmethylated CpG sites are
+denoted by 'T'. In the vector representation of methylation, a '1' corresponds to a methylated
+site, while a '0' corresponds to an unmethylated site. Consequently, the sequence 'CCTTCT' in the
+PAT format can be represented by the vector [1, 1, 0, 0, 1, 0]. Continuous CpG sites of length $n$
+are used as a window, which contains several CpG motifs of the same length. These motifs can be
 converted into vector format. For instance, in a window of length 3, the following motif is included:
 
 $$
@@ -17,6 +17,38 @@ $$
 \end{pmatrix}
 $$
 
-The vectors corresponding to motifs within a window of length $n$ are situated within an $n$-dimensional 
+The vectors corresponding to motifs within a window of length $n$ are situated within an $n$-dimensional
 cartesian coordinate system.
 
+## Usage
+
+### mv-vectorization
+
+mv-vectorization is used to vectorize .pat files. You can adjust the window sizes based on your specific requirements.
+
+```
+pattools mv-vectorization -w 5 -i xxx.pat.gz -o xxx.mv.gz
+```
+
+### mv-clustering
+
+mv-clustering is a tool used to merge all samples and perform clustering on the combined MVs
+
+```
+pattools mv-clustering -i mv_group_sample.input -c /path/to/CpG.bed.cpg.gz -o ./lung.mvc.gz
+```
+
+### mv-separating
+
+```
+pattools mv-separating -i ./lung.mvc.gz -g 1 --frac-mvs 0.8 --frac-samples 0.1 -o ./LUAD.mvc
+```
+
+### mv-extract
+
+mv-extract is a tool designed to extract MVs from .mv and .mvc files, outputting the extracted data as an MVs matrix.
+
+```
+pattools mv-extract -i mvc_group.input -r ../LUAD.mvc -o LUAD.group.mvm
+pattools mv-extract -i mv_sample.input -r ../LUAD.mvc -o LUAD.sample.mvm
+```
