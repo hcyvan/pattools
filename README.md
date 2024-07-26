@@ -77,7 +77,7 @@ For example: install from dev-xxx branch
 pip install git+https://e.coding.net/gomicsgene2/lung_cancer_yixing/pattools.git@dev-xxx
 ```
 
-## Usage
+## Usage (Deprecated, gradually moved to the docs directory)
 
 ### pattools SDK
 
@@ -121,49 +121,10 @@ pattools entropy -d 3 -w 4\
     -o /mnt/d/project/pattools/tmp/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.entropy
 ```
 
-#### ratio
-
-```
-pattools ratio -d 3\
-    -i /mnt/d/data/cacLung/raw/pat/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.pat.gz \
-    -o /mnt/d/project/pattools/tmp/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.ratio
-```
-
 #### mv-calcutation
 
 ```
 pattools mv-calcutation -i /mnt/d/data/cacLung/raw/pat/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.motif.gz
-```
-
-#### mv-vectorization
-
-```
-cd /mnt/d/data/cacLung/raw/pat/
-pattools mv-vectorization -i GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.pat.gz -o GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.motif.gz
-```
-
-#### mv-clustering
-
-This command is used to merge all samples and find different vector
-
-```
-pattools mv-clustering -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -c /mnt/d/project/wgbs_tools/references/hg38/CpG.bed.cpg.gz -m MRESC -r chr1:1-100 -o ./tmp/lung.w4.mvc.gz 2>/dev/null
-```
-
-#### mv-separating
-
-```
-pattools mv-separating -i /mnt/d/data/epiLungCancer/intermediate/vector/20240612/lung.w4.mvc.gz -g 1 --frac-mvs 1.0 --frac-samples 0.5 -o ./tmp/LUAD.diff.motif 2>/dev/null
-```
-
-#### mv-extract
-
-```
-pattools mv-extract -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -r chr4:6909897-6909899  2>/dev/null
-pattools mv-extract -i /mnt/d/data/epiLungCancer/intermediate/vector/w4/sample_group_sample.input -r ./LUAD_0.3.diff.mvc  2>/dev/null
-```
-```
-pattools mv-extract-mvc -i mvc_group.input -r ../LUAD.mvc -o ./LUAD.group.mvm
 ```
 
 #### region
@@ -174,6 +135,8 @@ genome index coordinates or CpG index coordinates.
 ```
 pattools region -t cpg2genome -i chr1:266762-266762 -c /mnt/d/project/wgbs_tools/references/hg38/CpG.bed.gz
 ```
+
+#### region-file
 
 ```
 pattools region-file -t cpg2genome --column col2  --out-format bed -c /mnt/d/project/wgbs_tools/references/hg38/CpG.bed.gz -i LUAD_1.0_0.txt -o LUAD_1.0_0.t.txt

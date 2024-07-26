@@ -4,9 +4,10 @@
 
 The CpG Start Indexed (CGS) format comprises two mandatory columns along with several informational columns:
 
-- chrom: chromosome number or sequence names
-- cpg_index: 1-based, end-inclusive position of the CpG index
-- Informational columns [optional]: column 3 to column *n*, 
+- __Sequence name__ [chrom]: chromosome number or sequence names
+- __CpG index__ [cpg_index]: This column lists the sequential positions of CpG sites., 1-based, end-inclusive
+  position of the CpG index
+- __Informational columns__ [optional]: column 3 to column *n*,
 
 ```
 chr1	1	c3	c4
@@ -25,7 +26,24 @@ tabix -C -s 1 -b 2 -e 2 demo.cgs.gz
 
 ### PAT format
 
-PAT is a CGS-based format
+PAT is a CGS-based format, containing 4 columns:
+
+- __Sequence name__
+- __CpG index__
+- __Methylation motif__: This column denotes the methylation status of the CpG site
+    - 'C': methylated CpGs
+    - 'T': unmethylated CpGs
+    - '.': unknown methylation status
+- __Motif count__: This column records the frequency of each motif described in column 3
+
+```
+chr1    755     CCCTCCCCTCTTCCT 1
+chr1    755     TTTT    2
+chr1    756     CCCCCTC 1
+chr1    756     CCCCCT....CCCC  10
+chr1    758     CCCCCCCCCCCC    4
+chr1    758     CCTTCCCTCCC     1
+```
 
 ### MV format
 

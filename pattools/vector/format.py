@@ -8,7 +8,7 @@ class MvWindow:
     def __init__(self):
         self.chrom = None
         self.cpg_idx = None
-        self._mvs = None
+        self.mvs = None
         self._mv_str = None
 
     def decode(self, mv_str):
@@ -19,11 +19,11 @@ class MvWindow:
                 return self._decode_motif(items)
             self.chrom = items[0]
             self.cpg_idx = int(items[1])
-            self._mvs = items[2]
+            self.mvs = items[2]
         else:
             self.chrom = None
             self.cpg_idx = None
-            self._mvs = None
+            self.mvs = None
         return self
 
     def _decode_motif(self, items):
@@ -32,11 +32,11 @@ class MvWindow:
         """
         self.chrom = items[0]
         self.cpg_idx = int(items[1])
-        self._mvs = '|'.join([str(x) for x in items[2:]])
+        self.mvs = '|'.join([str(x) for x in items[2:]])
         return self
 
     def encode(self):
-        return f"{self.chrom}\t{self.cpg_idx}\t{self._mvs}"
+        return f"{self.chrom}\t{self.cpg_idx}\t{self.mvs}"
 
 
 class MvcWindow:
@@ -125,13 +125,49 @@ class MvcWindow:
 
 class BaseHeader:
     def __init__(self):
+        self.format = None
         self.window = None
         self.col_names = None
         self.headers = []
 
     @staticmethod
+    def check_file_list_headers(file_list):
+        _file_headers = []
+        for file_name in file_list:
+            with Open(file_name) as f:
+                bh = BaseHeader()
+                for line in f:
+                    if line.startswith('#'):
+                        bh.decode(line.strip())
+                    else:
+                        break
+                _file_headers.append(bh)
+        _window = None
+        _format = None
+        for i, header in enumerate(_file_headers):
+            if _format is None:
+                _format = header.format
+            if _format != header.format:
+                _error = f'File Format size is not the same: {_format} [others] and {header.format} [{file_list[i]}]'
+                raise Exception(_error)
+            if _window is None:
+                _window = header.window
+            if _window != header.window:
+                _error = f'Window size is not the same: {_window} [others] and {header.window} [{file_list[i]}]'
+                raise Exception(_error)
+        return _file_headers[0]
+
+    @staticmethod
+    def parse_header_format(header_str):
+        p = re.compile(r"##FORMAT\s*:\s*([a-zA-Z0-9,]+).*")
+        m = p.match(header_str)
+        if m:
+            return m.group(1)
+        return None
+
+    @staticmethod
     def parse_header_window(header_str):
-        p = re.compile(r"##WINDOW:\s*(\d+)")
+        p = re.compile(r"##WINDOW\s*:\s*(\d+)")
         m = p.match(header_str)
         if m:
             return int(m.group(1))
@@ -140,6 +176,8 @@ class BaseHeader:
     def decode(self, line):
         self.headers.append(line)
         if line.startswith('##'):
+            if self.format is None:
+                self.format = self.parse_header_format(line)
             if self.window is None:
                 self.window = self.parse_header_window(line)
         elif line.startswith('#'):
