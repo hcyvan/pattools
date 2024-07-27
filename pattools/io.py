@@ -314,7 +314,6 @@ class MvTabix:
         row = line.strip().split('\t')
         chrom = row[0]
         cpg_idx = int(row[1])
-        # TODO: use a more general format
         motif_count_arr = [int(x) for x in row[2].split('|')]
         return chrom, cpg_idx, motif_count_arr
 

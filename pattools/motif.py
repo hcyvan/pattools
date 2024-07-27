@@ -88,6 +88,11 @@ class Motif:
         motifs = self.vectors2motifs(vectors)
         return self.count_motifs(motifs)
 
+    def mvs2motif_count(self, mvs):
+        count_arr = [int(x) for x in mvs.split('|')]
+        motif_count = OrderedDict(zip(self._get_motif_array(), count_arr))
+        return motif_count
+
     def _get_motif_array(self):
         motifs = self.cache_motif_array.get(self.count, None)
         if motifs is not None:
