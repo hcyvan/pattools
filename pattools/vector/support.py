@@ -2,7 +2,7 @@ import sys
 from pattools.vector.utils import *
 from pattools.motif import Motif
 from pattools.vector.calculator import VectorCalculator
-from pattools.io import Output, PatTabix, CpG2Tabix
+from pattools.io import Output, MvTabix, CpG2Tabix
 from pattools.vector.format import MvcFormat, MvFormat, BaseHeader
 from pattools.utils import is_gzip_file
 from pattools.log import logger
@@ -50,10 +50,10 @@ def extract_mvs(file_list, regions, outfile=None):
             of.write(f'{chrom}\t{cpg_idx}\t{mvs_group_str}\n')
 
 
-def extract_vector(input_file, outfile=None, window: int = 4, regions=None):
+def single_cluster(input_file, outfile=None, window: int = 4, regions=None):
     motif = Motif(window)
     with Output(filename=outfile, file_format='motif', bgzip=False) as of:
-        with PatTabix(input_file, regions) as tabix:
+        with MvTabix(input_file, regions) as tabix:
             vector_calculator = VectorCalculator(window=window)
             while True:
                 line = tabix.readline_and_parse(motif.motifs)
@@ -61,7 +61,7 @@ def extract_vector(input_file, outfile=None, window: int = 4, regions=None):
                     break
                 chrom, cpg_idx, motif_count = line
                 vector_calculator.set_motif_count(chrom, cpg_idx, motif_count).cluster()
-                of.write(f"{vector_calculator}\n")
+                of.write(f"{vector_calculator.get_mvc_base()}\n")
 
 
 def fix_mvc(mvc_file, cpg_bed=None, out=None):

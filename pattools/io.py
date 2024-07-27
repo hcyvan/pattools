@@ -290,9 +290,9 @@ class CpG2Tabix:
         return False
 
 
-class PatTabix:
+class MvTabix:
     """
-    [chr]\t[cpg_idx]\t[others]
+    [chr]\t[cpg_idx]\t[mvs]
     tabix -C -b 2 -e 2 -s 1 xxxx.pat.gz/mv.gz/mvc.gz
     """
 
@@ -315,7 +315,7 @@ class PatTabix:
         chrom = row[0]
         cpg_idx = int(row[1])
         # TODO: use a more general format
-        motif_count_arr = [int(x) for x in row[2:]]
+        motif_count_arr = [int(x) for x in row[2].split('|')]
         return chrom, cpg_idx, motif_count_arr
 
     def readline(self):

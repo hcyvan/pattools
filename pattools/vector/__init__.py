@@ -1,6 +1,6 @@
 from pattools.vector.clustering import methylation_vector_cluster
 from pattools.vector.separating import mv_separating
-from pattools.vector.support import extract_mvs, extract_vector, fix_mvc, fix_mv
+from pattools.vector.support import extract_mvs, single_cluster, fix_mvc, fix_mv
 from pattools.vector.vectorization import pat2mv
 from pattools.cmd import command, Cmd
 from pattools.vector.utils import get_cpg_index_regions
@@ -21,8 +21,10 @@ class VectorExtractCmd(Cmd):
         extract_mvs(args.input, regions, args.out)
 
 
-@command('mv-calculate', 'Methylation vectors calculate')
-class VectorCalculateCmd(Cmd):
+@command('mv-single-clustering', 'This command exclusively clusters the .mv file of a single sample, '
+                                 'without merging multiple samples or including any grouping information.'
+                                 'relate `mv-clustering`')
+class VectorSingleClusteringCmd(Cmd):
     def add_argument(self, parser):
         parser.add_argument('-i', '--input', required=True, help='Input file, *.mvc.gz')
         parser.add_argument('-w', '--window', type=int, default='4',
@@ -31,7 +33,7 @@ class VectorCalculateCmd(Cmd):
                             help='The output file, If not set, output is sent to standard output.')
 
     def do(self, args):
-        extract_vector(args.input, args.out, window=args.window)
+        single_cluster(args.input, args.out, window=args.window)
 
 
 @command('mv-vectorization', 'Methylation vectors vectorization')
