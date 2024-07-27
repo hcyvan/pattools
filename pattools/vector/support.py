@@ -14,8 +14,10 @@ def extract_mvs(file_list, regions, outfile=None):
         col_names = ['mvs']
     else:
         mvc_files, col_names = parse_mvc_group_file(file_list)
+    logger.info(f"Check the format of {len(mvc_files)} files")
     header_common = BaseHeader.check_file_list_headers(mvc_files)
-
+    logger.info(f"File info: format={header_common.format}, window={header_common.window}")
+    motif = Motif(header_common.window)
     mvc_file_list = []
     for mvc_file in mvc_files:
         if header_common.format == 'mvc':
@@ -29,23 +31,21 @@ def extract_mvs(file_list, regions, outfile=None):
         of.write(f"##WINDOW: {header_common.window}\n")
         of.write(f"##COMMAND: {' '.join(sys.argv)}\n")
         _col_names = "\t".join(col_names)
-        if header_common.format == 'mvc':
-            of.write(f'#chrom\tcpg\tstart\tend\t{_col_names}\n')
-        else:
-            of.write(f'#chrom\tcpg\t{_col_names}\n')
+        of.write(f'#chrom\tcpg\t{_col_names}\n')
         for region in regions:
             chrom, cpg_idx, _ = parse_region_string(region)
             mvs_list = []
             for i, mvc in enumerate(mvc_file_list):
                 if mvc.mvw.cpg_idx is None or mvc.mvw.cpg_idx > cpg_idx:
-                    mvs_list.append("")
+                    mvs_list.append(motif.get_mvs())
                 else:
                     while mvc.mvw.cpg_idx < cpg_idx:
                         mvc.readline()
                     if mvc.mvw.cpg_idx == cpg_idx:
                         mvs_list.append(mvc.mvw.mvs)
-
                         mvc.readline()
+                    else:
+                        mvs_list.append(motif.get_mvs())
             mvs_group_str = "\t".join(mvs_list)
             of.write(f'{chrom}\t{cpg_idx}\t{mvs_group_str}\n')
 

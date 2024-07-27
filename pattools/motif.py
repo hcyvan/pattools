@@ -104,3 +104,8 @@ class Motif:
                 motifs.append(motif)
         self.cache_motif_array[self.count] = motifs
         return motifs
+
+    def get_mvs(self, counter: OrderedDict[str, int] = None):
+        if counter is None:
+            return '|'.join(['0'] * len(self.motifs))
+        return '|'.join([str(x) for x in counter.values()])

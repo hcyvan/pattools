@@ -23,5 +23,5 @@ def pat2mv(filename: str, outfile: str = None, window: int = 4, bgzip: bool = Tr
             if out_version == 'v1':
                 counts = '\t'.join([str(x) for x in counter.values()])
             else:
-                counts = '|'.join([str(x) for x in counter.values()])
+                counts = motif.get_mvs(counter)
             of.write(f'{win[0]}\t{win[1]}\t{counts}\n')
