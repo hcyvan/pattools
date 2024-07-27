@@ -59,3 +59,12 @@ mv-extract is a tool designed to extract MVs from .mv and .mvc files, outputting
 pattools mv-extract -i mvc_group.input -r ../LUAD.mvc -o LUAD.group.mvm
 pattools mv-extract -i mv_sample.input -r ../LUAD.mvc -o LUAD.sample.mvm
 ```
+
+#### mv-single-clustering
+
+This command exclusively clusters the .mv file of a single sample, without merging multiple samples or including any
+grouping information.
+
+```
+pattools mv-single-clustering -i /mnt/d/data/epiLungCancer/intermediate/vector/w5/mv/E05A2071.mv.gz -w5
+```

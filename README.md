@@ -121,12 +121,6 @@ pattools entropy -d 3 -w 4\
     -o /mnt/d/project/pattools/tmp/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.entropy
 ```
 
-#### mv-calcutation
-
-```
-pattools mv-calcutation -i /mnt/d/data/cacLung/raw/pat/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.motif.gz
-```
-
 #### region
 
 This command is used to convert a region between different coordinate systems, such as
