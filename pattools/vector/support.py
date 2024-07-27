@@ -1,4 +1,5 @@
 import sys
+import numpy as np
 from pattools.vector.utils import *
 from pattools.motif import Motif
 from pattools.vector.calculator import VectorCalculator
@@ -6,9 +7,11 @@ from pattools.io import Output, MvTabix, CpG2Tabix
 from pattools.vector.format import MvcFormat, MvFormat, BaseHeader
 from pattools.utils import is_gzip_file
 from pattools.log import logger
+from pattools.vector.utils import get_cpg_index_regions
 
 
-def extract_mvs(file_list, regions, outfile=None):
+def extract_mvs(file_list, region_file, outfile=None):
+    regions = get_cpg_index_regions(region_file)
     if is_gzip_file(file_list):
         mvc_files = [file_list]
         col_names = ['mvs']
@@ -62,6 +65,40 @@ def single_cluster(input_file, outfile=None, window: int = 4, regions=None):
                 chrom, cpg_idx, motif_count = line
                 vector_calculator.set_motif_count(chrom, cpg_idx, motif_count).cluster()
                 of.write(f"{vector_calculator.get_mvc_base()}\n")
+
+
+def find_motifs(input_file, mvc_file, outfile=None):
+    mvf = MvFormat(input_file)
+    mvf.readline()
+    logger.info(f"Input file info: format={mvf.header.format}, window={mvf.header.window}")
+    mvcf = MvcFormat(mvc_file)
+    with Output(filename=outfile, file_format='cgs', bgzip=True) as of:
+        for f in mvcf:
+            # TODO: The specific MV cluster should be marked in `mv-separating`. However, this feature was not implemented
+            #  in previous development versions, so the current default is to check the second cluster. This issue will
+            #  be addressed in future updates.
+            # TODO: The search range for cluster centers should be calculated; currently, it defaults to 1
+            center = mvcf.mvw.get_cluster_centers()[1]
+            if len(center) != mvf.header.window:
+                err = f'The dimension of the center, {len(center)}, does not match the size of the window, {mvf.header.window}'
+                logger.error(err)
+                raise Exception(err)
+            if mvf.mvw.cpg_idx > mvcf.mvw.cpg_idx:
+                continue
+            while mvf.mvw.cpg_idx < mvcf.mvw.cpg_idx:
+                mvf.readline()
+            if mvf.mvw.cpg_idx == mvcf.mvw.cpg_idx:
+                motif = Motif(mvf.header.window)
+                motif_count = motif.mvs2motif_count(mvf.mvw.mvs, remove_0=True)
+                hint = 0
+                for k, v in motif_count.items():
+                    obj = motif.motif2vector(k)
+                    dist = np.linalg.norm(np.array(center) - np.array(obj))
+                    if dist < 1:
+                        # print(mvcf.mvw.chrom, mvcf.mvw.cpg_idx, dist, v, obj, center)
+                        hint += v
+                of.write(f'{mvcf.mvw.chrom}\t{mvcf.mvw.cpg_idx}\t{hint}\n')
+                mvf.readline()
 
 
 def fix_mvc(mvc_file, cpg_bed=None, out=None):

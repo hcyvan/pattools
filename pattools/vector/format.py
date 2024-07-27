@@ -1,11 +1,13 @@
 import re
 import sys
-from collections import Counter
+from collections import Counter, OrderedDict
 from pattools.io import Open
+from pattools.motif import Motif
 
 
 class MvWindow:
-    def __init__(self):
+    def __init__(self, window=None):
+        self._window = window
         self.chrom = None
         self.cpg_idx = None
         self.mvs = None
@@ -40,7 +42,7 @@ class MvWindow:
 
 
 class MvcWindow:
-    def __init__(self, groups, group_samples):
+    def __init__(self, groups=None, group_samples=None):
         self._groups = groups
         self._group_samples = group_samples
         self.chrom = None
@@ -56,9 +58,18 @@ class MvcWindow:
         self._cluster_group_samples = None
         self._cluster_group_mvs_num_counter = []
         self._cluster_group_samples_num_counter = []
-
-        self._group_samples_counter = Counter(dict([(k, len(v)) for k, v in group_samples.items()]))
+        if group_samples is not None:
+            self._group_samples_counter = Counter(dict([(k, len(v)) for k, v in self._group_samples.items()]))
         self._mvc_str = None
+
+    def get_cluster_centers(self):
+        # TODO: this two line will be remove in the future
+        _cluster_str = self._cluster_center.replace('(', "")
+        _cluster_str = _cluster_str.replace(')', "")
+        centers = []
+        for center_str in _cluster_str.split('|'):
+            centers.append([float(x) for x in center_str.split(',')])
+        return centers
 
     def decode(self, mvc_str):
         self._mvc_str = mvc_str
@@ -77,7 +88,7 @@ class MvcWindow:
             self._cluster_group_mvs_num_counter = []
             self._cluster_group_samples_num_counter = []
             self._mvs_num = sum([int(x) for x in self.mvs.split('|')])
-            if self._mvs_num > 0:
+            if self._mvs_num > 0 and self._groups is not None:
                 for cluster in self._cluster_group_mvs_num.split('|'):
                     counter = Counter(dict(zip(self._groups, [int(x) for x in cluster.split(',')])))
                     self._cluster_group_mvs_num_counter.append(counter)
@@ -309,7 +320,7 @@ class MvFormat:
         while self._line and self._line.startswith('#'):
             self.header.decode(self._line)
             self._line = self._f.readline()
-        self.mvw = MvWindow()
+        self.mvw = MvWindow(self.header.window)
 
     def readline(self):
         _line = self._line

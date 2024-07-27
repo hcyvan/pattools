@@ -1,9 +1,8 @@
 from pattools.vector.clustering import methylation_vector_cluster
 from pattools.vector.separating import mv_separating
-from pattools.vector.support import extract_mvs, single_cluster, fix_mvc, fix_mv
+from pattools.vector.support import extract_mvs, single_cluster, find_motifs, fix_mvc, fix_mv
 from pattools.vector.vectorization import pat2mv
 from pattools.cmd import command, Cmd
-from pattools.vector.utils import get_cpg_index_regions
 
 
 @command('mv-extract', 'extract methylation vectors from .mv or .mvc files')
@@ -17,8 +16,7 @@ class VectorExtractCmd(Cmd):
                             help='The output file, If not set, output is sent to standard output.')
 
     def do(self, args):
-        regions = get_cpg_index_regions(args.region)
-        extract_mvs(args.input, regions, args.out)
+        extract_mvs(args.input, args.region, args.out)
 
 
 @command('mv-single-clustering', 'This command exclusively clusters the .mv file of a single sample, '
@@ -34,6 +32,19 @@ class VectorSingleClusteringCmd(Cmd):
 
     def do(self, args):
         single_cluster(args.input, args.out, window=args.window)
+
+
+@command('mv-find', 'This command is used to identify biomarkers recorded in the .mvc file '
+                    'within the .mv file.')
+class VectorFindCmd(Cmd):
+    def add_argument(self, parser):
+        parser.add_argument('-i', '--input', required=True, help='Input file, *.mv.gz')
+        parser.add_argument('-m', '--mvc-file', required=True, help='The .mvc format file.')
+        parser.add_argument('-o', '--out', default=None,
+                            help='The output file, If not set, output is sent to standard output.')
+
+    def do(self, args):
+        find_motifs(args.input, args.mvc_file, args.out)
 
 
 @command('mv-vectorization', 'Methylation vectors vectorization')

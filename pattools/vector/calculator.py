@@ -170,7 +170,7 @@ class VectorCalculator(object):
         _mvs = '|'.join([str(x) for x in motif_count_ordered.values()])
         centers = []
         for k, v in self._clusters_centroid.items():
-            centers.append(f"({','.join([f'{x:.3f}' for x in v])})")
+            centers.append(f"{','.join([f'{x:.3f}' for x in v])}")
         centers = '|'.join(centers)
         return f"{self._chr}\t{self._start}\t{_mvs}\t{self.get_clusters_number()}\t{centers}"
 
@@ -192,7 +192,7 @@ class VectorCalculator(object):
         _mvs = '|'.join([str(x) for x in motif_count_ordered.values()])
         centers = []
         for k, v in self._clusters_centroid.items():
-            centers.append(f"({','.join([f'{x:.3f}' for x in v])})")
+            centers.append(f"{','.join([f'{x:.3f}' for x in v])}")
         centers = '|'.join(centers)
 
         _group = np.array(self._group)

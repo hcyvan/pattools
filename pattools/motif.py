@@ -1,6 +1,5 @@
 import itertools
 from typing import Dict, List, Union
-import numpy as np
 from collections import OrderedDict
 
 
@@ -18,11 +17,11 @@ class Motif:
         self.motifs = self._get_motif_array()
         self.vectors = []
         self._vector_motif = dict()
-        for k, v in self.motif2vector().items():
+        for k, v in self._motif2vector().items():
             self.vectors.append(v)
             self._vector_motif[tuple(v)] = k
 
-    def motif2vector(self):
+    def _motif2vector(self):
         m2v = self.cache_motif2vector.get(self.count)
         if m2v:
             return m2v
@@ -31,6 +30,10 @@ class Motif:
             m2v[m] = list(map(lambda x: dict(C=1, T=0)[x], m))
         self.cache_motif2vector[self.count] = m2v
         return m2v
+
+    def motif2vector(self, motif: str):
+        m2v = self._motif2vector()
+        return m2v[motif]
 
     def vectors2motifs(self, vectors):
         return [self._vector_motif[tuple(x)] for x in vectors]
@@ -78,7 +81,7 @@ class Motif:
         :param counter: motif count dict.
         :return: array of motif vectors
         """
-        motif2vector_map = self.motif2vector()
+        motif2vector_map = self._motif2vector()
         vectors = []
         for k, v in counter.items():
             vectors.extend([motif2vector_map[k]] * v)
@@ -88,9 +91,11 @@ class Motif:
         motifs = self.vectors2motifs(vectors)
         return self.count_motifs(motifs)
 
-    def mvs2motif_count(self, mvs):
+    def mvs2motif_count(self, mvs, remove_0=False):
         count_arr = [int(x) for x in mvs.split('|')]
         motif_count = OrderedDict(zip(self._get_motif_array(), count_arr))
+        if remove_0:
+            return OrderedDict((k, v) for k, v in motif_count.items() if v != 0)
         return motif_count
 
     def _get_motif_array(self):
@@ -107,6 +112,7 @@ class Motif:
                     else:
                         motif += 'C'
                 motifs.append(motif)
+
         self.cache_motif_array[self.count] = motifs
         return motifs
 

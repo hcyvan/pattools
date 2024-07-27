@@ -207,6 +207,9 @@ class _TabixRandom:
 
 
 class _TabixSequential:
+    """
+    TODO: merge this class into _TabixRandom.
+    """
     def __init__(self, filename: str, region: str | List[str] = None):
         self._filename = filename
         self._regions_pointer = -1
