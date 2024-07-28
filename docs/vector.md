@@ -60,6 +60,16 @@ pattools mv-extract -i mvc_group.input -r ../LUAD.mvc -o LUAD.group.mvm
 pattools mv-extract -i mv_sample.input -r ../LUAD.mvc -o LUAD.sample.mvm
 ```
 
+### mv-find
+
+The mv-find tool is designed to identify methylation vectors within smvc (specific methylation vector
+clusters, obtained via mv-separating) across one or more samples.
+
+```
+pattools mv-find -i mv_sample.input -m ../LUAD.mvc -o LUAD.GSE186458.mvh
+pattools mv-find -i *.mv.gz -m ../LUAD.mvc -o LUAD.GSE186458.mvh
+```
+
 #### mv-single-clustering
 
 This command exclusively clusters the .mv file of a single sample, without merging multiple samples or including any
@@ -68,3 +78,21 @@ grouping information.
 ```
 pattools mv-single-clustering -i /mnt/d/data/epiLungCancer/intermediate/vector/w5/mv/E05A2071.mv.gz -w5
 ```
+
+## Input File List
+
+- mv-group-sample list
+- mv-sample list
+- mvc-group list
+
+### mv-sample list
+
+[*.mv.gz]\t[sample-label]
+
+```
+/path/to/GSM5652176_Adipocytes-Z000000T7.mv.gz        Adipocytes-Z000000T7
+/path/to/GSM5652177_Adipocytes-Z000000T9.mv.gz        Adipocytes-Z000000T9
+/path/to/GSM5652179_Aorta-Endothel-Z00000422.mv.gz    Aorta-Endothel-Z00000422
+/path/to/GSM5652180_Aorta-Endothel-Z0000043G.mv.gz    Aorta-Endothel-Z0000043G
+```
+

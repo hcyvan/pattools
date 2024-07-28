@@ -38,7 +38,7 @@ class VectorSingleClusteringCmd(Cmd):
                     'within the .mv file.')
 class VectorFindCmd(Cmd):
     def add_argument(self, parser):
-        parser.add_argument('-i', '--input', required=True, help='Input file, *.mv.gz')
+        parser.add_argument('-i', '--input', required=True, help='Input file, *.mv.gz/mv-sample list')
         parser.add_argument('-m', '--mvc-file', required=True, help='The .mvc format file.')
         parser.add_argument('-o', '--out', default=None,
                             help='The output file, If not set, output is sent to standard output.')
