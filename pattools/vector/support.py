@@ -80,11 +80,8 @@ def find_motifs(input_file, mvc_file, outfile=None):
         _col_names = "\t".join(col_names)
         of.write(f'#chrom\tcpg\t{_col_names}\n')
         for _ in mvcf:
-            # TODO: The specific MV cluster should be marked in `mv-separating`. However, this feature was not implemented
-            #  in previous development versions, so the current default is to check the second cluster. This issue will
-            #  be addressed in future updates.
             # TODO: The search range for cluster centers should be calculated; currently, it defaults to 1
-            center = mvcf.mvw.get_cluster_centers()[1]
+            center = mvcf.mvw.get_cluster_centers()[mvcf.mvw.get_specific_mvc()]
             chrom = mvcf.mvw.chrom
             cpg_idx = mvcf.mvw.cpg_idx
             if len(center) != header.window:
@@ -106,7 +103,7 @@ def find_motifs(input_file, mvc_file, outfile=None):
                         for k, v in motif_count.items():
                             obj = motif.motif2vector(k)
                             dist = np.linalg.norm(np.array(center) - np.array(obj))
-                            if dist < 1:
+                            if dist < 1.4:
                                 # print(mvcf.mvw.chrom, mvcf.mvw.cpg_idx, dist, v, obj, center)
                                 hint += v
                         _mvf.readline()

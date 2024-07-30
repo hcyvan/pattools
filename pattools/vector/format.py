@@ -1,8 +1,7 @@
 import re
 import sys
-from collections import Counter, OrderedDict
+from collections import Counter
 from pattools.io import Open
-from pattools.motif import Motif
 
 
 class MvWindow:
@@ -61,6 +60,7 @@ class MvcWindow:
         if group_samples is not None:
             self._group_samples_counter = Counter(dict([(k, len(v)) for k, v in self._group_samples.items()]))
         self._mvc_str = None
+        self._items = None
 
     def get_cluster_centers(self):
         # TODO: this two line will be remove in the future
@@ -71,10 +71,15 @@ class MvcWindow:
             centers.append([float(x) for x in center_str.split(',')])
         return centers
 
+    def get_specific_mvc(self):
+        # TODO add a child type of mvc
+        return int(self._items[12])
+
     def decode(self, mvc_str):
-        self._mvc_str = mvc_str
+        self._mvc_str = mvc_str.strip('\n')
         if self._mvc_str:
-            items = mvc_str.strip("\n").split('\t')
+            items = self._mvc_str.split('\t')
+            self._items = items
             self.chrom = items[0]
             self.cpg_idx = int(items[1])
             self.genome_start = int(items[2])
@@ -125,7 +130,7 @@ class MvcWindow:
             mvs_in_cluster_frac = _mvs_counter_target / _mvs_counter_total
             samples_in_group_frac = _samples_counter_target / _target_group_samples_total
             if mvs_in_cluster_frac >= min_mvs_in_cluster_frac and samples_in_group_frac >= min_samples_in_group_frac:
-                return mvs_in_cluster_frac, samples_in_group_frac
+                return mvs_in_cluster_frac, samples_in_group_frac, i
         return None
 
     def calc_meta(self):
@@ -268,8 +273,8 @@ class MvcFormat:
             _satisfied = self.mvw.satisfied(group, min_mvs_in_cluster_frac, min_samples_in_group_frac)
             if _satisfied:
                 if with_meta:
-                    mvs_in_cluster_frac, samples_in_group_frac = _satisfied
-                    f_out.write(f"{self._line}\t{mvs_in_cluster_frac}\t{samples_in_group_frac}\n")
+                    mvs_in_cluster_frac, samples_in_group_frac, _satisfied_cluster = _satisfied
+                    f_out.write(f"{self._line}\t{mvs_in_cluster_frac}\t{samples_in_group_frac}\t{_satisfied_cluster}\n")
                 else:
                     f_out.write(self._line + '\n')
             self._line = self._f.readline()
