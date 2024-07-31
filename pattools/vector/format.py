@@ -2,6 +2,8 @@ import re
 import sys
 from collections import Counter
 from pattools.io import Open
+from pattools.vector.calculator import VectorCalculator
+from pattools.motif import Motif
 
 
 class MvWindow:
@@ -41,7 +43,8 @@ class MvWindow:
 
 
 class MvcWindow:
-    def __init__(self, groups=None, group_samples=None):
+    def __init__(self, window=None, groups=None, group_samples=None):
+        self._window = window
         self._groups = groups
         self._group_samples = group_samples
         self.chrom = None
@@ -130,13 +133,20 @@ class MvcWindow:
             mvs_in_cluster_frac = _mvs_counter_target / _mvs_counter_total
             samples_in_group_frac = _samples_counter_target / _target_group_samples_total
             if mvs_in_cluster_frac >= min_mvs_in_cluster_frac and samples_in_group_frac >= min_samples_in_group_frac:
-                return mvs_in_cluster_frac, samples_in_group_frac, i
+                motif_cluster = self.calc_meta()
+                return mvs_in_cluster_frac, samples_in_group_frac, i + 1, motif_cluster
         return None
 
     def calc_meta(self):
+        vector_calculator = VectorCalculator(window=self._window, cluster='MRESC')
+        motif = Motif(self._window)
+        motif_count = motif.mvs2motif_count(self.mvs)
+        vector_calculator.set_motif_count(self.chrom, self.cpg_idx, motif_count)
+        vector_calculator.cluster()
+        motif_label = vector_calculator.get_motif_label_mark()
         if self._cluster_num < 2 or self._mvs_num < 80:
             return ""
-        return "meta"
+        return motif_label
 
 
 class BaseHeader:
@@ -265,7 +275,7 @@ class MvcFormat:
         while self._line and self._line.startswith('#'):
             self.header.decode(self._line)
             self._line = self._f.readline()
-        self.mvw = MvcWindow(self.header.groups, self.header.group_samples)
+        self.mvw = MvcWindow(self.header.window, self.header.groups, self.header.group_samples)
 
     def filter(self, f_out, group, min_mvs_in_cluster_frac=1, min_samples_in_group_frac=0.9, with_meta=False):
         while self._line:
@@ -273,8 +283,9 @@ class MvcFormat:
             _satisfied = self.mvw.satisfied(group, min_mvs_in_cluster_frac, min_samples_in_group_frac)
             if _satisfied:
                 if with_meta:
-                    mvs_in_cluster_frac, samples_in_group_frac, _satisfied_cluster = _satisfied
-                    f_out.write(f"{self._line}\t{mvs_in_cluster_frac}\t{samples_in_group_frac}\t{_satisfied_cluster}\n")
+                    mvs_in_cluster_frac, samples_in_group_frac, _satisfied_cluster, _motif_cluster = _satisfied
+                    f_out.write(
+                        f"{self._line}\t{mvs_in_cluster_frac}\t{samples_in_group_frac}\t{_satisfied_cluster}\t{_motif_cluster}\n")
                 else:
                     f_out.write(self._line + '\n')
             self._line = self._f.readline()

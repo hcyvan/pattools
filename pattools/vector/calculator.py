@@ -299,6 +299,22 @@ class VectorCalculator(object):
         label_counts = Counter(_labels)
         self._clusters_labels_count = OrderedDict(label_counts.most_common())
 
+    def get_motif_label_mark(self):
+        _motif = self.get_motif()
+        _motif_str_arr = _motif.vectors2motifs(self._vectors)
+        motif_order = dict()
+        for i, (k, v) in enumerate(self._clusters_labels_count.items()):
+            for label, motif_str in zip(self._labels, _motif_str_arr):
+                if k == label:
+                    motif_order[motif_str] = i + 1
+        out = []
+        for m in _motif.motifs:
+            if m in motif_order:
+                out.append(motif_order[m])
+            else:
+                out.append(0)
+        return '|'.join([str(x) for x in out])
+
     def _find_centroids(self):
         _labels = np.array(self._labels)
         _vectors = np.array(self._vectors)
