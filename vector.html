@@ -62,7 +62,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'vector';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="References" href="references.html" />
+    <link rel="next" title="File format" href="file_format.html" />
     <link rel="prev" title="Deconvolution" href="deconvolution.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -155,8 +155,8 @@
       
     
     
-    <img src="_static/logo.svg" class="logo__image only-light" alt="Pattools Document - Home"/>
-    <script>document.write(`<img src="_static/logo.svg" class="logo__image only-dark" alt="Pattools Document - Home"/>`);</script>
+    <img src="_static/logo.png" class="logo__image only-light" alt="Pattools Document - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Pattools Document - Home"/>`);</script>
   
   
 </a></div>
@@ -187,6 +187,7 @@
 <li class="toctree-l1"><a class="reference internal" href="matgen.html">Matrix generate</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Methylation vector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file_format.html">File format</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="how_to_contribute.html">How to contribute</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
@@ -362,7 +363,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -378,6 +381,28 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usage">Usage</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mv-vectorization">mv-vectorization</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mv-clustering">mv-clustering</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mv-separating">mv-separating</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mv-extract">mv-extract</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mv-find">mv-find</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mv-single-clustering">mv-single-clustering</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#input-file-list">Input File List</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mv-sample-list">mv-sample list</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -389,7 +414,12 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="methylation-vector">
 <h1>Methylation vector<a class="headerlink" href="#methylation-vector" title="Link to this heading">#</a></h1>
-<p>In the PAT format file, methylated CpG sites are denoted by ‘C’, and unmethylated CpG sites are denoted by ‘T’. In the vector representation of methylation, a ‘1’ corresponds to a methylated site, while a ‘0’ corresponds to an unmethylated site. Consequently, the sequence ‘CCTTCT’ in the PAT format can be represented by the vector [1, 1, 0, 0, 1, 0]. Continuous CpG sites of length <span class="math notranslate nohighlight">\(n\)</span> are used as a window, which contains several CpG motifs of the same length. These motifs can be converted into vector format. For instance, in a window of length 3, the following motif is included:</p>
+<p>In the PAT format file, methylated CpG sites are denoted by ‘C’, and unmethylated CpG sites are
+denoted by ‘T’. In the vector representation of methylation, a ‘1’ corresponds to a methylated
+site, while a ‘0’ corresponds to an unmethylated site. Consequently, the sequence ‘CCTTCT’ in the
+PAT format can be represented by the vector [1, 1, 0, 0, 1, 0]. Continuous CpG sites of length <span class="math notranslate nohighlight">\(n\)</span>
+are used as a window, which contains several CpG motifs of the same length. These motifs can be
+converted into vector format. For instance, in a window of length 3, the following motif is included:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{pmatrix}
@@ -400,7 +430,75 @@ document.write(`
 0 &amp; 0 &amp; 0 \\
 \end{pmatrix}
 \end{split}\]</div>
-<p>The vectors corresponding to motifs within a window of length <span class="math notranslate nohighlight">\(n\)</span> are situated within an <span class="math notranslate nohighlight">\(n\)</span>-dimensional Cartesian coordinate system.</p>
+<p>The vectors corresponding to motifs within a window of length <span class="math notranslate nohighlight">\(n\)</span> are situated within an <span class="math notranslate nohighlight">\(n\)</span>-dimensional
+cartesian coordinate system.</p>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">#</a></h2>
+<a class="bg-primary mb-1 reference internal image-reference" href="_images/vector-flow.png"><img alt="fishy" class="bg-primary mb-1 align-center" src="_images/vector-flow.png" style="width: 600px;" /></a>
+<section id="mv-vectorization">
+<h3>mv-vectorization<a class="headerlink" href="#mv-vectorization" title="Link to this heading">#</a></h3>
+<p>mv-vectorization is used to vectorize .pat files. You can adjust the window sizes based on your specific requirements.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pattools</span> <span class="n">mv</span><span class="o">-</span><span class="n">vectorization</span> <span class="o">-</span><span class="n">w</span> <span class="mi">5</span> <span class="o">-</span><span class="n">i</span> <span class="n">xxx</span><span class="o">.</span><span class="n">pat</span><span class="o">.</span><span class="n">gz</span> <span class="o">-</span><span class="n">o</span> <span class="n">xxx</span><span class="o">.</span><span class="n">mv</span><span class="o">.</span><span class="n">gz</span>
+</pre></div>
+</div>
+</section>
+<section id="mv-clustering">
+<h3>mv-clustering<a class="headerlink" href="#mv-clustering" title="Link to this heading">#</a></h3>
+<p>mv-clustering is a tool used to merge all samples and perform clustering on the combined MVs</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pattools</span> <span class="n">mv</span><span class="o">-</span><span class="n">clustering</span> <span class="o">-</span><span class="n">i</span> <span class="n">mv_group_sample</span><span class="o">.</span><span class="n">input</span> <span class="o">-</span><span class="n">c</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">CpG</span><span class="o">.</span><span class="n">bed</span><span class="o">.</span><span class="n">cpg</span><span class="o">.</span><span class="n">gz</span> <span class="o">-</span><span class="n">o</span> <span class="o">./</span><span class="n">lung</span><span class="o">.</span><span class="n">mvc</span><span class="o">.</span><span class="n">gz</span>
+</pre></div>
+</div>
+</section>
+<section id="mv-separating">
+<h3>mv-separating<a class="headerlink" href="#mv-separating" title="Link to this heading">#</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pattools</span> <span class="n">mv</span><span class="o">-</span><span class="n">separating</span> <span class="o">-</span><span class="n">i</span> <span class="o">./</span><span class="n">lung</span><span class="o">.</span><span class="n">mvc</span><span class="o">.</span><span class="n">gz</span> <span class="o">-</span><span class="n">g</span> <span class="mi">1</span> <span class="o">--</span><span class="n">frac</span><span class="o">-</span><span class="n">mvs</span> <span class="mf">0.8</span> <span class="o">--</span><span class="n">frac</span><span class="o">-</span><span class="n">samples</span> <span class="mf">0.1</span> <span class="o">-</span><span class="n">o</span> <span class="o">./</span><span class="n">LUAD</span><span class="o">.</span><span class="n">mvc</span>
+</pre></div>
+</div>
+</section>
+<section id="mv-extract">
+<h3>mv-extract<a class="headerlink" href="#mv-extract" title="Link to this heading">#</a></h3>
+<p>mv-extract is a tool designed to extract MVs from .mv and .mvc files, outputting the extracted data as an MVs matrix.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pattools</span> <span class="n">mv</span><span class="o">-</span><span class="n">extract</span> <span class="o">-</span><span class="n">i</span> <span class="n">mvc_group</span><span class="o">.</span><span class="n">input</span> <span class="o">-</span><span class="n">r</span> <span class="o">../</span><span class="n">LUAD</span><span class="o">.</span><span class="n">mvc</span> <span class="o">-</span><span class="n">o</span> <span class="n">LUAD</span><span class="o">.</span><span class="n">group</span><span class="o">.</span><span class="n">mvm</span>
+<span class="n">pattools</span> <span class="n">mv</span><span class="o">-</span><span class="n">extract</span> <span class="o">-</span><span class="n">i</span> <span class="n">mv_sample</span><span class="o">.</span><span class="n">input</span> <span class="o">-</span><span class="n">r</span> <span class="o">../</span><span class="n">LUAD</span><span class="o">.</span><span class="n">mvc</span> <span class="o">-</span><span class="n">o</span> <span class="n">LUAD</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">mvm</span>
+</pre></div>
+</div>
+</section>
+<section id="mv-find">
+<h3>mv-find<a class="headerlink" href="#mv-find" title="Link to this heading">#</a></h3>
+<p>The mv-find tool is designed to identify methylation vectors within smvc (specific methylation vector
+clusters, obtained via mv-separating) across one or more samples.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pattools</span> <span class="n">mv</span><span class="o">-</span><span class="n">find</span> <span class="o">-</span><span class="n">i</span> <span class="n">mv_sample</span><span class="o">.</span><span class="n">input</span> <span class="o">-</span><span class="n">m</span> <span class="o">../</span><span class="n">LUAD</span><span class="o">.</span><span class="n">mvc</span> <span class="o">-</span><span class="n">o</span> <span class="n">LUAD</span><span class="o">.</span><span class="n">GSE186458</span><span class="o">.</span><span class="n">mvh</span>
+<span class="n">pattools</span> <span class="n">mv</span><span class="o">-</span><span class="n">find</span> <span class="o">-</span><span class="n">i</span> <span class="o">*.</span><span class="n">mv</span><span class="o">.</span><span class="n">gz</span> <span class="o">-</span><span class="n">m</span> <span class="o">../</span><span class="n">LUAD</span><span class="o">.</span><span class="n">mvc</span> <span class="o">-</span><span class="n">o</span> <span class="n">LUAD</span><span class="o">.</span><span class="n">GSE186458</span><span class="o">.</span><span class="n">mvh</span>
+</pre></div>
+</div>
+<section id="mv-single-clustering">
+<h4>mv-single-clustering<a class="headerlink" href="#mv-single-clustering" title="Link to this heading">#</a></h4>
+<p>This command exclusively clusters the .mv file of a single sample, without merging multiple samples or including any
+grouping information.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pattools</span> <span class="n">mv</span><span class="o">-</span><span class="n">single</span><span class="o">-</span><span class="n">clustering</span> <span class="o">-</span><span class="n">i</span> <span class="o">/</span><span class="n">mnt</span><span class="o">/</span><span class="n">d</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">epiLungCancer</span><span class="o">/</span><span class="n">intermediate</span><span class="o">/</span><span class="n">vector</span><span class="o">/</span><span class="n">w5</span><span class="o">/</span><span class="n">mv</span><span class="o">/</span><span class="n">E05A2071</span><span class="o">.</span><span class="n">mv</span><span class="o">.</span><span class="n">gz</span> <span class="o">-</span><span class="n">w5</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="input-file-list">
+<h2>Input File List<a class="headerlink" href="#input-file-list" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>mv-group-sample list</p></li>
+<li><p>mv-sample list</p></li>
+<li><p>mvc-group list</p></li>
+</ul>
+<section id="mv-sample-list">
+<h3>mv-sample list<a class="headerlink" href="#mv-sample-list" title="Link to this heading">#</a></h3>
+<p>[*.mv.gz]\t[sample-label]</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">GSM5652176_Adipocytes</span><span class="o">-</span><span class="n">Z000000T7</span><span class="o">.</span><span class="n">mv</span><span class="o">.</span><span class="n">gz</span>        <span class="n">Adipocytes</span><span class="o">-</span><span class="n">Z000000T7</span>
+<span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">GSM5652177_Adipocytes</span><span class="o">-</span><span class="n">Z000000T9</span><span class="o">.</span><span class="n">mv</span><span class="o">.</span><span class="n">gz</span>        <span class="n">Adipocytes</span><span class="o">-</span><span class="n">Z000000T9</span>
+<span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">GSM5652179_Aorta</span><span class="o">-</span><span class="n">Endothel</span><span class="o">-</span><span class="n">Z00000422</span><span class="o">.</span><span class="n">mv</span><span class="o">.</span><span class="n">gz</span>    <span class="n">Aorta</span><span class="o">-</span><span class="n">Endothel</span><span class="o">-</span><span class="n">Z00000422</span>
+<span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">GSM5652180_Aorta</span><span class="o">-</span><span class="n">Endothel</span><span class="o">-</span><span class="n">Z0000043G</span><span class="o">.</span><span class="n">mv</span><span class="o">.</span><span class="n">gz</span>    <span class="n">Aorta</span><span class="o">-</span><span class="n">Endothel</span><span class="o">-</span><span class="n">Z0000043G</span>
+</pre></div>
+</div>
+</section>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -443,11 +541,11 @@ document.write(`
       </div>
     </a>
     <a class="right-next"
-       href="references.html"
+       href="file_format.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">References</p>
+        <p class="prev-next-title">File format</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -457,6 +555,35 @@ document.write(`
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usage">Usage</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mv-vectorization">mv-vectorization</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mv-clustering">mv-clustering</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mv-separating">mv-separating</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mv-extract">mv-extract</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mv-find">mv-find</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#mv-single-clustering">mv-single-clustering</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#input-file-list">Input File List</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mv-sample-list">mv-sample list</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

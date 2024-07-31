@@ -6,7 +6,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Search - Pattools Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File format &#8212; Pattools Document</title>
   
   
   
@@ -55,12 +57,11 @@
     <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'search';</script>
-  <script src="_static/searchtools.js"></script>
-  <script src="_static/language_data.js"></script>
-  <script src="searchindex.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'file_format';</script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="#" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="References" href="references.html" />
+    <link rel="prev" title="Methylation vector" href="vector.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -92,7 +93,7 @@
     <div class="search-button__overlay"></div>
     <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
-      action="#"
+      action="search.html"
       method="get">
   <i class="fa-solid fa-magnifying-glass"></i>
   <input type="search"
@@ -122,8 +123,6 @@
     <div class="bd-container__inner bd-page-width">
       
       
-      
-        
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -180,13 +179,13 @@
                 </a>
             </li>
         </ul>
-        <ul class="nav bd-sidenav">
+        <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="beta.html">Beta value</a></li>
 <li class="toctree-l1"><a class="reference internal" href="matgen.html">Matrix generate</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vector.html">Methylation vector</a></li>
-<li class="toctree-l1"><a class="reference internal" href="file_format.html">File format</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">File format</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="how_to_contribute.html">How to contribute</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
@@ -261,7 +260,7 @@
       
       
       
-      <li><a href="https://github.com/hcyvan/pattools/issues/new?title=Issue%20on%20page%20%2Fsearch.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/hcyvan/pattools/issues/new?title=Issue%20on%20page%20%2Ffile_format.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -273,6 +272,54 @@
   </span>
 <span class="btn__text-container">Open issue</span>
 </a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/file_format.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
 </li>
       
   </ul>
@@ -314,7 +361,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -323,42 +372,120 @@ document.write(`
 </div>
               
               
-  <div class="bd-search-container">
-    <h1>Search</h1>
-    <noscript>
-      <div class="admonition error">
-        <p class="admonition-title">Error</p>
-        <p>Please activate JavaScript to enable the search functionality.</p>
-      </div>
-    </noscript>
-    
-<form class="bd-search d-flex align-items-center"
-      action="#"
-      method="get">
-  <i class="fa-solid fa-magnifying-glass"></i>
-  <input type="search"
-         class="form-control"
-         name="q"
-         id="search-input"
-         placeholder="Search this book..."
-         aria-label="Search this book..."
-         autocomplete="off"
-         autocorrect="off"
-         autocapitalize="off"
-         spellcheck="false"/>
-  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-    <div id="search-results"></div>
-  </div>
-  <script>
-    // Activate the search field on page load
-    let searchInput = document.querySelector("form.bd-search input");
-    if (searchInput) {
-        searchInput.focus();
-        searchInput.select();
-        console.log("[PST]: Set focus on search field.");
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>File format</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cpg-start-indexed-format">CpG start indexed format</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pat-format">PAT format</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mv-format">MV format</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mvc-format">MVC format</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mvm-format">MVM format</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="file-format">
+<h1>File format<a class="headerlink" href="#file-format" title="Link to this heading">#</a></h1>
+<section id="cpg-start-indexed-format">
+<h2>CpG start indexed format<a class="headerlink" href="#cpg-start-indexed-format" title="Link to this heading">#</a></h2>
+<p>The CpG Start Indexed (CGS) format comprises two mandatory columns along with several informational columns:</p>
+<ul class="simple">
+<li><p><strong>Sequence name</strong> [chrom]: chromosome number or sequence names</p></li>
+<li><p><strong>CpG index</strong> [cpg_index]: This column lists the sequential positions of CpG sites., 1-based, end-inclusive
+position of the CpG index</p></li>
+<li><p><strong>Informational columns</strong> [optional]: column 3 to column <em>n</em>,</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">chr1</span>	<span class="mi">1</span>	<span class="n">c3</span>	<span class="n">c4</span>
+<span class="n">chr1</span>	<span class="mi">2</span>	<span class="n">c3</span>	<span class="n">c4</span>
+<span class="n">chr1</span>	<span class="mi">3</span>	<span class="n">c3</span>	<span class="n">c4</span>
+<span class="n">chr1</span>	<span class="mi">4</span>	<span class="n">c3</span>	<span class="n">c4</span>
+</pre></div>
+</div>
+<p>The file header is prefixed with a # symbol. The entire file is compressed using <em>bgzip</em> and indexed with
+<em>tabix</em>. Below is an example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bgzip</span> <span class="n">demo</span><span class="o">.</span><span class="n">cgs</span>
+<span class="n">tabix</span> <span class="o">-</span><span class="n">C</span> <span class="o">-</span><span class="n">s</span> <span class="mi">1</span> <span class="o">-</span><span class="n">b</span> <span class="mi">2</span> <span class="o">-</span><span class="n">e</span> <span class="mi">2</span> <span class="n">demo</span><span class="o">.</span><span class="n">cgs</span><span class="o">.</span><span class="n">gz</span>
+</pre></div>
+</div>
+<section id="pat-format">
+<h3>PAT format<a class="headerlink" href="#pat-format" title="Link to this heading">#</a></h3>
+<p>PAT is a CGS-based format, containing 4 columns:</p>
+<ul class="simple">
+<li><p><strong>Sequence name</strong></p></li>
+<li><p><strong>CpG index</strong></p></li>
+<li><p><strong>Methylation motif</strong>: This column denotes the methylation status of the CpG site</p>
+<ul>
+<li><p>‘C’: methylated CpGs</p></li>
+<li><p>‘T’: unmethylated CpGs</p></li>
+<li><p>‘.’: unknown methylation status</p></li>
+</ul>
+</li>
+<li><p><strong>Motif count</strong>: This column records the frequency of each motif described in column 3</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">chr1</span>    <span class="mi">755</span>     <span class="n">CCCTCCCCTCTTCCT</span> <span class="mi">1</span>
+<span class="n">chr1</span>    <span class="mi">755</span>     <span class="n">TTTT</span>    <span class="mi">2</span>
+<span class="n">chr1</span>    <span class="mi">756</span>     <span class="n">CCCCCTC</span> <span class="mi">1</span>
+<span class="n">chr1</span>    <span class="mi">756</span>     <span class="n">CCCCCT</span><span class="o">....</span><span class="n">CCCC</span>  <span class="mi">10</span>
+<span class="n">chr1</span>    <span class="mi">758</span>     <span class="n">CCCCCCCCCCCC</span>    <span class="mi">4</span>
+<span class="n">chr1</span>    <span class="mi">758</span>     <span class="n">CCTTCCCTCCC</span>     <span class="mi">1</span>
+</pre></div>
+</div>
+</section>
+<section id="mv-format">
+<h3>MV format<a class="headerlink" href="#mv-format" title="Link to this heading">#</a></h3>
+<p>MV (methylation vector) format is a CGS-based format</p>
+</section>
+<section id="mvc-format">
+<h3>MVC format<a class="headerlink" href="#mvc-format" title="Link to this heading">#</a></h3>
+<p>MVC (methylation vector cluster) format is a CGS-based format</p>
+</section>
+<section id="mvm-format">
+<h3>MVM format<a class="headerlink" href="#mvm-format" title="Link to this heading">#</a></h3>
+<p>MVM (methylation vector matrix) format is a CGS-based format</p>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
     }
-  </script>
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
 
               
               
@@ -367,12 +494,51 @@ document.write(`
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="vector.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Methylation vector</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="references.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">References</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cpg-start-indexed-format">CpG start indexed format</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pat-format">PAT format</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mv-format">MV format</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mvc-format">MVC format</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mvm-format">MVM format</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

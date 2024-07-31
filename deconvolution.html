@@ -153,8 +153,8 @@
       
     
     
-    <img src="_static/logo.svg" class="logo__image only-light" alt="Pattools Document - Home"/>
-    <script>document.write(`<img src="_static/logo.svg" class="logo__image only-dark" alt="Pattools Document - Home"/>`);</script>
+    <img src="_static/logo.png" class="logo__image only-light" alt="Pattools Document - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Pattools Document - Home"/>`);</script>
   
   
 </a></div>
@@ -185,6 +185,7 @@
 <li class="toctree-l1"><a class="reference internal" href="matgen.html">Matrix generate</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Deconvolution</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vector.html">Methylation vector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file_format.html">File format</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="how_to_contribute.html">How to contribute</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
@@ -360,7 +361,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -376,6 +379,14 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usage">usage</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -388,12 +399,29 @@ document.write(`
   <section class="tex2jax_ignore mathjax_ignore" id="deconvolution">
 <h1>Deconvolution<a class="headerlink" href="#deconvolution" title="Link to this heading">#</a></h1>
 <p>Pattools facilitates multiple deconvolution algorithms tailored to methylation data analysis.
-The deconvolution algorithms implemented by <em>pattools deconv</em> include:</p>
+The deconvolution algorithms implemented by <code class="docutils literal notranslate"><span class="pre">pattools</span> <span class="pre">deconv</span></code> include:</p>
 <ul class="simple">
-<li><p>sun <span id="id1">[<a class="reference internal" href="references.html#id3" title="Kun Sun, Peiyong Jiang, K. C. Allen Chan, John Wong, Yvonne K. Y. Cheng, Raymond H. S. Liang, Wai-kong Chan, Edmond S. K. Ma, Stephen L. Chan, Suk Hang Cheng, Rebecca W. Y. Chan, Yu K. Tong, Simon S. M. Ng, Raymond S. M. Wong, David S. C. Hui, Tse Ngong Leung, Tak Y. Leung, Paul B. S. Lai, Rossa W. K. Chiu, and Yuk Ming Dennis Lo. Plasma DNA tissue mapping by genome-wide methylation sequencing for noninvasive prenatal, cancer, and transplantation assessments. Proceedings of the National Academy of Sciences of the United States of America, 112(40):E5503–E5512, October 2015. URL: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4603482/ (visited on 2024-05-21), doi:10.1073/pnas.1508736112.">Sun <em>et al.</em>, 2015</a>]</span></p></li>
-<li><p>moss <span id="id2">[<a class="reference internal" href="references.html#id4" title="Joshua Moss, Judith Magenheim, Daniel Neiman, Hai Zemmour, Netanel Loyfer, Amit Korach, Yaacov Samet, Myriam Maoz, Henrik Druid, Peter Arner, Keng-Yeh Fu, Endre Kiss, Kirsty L. Spalding, Giora Landesberg, Aviad Zick, Albert Grinshpun, A. M. James Shapiro, Markus Grompe, Avigail Dreazan Wittenberg, Benjamin Glaser, Ruth Shemer, Tommy Kaplan, and Yuval Dor. Comprehensive human cell-type methylation atlas reveals origins of circulating cell-free DNA in health and disease. Nature Communications, 9(1):5068, November 2018. Number: 1 Publisher: Nature Publishing Group. URL: https://www.nature.com/articles/s41467-018-07466-6 (visited on 2024-02-22), doi:10.1038/s41467-018-07466-6.">Moss <em>et al.</em>, 2018</a>]</span></p></li>
-<li><p>loyfer <span id="id3">[<a class="reference internal" href="references.html#id2" title="Netanel Loyfer, Jonathan Rosenski, and Tommy Kaplan. Wgbstools: a computational suite for dna methylation sequencing data representation, visualization, and analysis. bioRxiv, 2024. doi:10.1101/2024.05.08.593132.">Loyfer <em>et al.</em>, 2024</a>]</span></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sun</span></code> <span id="id1">[<a class="reference internal" href="references.html#id3" title="Kun Sun, Peiyong Jiang, K. C. Allen Chan, John Wong, Yvonne K. Y. Cheng, Raymond H. S. Liang, Wai-kong Chan, Edmond S. K. Ma, Stephen L. Chan, Suk Hang Cheng, Rebecca W. Y. Chan, Yu K. Tong, Simon S. M. Ng, Raymond S. M. Wong, David S. C. Hui, Tse Ngong Leung, Tak Y. Leung, Paul B. S. Lai, Rossa W. K. Chiu, and Yuk Ming Dennis Lo. Plasma DNA tissue mapping by genome-wide methylation sequencing for noninvasive prenatal, cancer, and transplantation assessments. Proceedings of the National Academy of Sciences of the United States of America, 112(40):E5503–E5512, October 2015. URL: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4603482/ (visited on 2024-05-21), doi:10.1073/pnas.1508736112.">Sun <em>et al.</em>, 2015</a>]</span> ： based on the methylation densities (i.e., the percentage of CpGs being
+methylated within a 500-bp unit) of the methylation biomarker</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">moss</span></code> <span id="id2">[<a class="reference internal" href="references.html#id4" title="Joshua Moss, Judith Magenheim, Daniel Neiman, Hai Zemmour, Netanel Loyfer, Amit Korach, Yaacov Samet, Myriam Maoz, Henrik Druid, Peter Arner, Keng-Yeh Fu, Endre Kiss, Kirsty L. Spalding, Giora Landesberg, Aviad Zick, Albert Grinshpun, A. M. James Shapiro, Markus Grompe, Avigail Dreazan Wittenberg, Benjamin Glaser, Ruth Shemer, Tommy Kaplan, and Yuval Dor. Comprehensive human cell-type methylation atlas reveals origins of circulating cell-free DNA in health and disease. Nature Communications, 9(1):5068, November 2018. Number: 1 Publisher: Nature Publishing Group. URL: https://www.nature.com/articles/s41467-018-07466-6 (visited on 2024-02-22), doi:10.1038/s41467-018-07466-6.">Moss <em>et al.</em>, 2018</a>]</span> : based on the beta values of the Illumina Infinium Human Methylation 450K or EPIC BeadChip arrays</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">loyfer</span></code> <span id="id3">[<a class="reference internal" href="references.html#id2" title="Netanel Loyfer, Jonathan Rosenski, and Tommy Kaplan. Wgbstools: a computational suite for dna methylation sequencing data representation, visualization, and analysis. bioRxiv, 2024. doi:10.1101/2024.05.08.593132.">Loyfer <em>et al.</em>, 2024</a>]</span> : based on the uxm ratios of the DNA regions</p></li>
 </ul>
+<section id="usage">
+<h2>usage<a class="headerlink" href="#usage" title="Link to this heading">#</a></h2>
+<p>take <code class="docutils literal notranslate"><span class="pre">sun</span></code> for example</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># View the cell components for each method</span>
+pattools<span class="w"> </span>deconv-helper<span class="w"> </span>-m<span class="w"> </span>sun<span class="w"> </span>
+
+<span class="c1"># run </span>
+pattools<span class="w"> </span>deconv<span class="w"> </span>-m<span class="w"> </span>sun<span class="w"> </span>-g<span class="w"> </span>hg38<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-c<span class="w"> </span>/mnt/d/project/wgbs_tools/references/hg38/CpG.bed.gz<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-p<span class="w"> </span>/mnt/d/data/cacLung/raw/pat/GSM5652289_Blood-T-Eff-CD8-Z0000041F.hg38.pat.gz<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-o<span class="w"> </span>/mnt/d/project/pattools/tmp/out.csv<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--include<span class="w"> </span>T-cells<span class="w"> </span>B-cells<span class="w"> </span>Neutrophils<span class="w"> </span><span class="se">\ </span>
+<span class="w">    </span>--ignore<span class="w"> </span>Liver<span class="w"> </span>Lung<span class="w"> </span>
+</pre></div>
+</div>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -450,6 +478,21 @@ The deconvolution algorithms implemented by <em>pattools deconv</em> include:</p
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usage">usage</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
