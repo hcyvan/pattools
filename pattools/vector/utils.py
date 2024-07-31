@@ -1,5 +1,6 @@
 import re
 from pathlib import Path
+from pattools.utils import is_gzip_file
 
 
 def parse_mv_group_sample_file(file_list, target_groups=None):
@@ -23,15 +24,26 @@ def parse_mv_group_sample_file(file_list, target_groups=None):
     return input_files, groups, samples
 
 
-def parse_mvc_group_file(file_list):
-    input_files = []
-    groups = []
-    with open(file_list, 'r') as f:
-        for line in f:
-            line = line.strip().split('\t')
-            input_files.append(line[0])
-            groups.append(line[1])
-    return input_files, groups
+def parse_mv_sample_file(file_list, default_col_name='mvs'):
+    """
+    This function is used to parse the mv-sample list or mvc-group list. If the input is a
+    single *.mv.gz or *.mvc.gz, it will format and return a compatible formats
+    @param default_col_name:
+    @param file_list:
+    @return:
+    """
+    if is_gzip_file(file_list):
+        mv_files = [file_list]
+        col_names = [default_col_name]
+    else:
+        mv_files = []
+        col_names = []
+        with open(file_list, 'r') as f:
+            for line in f:
+                line = line.strip().split('\t')
+                mv_files.append(line[0])
+                col_names.append(line[1])
+    return mv_files, col_names
 
 
 def parse_region_string(region_string):

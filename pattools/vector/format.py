@@ -5,7 +5,8 @@ from pattools.io import Open
 
 
 class MvWindow:
-    def __init__(self):
+    def __init__(self, window=None):
+        self._window = window
         self.chrom = None
         self.cpg_idx = None
         self.mvs = None
@@ -40,7 +41,7 @@ class MvWindow:
 
 
 class MvcWindow:
-    def __init__(self, groups, group_samples):
+    def __init__(self, groups=None, group_samples=None):
         self._groups = groups
         self._group_samples = group_samples
         self.chrom = None
@@ -56,14 +57,29 @@ class MvcWindow:
         self._cluster_group_samples = None
         self._cluster_group_mvs_num_counter = []
         self._cluster_group_samples_num_counter = []
-
-        self._group_samples_counter = Counter(dict([(k, len(v)) for k, v in group_samples.items()]))
+        if group_samples is not None:
+            self._group_samples_counter = Counter(dict([(k, len(v)) for k, v in self._group_samples.items()]))
         self._mvc_str = None
+        self._items = None
+
+    def get_cluster_centers(self):
+        # TODO: this two line will be remove in the future
+        _cluster_str = self._cluster_center.replace('(', "")
+        _cluster_str = _cluster_str.replace(')', "")
+        centers = []
+        for center_str in _cluster_str.split('|'):
+            centers.append([float(x) for x in center_str.split(',')])
+        return centers
+
+    def get_specific_mvc(self):
+        # TODO add a child type of mvc
+        return int(self._items[12])
 
     def decode(self, mvc_str):
-        self._mvc_str = mvc_str
+        self._mvc_str = mvc_str.strip('\n')
         if self._mvc_str:
-            items = mvc_str.strip("\n").split('\t')
+            items = self._mvc_str.split('\t')
+            self._items = items
             self.chrom = items[0]
             self.cpg_idx = int(items[1])
             self.genome_start = int(items[2])
@@ -77,7 +93,7 @@ class MvcWindow:
             self._cluster_group_mvs_num_counter = []
             self._cluster_group_samples_num_counter = []
             self._mvs_num = sum([int(x) for x in self.mvs.split('|')])
-            if self._mvs_num > 0:
+            if self._mvs_num > 0 and self._groups is not None:
                 for cluster in self._cluster_group_mvs_num.split('|'):
                     counter = Counter(dict(zip(self._groups, [int(x) for x in cluster.split(',')])))
                     self._cluster_group_mvs_num_counter.append(counter)
@@ -114,7 +130,7 @@ class MvcWindow:
             mvs_in_cluster_frac = _mvs_counter_target / _mvs_counter_total
             samples_in_group_frac = _samples_counter_target / _target_group_samples_total
             if mvs_in_cluster_frac >= min_mvs_in_cluster_frac and samples_in_group_frac >= min_samples_in_group_frac:
-                return mvs_in_cluster_frac, samples_in_group_frac
+                return mvs_in_cluster_frac, samples_in_group_frac, i
         return None
 
     def calc_meta(self):
@@ -257,8 +273,8 @@ class MvcFormat:
             _satisfied = self.mvw.satisfied(group, min_mvs_in_cluster_frac, min_samples_in_group_frac)
             if _satisfied:
                 if with_meta:
-                    mvs_in_cluster_frac, samples_in_group_frac = _satisfied
-                    f_out.write(f"{self._line}\t{mvs_in_cluster_frac}\t{samples_in_group_frac}\n")
+                    mvs_in_cluster_frac, samples_in_group_frac, _satisfied_cluster = _satisfied
+                    f_out.write(f"{self._line}\t{mvs_in_cluster_frac}\t{samples_in_group_frac}\t{_satisfied_cluster}\n")
                 else:
                     f_out.write(self._line + '\n')
             self._line = self._f.readline()
@@ -309,7 +325,7 @@ class MvFormat:
         while self._line and self._line.startswith('#'):
             self.header.decode(self._line)
             self._line = self._f.readline()
-        self.mvw = MvWindow()
+        self.mvw = MvWindow(self.header.window)
 
     def readline(self):
         _line = self._line

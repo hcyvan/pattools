@@ -165,6 +165,15 @@ class VectorCalculator(object):
             return self._distance_matrix[m + 1, n + 1]
         return None
 
+    def get_mvc_base(self):
+        motif_count_ordered: OrderedDict[str, int] = self.get_motif().count_motifs(self._motif_count)
+        _mvs = '|'.join([str(x) for x in motif_count_ordered.values()])
+        centers = []
+        for k, v in self._clusters_centroid.items():
+            centers.append(f"{','.join([f'{x:.3f}' for x in v])}")
+        centers = '|'.join(centers)
+        return f"{self._chr}\t{self._start}\t{_mvs}\t{self.get_clusters_number()}\t{centers}"
+
     def get_mvc(self, group_order, start, end):
         """
         MVC will output information about _labels, _group and _sample, such as:
@@ -179,12 +188,11 @@ class VectorCalculator(object):
         @return:
         """
 
-        self._motif_count.values()
         motif_count_ordered: OrderedDict[str, int] = self.get_motif().count_motifs(self._motif_count)
-        motif_tag = '|'.join([str(x) for x in motif_count_ordered.values()])
+        _mvs = '|'.join([str(x) for x in motif_count_ordered.values()])
         centers = []
         for k, v in self._clusters_centroid.items():
-            centers.append(f"({','.join([f'{x:.3f}' for x in v])})")
+            centers.append(f"{','.join([f'{x:.3f}' for x in v])}")
         centers = '|'.join(centers)
 
         _group = np.array(self._group)
@@ -222,7 +230,7 @@ class VectorCalculator(object):
                 samples_.append(':'.join([str(x) for x in samples]))
             cluster_group_samples.append(','.join(samples_))
         cluster_group_samples = '|'.join(cluster_group_samples)
-        return f"{self._chr}\t{self._start}\t{start - 1}\t{end}\t{motif_tag}\t{self.get_clusters_number()}\t{centers}\t{cluster_group_label_count}\t{cluster_group_sample_count}\t{cluster_group_samples}"
+        return f"{self._chr}\t{self._start}\t{start - 1}\t{end}\t{_mvs}\t{self.get_clusters_number()}\t{centers}\t{cluster_group_label_count}\t{cluster_group_sample_count}\t{cluster_group_samples}"
 
     def _do_cluster(self):
         _vectors = np.array(self._vectors)
