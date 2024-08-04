@@ -1,6 +1,6 @@
 from pattools.vector.clustering import methylation_vector_cluster
 from pattools.vector.separating import mv_separating
-from pattools.vector.support import extract_mvs, single_cluster, find_motifs, fix_mvc, fix_mv
+from pattools.vector.support import extract_mvs, single_cluster, find_motifs, qc, fix_mvc, fix_mv
 from pattools.vector.vectorization import pat2mv
 from pattools.cmd import command, Cmd
 
@@ -108,6 +108,17 @@ class VectorSeparatingCmd(Cmd):
     def do(self, args):
         mv_separating(args.input, args.group, args.frac_mvs, args.frac_samples, output_file=args.out,
                       with_meta=args.with_meta)
+
+
+@command('mv-qc', 'qc')
+class VectorFixQC(Cmd):
+    def add_argument(self, parser):
+        parser.add_argument('-i', '--input', required=True, help='Input file list')
+        parser.add_argument('-o', '--out', default=None,
+                            help='The output file, If not set, output is sent to standard output.')
+
+    def do(self, args):
+        qc(args.input, args.out)
 
 
 @command('mv-mvc-fix', 'fix mvc file')

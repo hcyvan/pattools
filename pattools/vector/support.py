@@ -1,4 +1,5 @@
 import sys
+import gzip
 import numpy as np
 from pattools.vector.utils import *
 from pattools.motif import Motif
@@ -112,6 +113,40 @@ def find_motifs(input_file, mvc_file, outfile=None):
                         mvs_list.append(0)
             hint_str = "\t".join([str(x) for x in mvs_list])
             of.write(f'{chrom}\t{cpg_idx}\t{hint_str}\n')
+
+
+def is_no_mvs(s):
+    pattern = r'^[0|]*$'
+    ret = bool(re.match(pattern, s))
+    return ret
+
+
+def qc(input_file, outfile):
+    with Output(outfile) as of:
+        mvc = MvcFormat(input_file)
+        window = mvc.header.window
+        mvs_total = np.zeros(2 ** window, dtype=np.int64)
+        window_count = 0
+        with gzip.open(input_file, 'rt') as gzf:
+            i = 0
+            for line in gzf:
+                i += 1
+                if i % 1000000 == 0:
+                    logger.info(f"parse {i} line")
+                if line.startswith("#"):
+                    continue
+                line = line.strip()
+                mvs = line.split('\t')[4]
+                if is_no_mvs(mvs):
+                    continue
+                mvs_np = np.array([int(x) for x in mvs.split('|')], dtype=np.int64)
+                mvs_total = mvs_total + mvs_np
+                window_count += 1
+        mvs_agv = mvs_total / window_count
+        total_str = "|".join([str(x) for x in mvs_total])
+        agv_str = "|".join([str(round(x, 2)) for x in mvs_agv])
+        of.write("#window\ttotal\tcount\tagv\n")
+        of.write(f"{window}\t{total_str}\t{window_count}\t{agv_str}\n")
 
 
 def fix_mvc(mvc_file, cpg_bed=None, out=None):
