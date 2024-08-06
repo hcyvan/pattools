@@ -126,27 +126,45 @@ def qc(input_file, outfile):
         mvc = MvcFormat(input_file)
         window = mvc.header.window
         mvs_total = np.zeros(2 ** window, dtype=np.int64)
+        window_not_empty_count = 0
         window_count = 0
+        window_size = 0
+        chr_count = 0
+        chr_current = ""
         with gzip.open(input_file, 'rt') as gzf:
             i = 0
             for line in gzf:
                 i += 1
-                if i % 1000000 == 0:
+                if i % 10000 == 0:
+                    break
                     logger.info(f"parse {i} line")
                 if line.startswith("#"):
                     continue
+                window_count += 1
                 line = line.strip()
-                mvs = line.split('\t')[4]
+                items = line.split('\t')
+                mvs = items[4]
+                chr = items[0]
+                genome_start = int(items[2])
+                genome_end = int(items[3])
+                if chr != chr_current:
+                    chr_count += 1
+
+                if window_size == 0:
+                    window_size = genome_end - genome_start
+                else:
+                    window_size = (window_size + genome_end - genome_start)/2
                 if is_no_mvs(mvs):
                     continue
                 mvs_np = np.array([int(x) for x in mvs.split('|')], dtype=np.int64)
                 mvs_total = mvs_total + mvs_np
-                window_count += 1
-        mvs_agv = mvs_total / window_count
+                window_not_empty_count += 1
+        mvs_agv = mvs_total / window_not_empty_count
         total_str = "|".join([str(x) for x in mvs_total])
         agv_str = "|".join([str(round(x, 2)) for x in mvs_agv])
-        of.write("#window\ttotal\tcount\tagv\n")
-        of.write(f"{window}\t{total_str}\t{window_count}\t{agv_str}\n")
+        #window_bp_avg = window_size / window_count
+        of.write("#window\ttotalMVs\tcount\tcountNotEmpty\tavgMVs\twindowBpAvg\n")
+        of.write(f"{window}\t{total_str}\t{window_count}\t{window_not_empty_count}\t{agv_str}\t{window_size:.2f}\n")
 
 
 def fix_mvc(mvc_file, cpg_bed=None, out=None):
