@@ -1,4 +1,5 @@
 import itertools
+import numpy as np
 from typing import Dict, List, Union
 from collections import OrderedDict
 
@@ -30,6 +31,12 @@ class Motif:
             m2v[m] = list(map(lambda x: dict(C=1, T=0)[x], m))
         self.cache_motif2vector[self.count] = m2v
         return m2v
+
+    def vector0(self):
+        return self.vectors[-1]
+
+    def scale(self):
+        return np.linalg.norm(self.vectors[0], ord=2)
 
     def motif2vector(self, motif: str):
         m2v = self._motif2vector()

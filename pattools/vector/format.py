@@ -1,9 +1,13 @@
 import re
 import sys
 from collections import Counter
+
+import numpy as np
+
 from pattools.io import Open
 from pattools.vector.calculator import VectorCalculator
 from pattools.motif import Motif
+from scipy.spatial.distance import cdist
 
 
 class MvWindow:
@@ -119,7 +123,7 @@ class MvcWindow:
     def encode(self):
         return f"{self.chrom}\t{self.cpg_idx}\t{self.genome_start}\t{self.genome_end}\t{self.mvs}\t{self._cluster_num}\t{self._cluster_center}\t{self._cluster_group_mvs_num}\t{self._cluster_group_samples_num}\t{self._cluster_group_samples}"
 
-    def satisfied(self, target, min_mvs_in_cluster_frac=1.0, min_samples_in_group_frac=0.9, min_mvs_num=80):
+    def satisfied(self, target, min_smvp=1.0, min_ssp=0.9, min_mvs_num=80):
         if self._cluster_num < 2 or self._mvs_num < min_mvs_num:
             return None
         _target_group_samples_total = self._group_samples_counter[target]
@@ -132,9 +136,15 @@ class MvcWindow:
             _samples_counter_target = _samples_counter[target]
             mvs_in_cluster_frac = _mvs_counter_target / _mvs_counter_total
             samples_in_group_frac = _samples_counter_target / _target_group_samples_total
-            if mvs_in_cluster_frac >= min_mvs_in_cluster_frac and samples_in_group_frac >= min_samples_in_group_frac:
+            if mvs_in_cluster_frac >= min_smvp and samples_in_group_frac >= min_ssp:
                 motif_cluster = self.calc_meta()
-                return mvs_in_cluster_frac, samples_in_group_frac, i + 1, motif_cluster
+                _centers = self.get_cluster_centers()
+                distances = cdist(np.array([_centers[i]]), np.array(_centers))[0]
+                i0 = np.argmax(distances)
+                motif = Motif(self._window)
+                _scale = motif.scale()
+                i0v0, i1v0 = cdist(np.array([motif.vector0()]), np.array(_centers)[[i0, i]])[0]
+                return mvs_in_cluster_frac, samples_in_group_frac, i0, i, i0v0 / _scale, i1v0 / _scale, motif_cluster
         return None
 
     def calc_meta(self):
@@ -283,9 +293,9 @@ class MvcFormat:
             _satisfied = self.mvw.satisfied(group, min_mvs_in_cluster_frac, min_samples_in_group_frac)
             if _satisfied:
                 if with_meta:
-                    mvs_in_cluster_frac, samples_in_group_frac, _satisfied_cluster, _motif_cluster = _satisfied
+                    smvp, ssp, i0, i1, i0v0, i1v0, _motif_cluster = _satisfied
                     f_out.write(
-                        f"{self._line}\t{mvs_in_cluster_frac}\t{samples_in_group_frac}\t{_satisfied_cluster}\t{_motif_cluster}\n")
+                        f"{self._line}\t{smvp}\t{ssp}\t{i0}\t{i1}\t{i0v0:.4f}\t{i1v0:.4f}\t{_motif_cluster}\n")
                 else:
                     f_out.write(self._line + '\n')
             self._line = self._f.readline()
