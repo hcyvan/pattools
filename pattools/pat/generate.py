@@ -1,4 +1,5 @@
 from pattools.io import Output, Open
+from pattools.pat.pat import PatStep
 from pattools.log import logger
 
 
@@ -7,3 +8,32 @@ def compress_and_tabix_pat(input_file, output):
     with Open(input_file) as infile, Output(output, file_format='pat', bgzip=True) as of:
         for line in infile:
             of.write(line)
+
+
+def merge_pat(pat_files, output):
+    pats = []
+    top = []
+    for pat_file in pat_files:
+        pat = PatStep(pat_file)
+        pats.append(pat)
+        top.append(pat.read_item())
+    with Output(output, file_format='pat', bgzip=True) as of:
+        while True:
+            if all(x is None for x in top):
+                break
+            cpg_least = 9999999999999
+            for item in top:
+                if item:
+                    if item.cpg < cpg_least:
+                        cpg_least = item.cpg
+            pat_item = None
+            for i, item in enumerate(top):
+                if item:
+                    if item.cpg == cpg_least:
+                        if pat_item is None:
+                            pat_item = item
+                        else:
+                            pat_item += item
+                        top[i] = pats[i].read_item()
+            for line in pat_item.get_lines():
+                of.write(line + '\n')

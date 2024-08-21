@@ -20,6 +20,43 @@ class PatIterator:
         raise StopIteration
 
 
+class PatItem:
+    def __init__(self, chrom, cpg):
+        self.chrom = chrom
+        self.cpg = cpg
+        self.counter = Counter()
+
+    def __add__(self, other):
+        item = PatItem(self.chrom, self.cpg)
+        item.counter.update(self.counter)
+        item.counter.update(other.counter)
+        return item
+
+    def get_lines(self):
+        lines = []
+        for k, v in self.counter.items():
+            lines.append(f'{self.chrom}\t{self.cpg}\t{k}\t{v}')
+        return lines
+    def __str__(self):
+        return f'{self.chrom}\t{self.cpg}\t{self.counter}'
+
+    def __repr__(self):
+        return self.__str__()
+
+
+class PatStep(PatIterator):
+    def read_item(self):
+        if self.line:
+            pat_item = PatItem(self.line[0], int(self.line[1]))
+            pat_item.counter.update([self.line[2]] * int(self.line[3]))
+            self.line = self.read_next_line()
+            while self.line and int(self.line[1]) == pat_item.cpg:
+                pat_item.counter.update([self.line[2]] * int(self.line[3]))
+                self.line = self.read_next_line()
+            return pat_item
+        return None
+
+
 class PatWindow(PatIterator):
     """
     This class is used to split Pat file into windows
