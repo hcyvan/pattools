@@ -89,7 +89,6 @@ def find_motifs(input_file, mvc_file, outfile=None):
                 err = f'The dimension of the center, {len(center)}, does not match the size of the window, {header.window}'
                 logger.error(err)
                 raise Exception(err)
-
             mvs_list = []
             for i, _mvf in enumerate(mvf_arr):
                 if _mvf.mvw.cpg_idx is None or _mvf.mvw.cpg_idx > cpg_idx:
@@ -104,8 +103,7 @@ def find_motifs(input_file, mvc_file, outfile=None):
                         for k, v in motif_count.items():
                             obj = motif.motif2vector(k)
                             dist = np.linalg.norm(np.array(center) - np.array(obj))
-                            if dist < 1.4:
-                                # print(mvcf.mvw.chrom, mvcf.mvw.cpg_idx, dist, v, obj, center)
+                            if dist < 1:
                                 hint += v
                         _mvf.readline()
                         mvs_list.append(hint)

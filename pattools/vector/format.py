@@ -80,9 +80,11 @@ class MvcWindow:
 
     def get_specific_mvc(self):
         # TODO add a child type of mvc
-        return int(self._items[12])
+        return int(self._items[13])
 
     def decode(self, mvc_str):
+        if mvc_str is None:
+            return self
         self._mvc_str = mvc_str.strip('\n')
         if self._mvc_str:
             items = self._mvc_str.split('\t')
