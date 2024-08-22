@@ -1,6 +1,6 @@
 from pattools.vector.clustering import methylation_vector_cluster
 from pattools.vector.separating import mv_separating
-from pattools.vector.support import extract_mvs, single_cluster, find_motifs, qc, fix_mvc, fix_mv
+from pattools.vector.support import extract_mvs, single_cluster, find_motifs, mvc_qc, mv_qc, fix_mvc, fix_mv
 from pattools.vector.vectorization import pat2mv
 from pattools.cmd import command, Cmd
 
@@ -110,15 +110,26 @@ class VectorSeparatingCmd(Cmd):
                       with_meta=args.with_meta)
 
 
-@command('mv-qc', 'qc')
+@command('mvc-qc', 'qc')
 class VectorFixQC(Cmd):
+    def add_argument(self, parser):
+        parser.add_argument('-i', '--input', required=True, help='mvc file')
+        parser.add_argument('-o', '--out', default=None,
+                            help='The output file, If not set, output is sent to standard output.')
+
+    def do(self, args):
+        mvc_qc(args.input, args.out)
+
+
+@command('mv-qc', 'qc')
+class VectorMvQC(Cmd):
     def add_argument(self, parser):
         parser.add_argument('-i', '--input', required=True, help='Input file list')
         parser.add_argument('-o', '--out', default=None,
                             help='The output file, If not set, output is sent to standard output.')
 
     def do(self, args):
-        qc(args.input, args.out)
+        mv_qc(args.input, args.out)
 
 
 @command('mv-mvc-fix', 'fix mvc file')

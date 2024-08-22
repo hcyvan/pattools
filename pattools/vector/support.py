@@ -119,7 +119,7 @@ def is_no_mvs(s):
     return ret
 
 
-def qc(input_file, outfile):
+def mvc_qc(input_file, outfile):
     with Output(outfile) as of:
         mvc = MvcFormat(input_file)
         window = mvc.header.window
@@ -161,6 +161,39 @@ def qc(input_file, outfile):
         agv_str = "|".join([str(round(x, 2)) for x in mvs_agv])
         of.write("#window\ttotalMVs\tcount\tcountNotEmpty\tavgMVs\twindowBpAvg\n")
         of.write(f"{window}\t{total_str}\t{window_count}\t{window_not_empty_count}\t{agv_str}\t{window_size:.2f}\n")
+
+
+def _mv_qc(mv_file, sample):
+    mvf = MvFormat(mv_file)
+    window = mvf.header.window
+    mvs_total = np.zeros(2 ** window, dtype=np.int64)
+    mvs_total_all = 0
+    window_count = 0
+    window_not_empty_count = 0
+    for line in mvf:
+        items = line.split('\t')
+        mvs_np = np.array([int(x) for x in items[2].split('|')], dtype=np.int64)
+        mvs_np_all = np.sum(mvs_np)
+        if mvs_np_all != 0:
+            window_not_empty_count += 1
+        window_count += 1
+        mvs_total = mvs_total + mvs_np
+        mvs_total_all += mvs_np_all
+    total_str = "|".join([str(x) for x in mvs_total])
+    return sample, window, total_str, window_count, window_not_empty_count, mvs_total_all
+
+
+def mv_qc(input_file, outfile):
+    mv_files, col_names = parse_mv_sample_file(input_file, default_col_name='hint')
+    logger.info(f"MV QC for  {len(mv_files)} files")
+    i = 0
+    with Output(outfile) as of:
+        of.write("#sample\twindow\ttotalMVs\tcount\tcountNotEmpty\ttotalMVsSum\n")
+        for mv_file, col_name in zip(mv_files, col_names):
+            i += 1
+            logger.info(f"... handling {i}/{len(mv_files)} {mv_file}")
+            items = _mv_qc(mv_file, col_name)
+            of.write('\t'.join([str(x) for x in items]) + '\n')
 
 
 def fix_mvc(mvc_file, cpg_bed=None, out=None):
