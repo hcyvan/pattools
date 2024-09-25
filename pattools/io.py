@@ -64,7 +64,7 @@ class Output:
         :param file_format: pat, pat format. motif, motif format
         :param bgzip: Whether to use bgzip compression for output files. False by default.
         """
-        self.filename = filename
+        self.filename = str(filename)
         self.file_format = file_format
         self.bgzip = bgzip
         if self.filename is None:

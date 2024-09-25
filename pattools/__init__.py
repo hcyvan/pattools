@@ -7,6 +7,7 @@ from pattools.cmd import CmdFactory
 from pattools.vector import *
 from pattools.region import *
 from pattools.deconv import *
+from pattools.reference import *
 
 
 def main():
