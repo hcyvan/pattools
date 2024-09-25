@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Installation &#8212; Pattools Document</title>
+    <title>How to use &#8212; Pattools Document</title>
   
   
   
@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -57,7 +57,7 @@
     <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'installation';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'how_to_use';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Beta value" href="beta.html" />
@@ -180,7 +180,7 @@
             </li>
         </ul>
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Installation</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">How to use</a></li>
 <li class="toctree-l1"><a class="reference internal" href="beta.html">Beta value</a></li>
 <li class="toctree-l1"><a class="reference internal" href="matgen.html">Matrix generate</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deconvolution.html">Deconvolution</a></li>
@@ -260,7 +260,7 @@
       
       
       
-      <li><a href="https://github.com/hcyvan/pattools/issues/new?title=Issue%20on%20page%20%2Finstallation.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/hcyvan/pattools/issues/new?title=Issue%20on%20page%20%2Fhow_to_use.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -290,7 +290,7 @@
       
       
       
-      <li><a href="_sources/installation.md" target="_blank"
+      <li><a href="_sources/how_to_use.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -374,7 +374,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Installation</h1>
+    <h1>How to use</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -384,9 +384,13 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-from-pypi">Install from PyPI</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-from-github">Install from github</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-from-source">Install from source</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#install-from-pypi">Install from PyPI</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#install-from-github">Install from github</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#install-from-source">Install from source</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usage">Usage</a></li>
 </ul>
             </nav>
         </div>
@@ -398,30 +402,50 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="how-to-use">
+<h1>How to use<a class="headerlink" href="#how-to-use" title="Link to this heading">#</a></h1>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
 <p>The full name of pattools is <em>pattools-methy</em>. This naming was chosen because the name pattools was already
 taken on PyPI. There are several ways to install pattools</p>
 <section id="install-from-pypi">
-<h2>Install from PyPI<a class="headerlink" href="#install-from-pypi" title="Link to this heading">#</a></h2>
+<h3>Install from PyPI<a class="headerlink" href="#install-from-pypi" title="Link to this heading">#</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">pattools</span><span class="o">-</span><span class="n">methy</span>
 </pre></div>
 </div>
 </section>
 <section id="install-from-github">
-<h2>Install from github<a class="headerlink" href="#install-from-github" title="Link to this heading">#</a></h2>
+<h3>Install from github<a class="headerlink" href="#install-from-github" title="Link to this heading">#</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">hcyvan</span><span class="o">/</span><span class="n">pattools</span><span class="o">.</span><span class="n">git</span>
 </pre></div>
 </div>
 </section>
 <section id="install-from-source">
-<h2>Install from source<a class="headerlink" href="#install-from-source" title="Link to this heading">#</a></h2>
+<h3>Install from source<a class="headerlink" href="#install-from-source" title="Link to this heading">#</a></h3>
 <p>Download the source code, and then</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">source</span><span class="o">/</span><span class="n">code</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
 <span class="n">python</span> <span class="o">./</span><span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
 </pre></div>
 </div>
+</section>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">#</a></h2>
+<a class="bg-primary mb-1 reference internal image-reference" href="_images/usage.png"><img alt="fishy" class="bg-primary mb-1 align-center" src="_images/usage.png" style="width: 600px;" /></a>
+<p>Once the installation is complete, you can begin analyzing BS-seq data.
+The general workflow involves the following steps:</p>
+<ol class="arabic simple">
+<li><p>Prepare the Reference Genome: Build the appropriate reference genome based on the species being analyzed.</p></li>
+</ol>
+<p>eg:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pattools</span> <span class="n">reference</span> <span class="o">-</span><span class="n">f</span> <span class="o">/</span><span class="n">PathTo</span><span class="o">/</span><span class="n">hg38</span><span class="o">.</span><span class="n">fa</span><span class="o">.</span><span class="n">gz</span> <span class="o">-</span><span class="n">o</span> <span class="o">/</span><span class="n">OutputPathTo</span><span class="o">/</span><span class="n">hg38</span> <span class="o">-</span><span class="n">c</span> <span class="n">chr1</span><span class="p">,</span><span class="n">chr2</span><span class="p">,</span><span class="n">chr3</span><span class="p">,</span><span class="n">chr4</span><span class="p">,</span><span class="n">chr5</span><span class="p">,</span><span class="n">chr6</span><span class="p">,</span><span class="n">chr7</span><span class="p">,</span><span class="n">chr8</span><span class="p">,</span><span class="n">chr9</span><span class="p">,</span><span class="n">chr10</span><span class="p">,</span><span class="n">chr11</span><span class="p">,</span><span class="n">chr12</span><span class="p">,</span><span class="n">chr13</span><span class="p">,</span><span class="n">chr14</span><span class="p">,</span><span class="n">chr15</span><span class="p">,</span><span class="n">chr16</span><span class="p">,</span><span class="n">chr17</span><span class="p">,</span><span class="n">chr18</span><span class="p">,</span><span class="n">chr19</span><span class="p">,</span><span class="n">chr20</span><span class="p">,</span><span class="n">chr21</span><span class="p">,</span><span class="n">chr22</span><span class="p">,</span><span class="n">chrX</span><span class="p">,</span><span class="n">chrY</span><span class="p">,</span><span class="n">chrM</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Convert Data to PAT Format: Convert the BS-seq data to the PAT format for compatibility with further processing.</p></li>
+<li><p>Conduct Downstream Analysis: Perform additional analysis steps based on your specific research needs and objectives.</p></li>
+</ol>
 </section>
 </section>
 
@@ -489,9 +513,13 @@ taken on PyPI. There are several ways to install pattools</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-from-pypi">Install from PyPI</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-from-github">Install from github</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-from-source">Install from source</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#install-from-pypi">Install from PyPI</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#install-from-github">Install from github</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#install-from-source">Install from source</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usage">Usage</a></li>
 </ul>
   </nav></div>
 
