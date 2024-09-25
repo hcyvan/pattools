@@ -4,7 +4,7 @@
 format: jb-book
 root: intro
 chapters:
-- file: installation
+- file: how_to_use
 - file: beta
 - file: matgen
 - file: deconvolution
