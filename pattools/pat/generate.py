@@ -9,8 +9,6 @@ def bam2pat(input_file, output):
     # TODO: add bam2pat
     for read in samfile.fetch(): # AlignedSegment
         print(read.reference_name, read.reference_id)
-
-
     samfile.close()
 
 def compress_and_tabix_pat(input_file, output):
