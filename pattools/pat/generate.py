@@ -1,7 +1,21 @@
+import pysam
+from pysam.libcalignedsegment import AlignedSegment
 from pattools.io import Output, Open
 from pattools.pat.pat import PatStep
 from pattools.log import logger
 
+def bam2pat(input_file, output):
+    samfile = pysam.AlignmentFile(input_file, "rb")
+    # print(samfile.header)
+    # for k,v in samfile.header.items():
+    #     print(1111111111111111111)
+    #     print(k,v)
+
+    for read in samfile.fetch(): # AlignedSegment
+        print(read.reference_name, read.reference_id)
+
+
+    samfile.close()
 
 def compress_and_tabix_pat(input_file, output):
     logger.info(f"Compress and tabixing {input_file}")
