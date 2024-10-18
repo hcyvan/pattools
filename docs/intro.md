@@ -27,3 +27,6 @@ the analysis of PAT format data. Pattools currently offers the following functio
 :width: 600px
 :align: center
 ```
+
+## Cite Us
+Cheng et al. (2024). Novel diagnosis and therapeutic strategies for small cell lung cancer based on aberrant methylation in lung cancer subtypes. (journal not determined)

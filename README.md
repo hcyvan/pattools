@@ -140,6 +140,9 @@ pattools region-file -t cpg2genome --column col2  --out-format bed -c /mnt/d/pro
 
 Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
+## Cite Us
+Cheng et al. (2024). Novel diagnosis and therapeutic strategies for small cell lung cancer based on aberrant methylation in lung cancer subtypes. (journal not determined)
+
 ## Acknowledgements
 
 + [wgbstools](https://github.com/nloyfer/wgbs_tools)
