@@ -5,7 +5,7 @@ from numpy.typing import NDArray
 import numpy as np
 from collections import Counter, OrderedDict
 from sklearn.cluster import DBSCAN
-import hdbscan
+# import hdbscan
 
 from scipy.spatial.distance import pdist, squareform
 

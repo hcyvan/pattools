@@ -94,7 +94,7 @@ def find_motifs(input_file, mvc_file, outfile=None):
                 if _mvf.mvw.cpg_idx is None or _mvf.mvw.cpg_idx > cpg_idx:
                     mvs_list.append(0)
                 else:
-                    while _mvf.mvw.cpg_idx < cpg_idx:
+                    while _mvf.mvw.cpg_idx is not None and _mvf.mvw.cpg_idx < cpg_idx:
                         _mvf.readline()
                     if _mvf.mvw.cpg_idx == cpg_idx:
                         motif = Motif(header.window)
