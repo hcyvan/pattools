@@ -1,6 +1,6 @@
 from pattools.vector.clustering import methylation_vector_cluster
 from pattools.vector.separating import mv_separating
-from pattools.vector.support import extract_mvs, single_cluster, find_motifs, mvc_qc, mv_qc, fix_mvc, fix_mv
+from pattools.vector.support import extract_mvs, single_cluster, find_motifs, smvc_merge, mvc_qc, mv_qc, fix_mvc, fix_mv
 from pattools.vector.vectorization import pat2mv
 from pattools.cmd import command, Cmd
 
@@ -109,6 +109,21 @@ class VectorSeparatingCmd(Cmd):
         mv_separating(args.input, args.group, args.frac_mvs, args.frac_samples, output_file=args.out,
                       with_meta=args.with_meta)
 
+
+@command('smvc-merge', 'smvc merge')
+class VectorMvcMerge(Cmd):
+    def add_argument(self, parser):
+        parser.add_argument('-i', '--input', required=True, help='smvc file')
+        parser.add_argument('-o', '--out', default=None,
+                            help='The output file, If not set, output is sent to standard output.')
+        parser.add_argument('-e', '--exclude', default=None, help='chrom to exclude')
+
+
+    def do(self, args):
+        exclude = args.exclude
+        if exclude is not None:
+            exclude = exclude.split(',')
+        smvc_merge(args.input, args.out, exclude)
 
 @command('mvc-qc', 'qc')
 class VectorFixQC(Cmd):

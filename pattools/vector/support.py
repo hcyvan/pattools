@@ -221,3 +221,55 @@ def fix_mv(mv_file, out=None):
         of.write(mv.header.encode() + "\n")
         for _ in mv:
             of.write(mv.mvw.encode() + '\n')
+
+
+def merge_smvc_items(smvc_items, fo, exclude):
+    if len(smvc_items) == 0:
+        return None
+    chrom = smvc_items[0][0]
+    if exclude is not None and chrom in exclude:
+        return
+    start = smvc_items[0][2]
+    end = smvc_items[-1][3]
+    smvp_idx = 10
+    ssp_idx = 11
+    i0v0_idx = 14
+    i1v0_idx = 15
+    smvp_value = np.mean([float(x[smvp_idx]) for x in smvc_items])
+    ssp_value = np.mean([float(x[ssp_idx]) for x in smvc_items])
+
+    i0v0_value = np.mean([float(x[i0v0_idx]) for x in smvc_items])
+    i1v0_value = np.mean([float(x[i1v0_idx]) for x in smvc_items])
+    smvr_class = "hypo" if i0v0_value > i1v0_value else "hyper"
+    items = [chrom, start, end, len(smvc_items), int(end) - int(start), round(smvp_value, 4), round(ssp_value, 4),
+             round(i0v0_value, 4),
+             round(i1v0_value, 4), smvr_class]
+    fo.write("\t".join([str(x) for x in items]) + "\n")
+
+
+def smvc_merge(input_file, outfile, exclude=None):
+    with Output(outfile) as fo:
+        with open(input_file) as fi:
+            chrom = None
+            end = None
+            smvc_items = []
+            for line in fi:
+                items = line.strip().split('\t')
+                _chrom = items[0]
+                _start = int(items[2])
+                _end = int(items[3])
+                if _chrom != chrom:
+                    merge_smvc_items(smvc_items, fo, exclude)
+                    smvc_items = []
+                    chrom, end = _chrom, _end
+                    smvc_items.append(items)
+                else:
+                    if _start <= end:
+                        end = _end
+                        smvc_items.append(items)
+                    else:
+                        merge_smvc_items(smvc_items, fo, exclude)
+                        smvc_items = []
+                        chrom, end = _chrom, _end
+                        smvc_items.append(items)
+            merge_smvc_items(smvc_items, fo, exclude)
