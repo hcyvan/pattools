@@ -8,6 +8,8 @@ from pattools.io import Output, MvTabix, CpG2Tabix
 from pattools.vector.format import MvcFormat, MvFormat, BaseHeader
 from pattools.log import logger
 from pattools.vector.utils import get_cpg_index_regions
+from pattools.deconv.utils import get_uxm_ratio_from_pat_by_cpg_idx
+from pattools.region.region import GenomicRegion
 
 
 def extract_mvs(file_list, region_file, outfile=None):
@@ -275,3 +277,39 @@ def smvc_merge(input_file, outfile, exclude=None):
                         chrom, end = _chrom, _end
                         smvc_items.append(items)
             merge_smvc_items(smvc_items, fo, exclude)
+
+
+def extract_uxm(pat_file, bed_file, cpg_file, outfile=None):
+    regions = []
+    with open(bed_file, 'r') as f:
+        for line in f:
+            items = line.strip().split('\t')
+            region = f"{items[0]}:{items[1]}-{items[2]}"
+            regions.append(region)
+    gr = GenomicRegion(cpg_file)
+    genome_cpg_idx = gr.genomic_to_cpg_idx(regions)
+    out = get_uxm_ratio_from_pat_by_cpg_idx(pat_file, genome_cpg_idx, na_remove=False)
+    values = []
+    for i, row in out.iterrows():
+        line = row['genome']
+        chrom, span = line.split(':')
+        start, end = span.split('-')
+        line = row['cpg']
+        _, span = line.split(':')
+        cpg_start, cpg_end = span.split('-')
+        values.append([chrom, start, end, cpg_start, cpg_end, row['uxm_ratio'], row['depth']])
+    if outfile is not None:
+        fo = open(outfile, 'w')
+    else:
+        fo = sys.stdout
+    for v in values:
+        fo.write("\t".join([str(x) for x in v]) + "\n")
+    fo.close()
+
+
+
+
+
+
+
+
