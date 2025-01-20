@@ -229,6 +229,8 @@ def merge_smvc_items(smvc_items, fo, exclude):
     chrom = smvc_items[0][0]
     if exclude is not None and chrom in exclude:
         return
+    cpg_start = smvc_items[0][1]
+    cpg_end = smvc_items[-1][1]
     start = smvc_items[0][2]
     end = smvc_items[-1][3]
     smvp_idx = 10
@@ -237,11 +239,11 @@ def merge_smvc_items(smvc_items, fo, exclude):
     i1v0_idx = 15
     smvp_value = np.mean([float(x[smvp_idx]) for x in smvc_items])
     ssp_value = np.mean([float(x[ssp_idx]) for x in smvc_items])
-
     i0v0_value = np.mean([float(x[i0v0_idx]) for x in smvc_items])
     i1v0_value = np.mean([float(x[i1v0_idx]) for x in smvc_items])
     smvr_class = "hypo" if i0v0_value > i1v0_value else "hyper"
-    items = [chrom, start, end, len(smvc_items), int(end) - int(start), round(smvp_value, 4), round(ssp_value, 4),
+    items = [chrom, start, end, cpg_start, cpg_end, len(smvc_items), int(end) - int(start), round(smvp_value, 4),
+             round(ssp_value, 4),
              round(i0v0_value, 4),
              round(i1v0_value, 4), smvr_class]
     fo.write("\t".join([str(x) for x in items]) + "\n")
