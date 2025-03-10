@@ -243,6 +243,8 @@ def merge_smvc_items(smvc_items, fo, exclude):
     ssp_value = np.mean([float(x[ssp_idx]) for x in smvc_items])
     i0v0_value = np.mean([float(x[i0v0_idx]) for x in smvc_items])
     i1v0_value = np.mean([float(x[i1v0_idx]) for x in smvc_items])
+    if i0v0_value - i1v0_value <0.5:
+        return
     smvr_class = "hypo" if i0v0_value > i1v0_value else "hyper"
     items = [chrom, start, end, cpg_start, cpg_end, len(smvc_items), int(end) - int(start), round(smvp_value, 4),
              round(ssp_value, 4),
