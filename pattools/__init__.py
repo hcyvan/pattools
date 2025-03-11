@@ -30,15 +30,6 @@ def main():
     parser_entropy.add_argument('-o', '--out', required=True,
                                 help='The output file, *.gz format. There are four columns in total, '
                                      'representing chromosome, index, entropy, and total sequencing depth of loci')
-    # =====================================================================
-    parser_beta = subparsers.add_parser('beta',
-                                        help='This command performs methylation ratio analysis on the sample')
-    parser_beta.add_argument('-i', '--input', required=True, help='Input file, *.pat.gz format')
-    parser_beta.add_argument('-d', '--depth', type=int, default='1',
-                             help='the minimum total count required to calculate methylation ratio')
-    parser_beta.add_argument('-o', '--out', required=True,
-                             help='The output file, *.gz format. There are four columns in total,'
-                                  'representing chromosome, index, methylation ratio, and total sequencing depth of loci')
     # ======================================================================
     parser_matrix_generate = subparsers.add_parser('matgen',
                                                    help='This command is used to generate matrix for entropy and beta')
@@ -56,8 +47,6 @@ def main():
     args = parser.parse_args()
     if args.sub == 'entropy':
         extract_entropy(args.input, args.depth, args.window, args.out)
-    if args.sub == 'beta':
-        extract_beta(args.input, args.depth, args.out)
     if args.sub == 'matgen':
         matrix_generate(args.input, args.coordinate, args.depth, args.exclude_mode, args.out)
     CmdFactory.run(args)

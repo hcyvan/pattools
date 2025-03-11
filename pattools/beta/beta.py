@@ -24,11 +24,11 @@ def calculate_methlevel(patWin, depth):
         meth_ratio = -1
     return round(meth_ratio, 4), total_count
 
-def extract_beta(input, depth, outfile, bgzip: bool = True):
+def extract_beta(pat_file, depth, outfile=None, bgzip: bool = True):
 
-    patWindow = PatWindow(input, window=1)
+    pat_window = PatWindow(pat_file, window=1)
     with Output(filename=outfile, bgzip=bgzip) as f:
-        for pat in patWindow:
+        for pat in pat_window:
             ratio, count = calculate_methlevel(pat[2], depth)
             f.write(f"{pat[0]}\t{pat[1]}\t{ratio}\t{count}\n")
 
