@@ -64,7 +64,7 @@ class Output:
         :param file_format: pat, pat format. motif, motif format
         :param bgzip: Whether to use bgzip compression for output files. False by default.
         """
-        self.filename=filename
+        self.filename = filename
         self.file_format = file_format
         self.bgzip = bgzip
         if self.filename is None:
@@ -211,6 +211,7 @@ class _TabixSequential:
     """
     TODO: merge this class into _TabixRandom.
     """
+
     def __init__(self, filename: str, region: str | List[str] = None):
         self._filename = filename
         self._regions_pointer = -1
@@ -336,6 +337,53 @@ class MvTabix:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
         return False
+
+    def readline_and_parse(self, motifs):
+        items = self.readline()
+        if items:
+            chrom, cpg_idx, motif_count_arr = items
+            motif_count = dict(zip(motifs, motif_count_arr))
+            return chrom, cpg_idx, motif_count
+        return None
+
+
+class CpGBedSequential:
+    def __init__(self, filename: str, region: str | List[str] = None):
+        # TODO use Open, not _TabixSequential
+        self._tabix = _TabixSequential(filename, region)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        line = next(self._tabix)
+        row = line.strip().split('\t')
+        chrom = row[0]
+        # TODO: CpG.bed.gz is not CGS format!!! This is just a temporary solution and needs to be replaced by the CpG.bed.gz class
+        genome_idx = int(row[1])
+        cpg_idx = int(row[2])
+        return chrom, cpg_idx, genome_idx
+
+
+    def readline(self):
+        try:
+            return self.__next__()
+        except StopIteration:
+            return None
+
+
+    def close(self):
+        self._tabix.close()
+
+
+    def __enter__(self):
+        return self
+
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+        return False
+
 
     def readline_and_parse(self, motifs):
         items = self.readline()

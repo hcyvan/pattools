@@ -37,6 +37,7 @@ class PatItem:
         for k, v in self.counter.items():
             lines.append(f'{self.chrom}\t{self.cpg}\t{k}\t{v}')
         return lines
+
     def __str__(self):
         return f'{self.chrom}\t{self.cpg}\t{self.counter}'
 
@@ -139,6 +140,12 @@ class PatWindow(PatIterator):
                     return chr, start, pattern
             else:
                 raise StopIteration
+
+    def readline(self):
+        try:
+            return self.__next__()
+        except StopIteration:
+            return None, None, None
 
 
 class PatRegion(PatIterator):

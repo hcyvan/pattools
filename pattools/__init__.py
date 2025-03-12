@@ -1,13 +1,14 @@
 import argparse
 from pattools.config import CONFIG
 from pattools.entropy import extract_entropy
-from pattools.beta import extract_beta
 from pattools.matrixgenerate import matrix_generate
 from pattools.cmd import CmdFactory
 from pattools.vector import *
 from pattools.region import *
 from pattools.deconv import *
 from pattools.reference import *
+from pattools.beta import *
+from pattools.pattox import *
 
 
 def main():
