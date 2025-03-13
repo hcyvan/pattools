@@ -58,7 +58,7 @@ class Output:
         of.write("hello Output\n")
     """
 
-    def __init__(self, filename=None, file_format='cgs', bgzip=False):
+    def __init__(self, filename=None, file_format=None, bgzip=False):
         """
         :param filename: output filename. if filename is None, it will write to standard output.
         :param file_format: pat, pat format. motif, motif format
