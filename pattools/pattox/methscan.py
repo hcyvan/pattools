@@ -1,6 +1,6 @@
 from pathlib import Path
 from pattools.pat import PatWindow
-from pattools.io import Output, Open, MvTabix, CpGBedSequential
+from pattools.io import Output, CpGBedSequential
 
 
 def calculate_methlevel(patWin, depth):

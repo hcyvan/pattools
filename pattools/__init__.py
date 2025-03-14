@@ -1,4 +1,5 @@
 import argparse
+import os
 from pattools.config import CONFIG
 from pattools.entropy import extract_entropy
 from pattools.matrixgenerate import matrix_generate
@@ -20,6 +21,9 @@ def main():
                                        help='select a sub command to use')
     CmdFactory.set_subparser(subparsers)
 
+
+
+
     # =====================================================================
     parser_entropy = subparsers.add_parser('entropy',
                                            help='This command performs entropy analysis on the sample')
@@ -37,9 +41,9 @@ def main():
     parser_matrix_generate.add_argument('-i', '--input', required=True, help='This is a text, with each line being the '
                                                                              'path to each entropy or beta file')
     parser_matrix_generate.add_argument('-o', '--out', required=True, help='The output is a standard bed format file')
+    parser_matrix_generate.add_argument('--gzip', default=False, help='compress the result by gzip')
     parser_matrix_generate.add_argument('-c', '--coordinate', required=True,
-                                        help='This is a standard CpG coordinate file '
-                                             'The current path is /PUBLIC/rd/lung_cac/rawdata/cpgMapinfo')
+                                        help='The CpG.bed.gz file which can generate by pattools genome-build')
     parser_matrix_generate.add_argument('-d', '--depth', type=int, default=3, help='the lowest depth of a matrix')
     parser_matrix_generate.add_argument('-e', '--exclude_mode', default='all',
                                         help='exclude -1 mode: all - exclude if all sample is -1,'
@@ -49,5 +53,5 @@ def main():
     if args.sub == 'entropy':
         extract_entropy(args.input, args.depth, args.window, args.out)
     if args.sub == 'matgen':
-        matrix_generate(args.input, args.coordinate, args.depth, args.exclude_mode, args.out)
+        matrix_generate(args.input, args.coordinate, args.depth, args.exclude_mode, args.out, args.gzip)
     CmdFactory.run(args)
