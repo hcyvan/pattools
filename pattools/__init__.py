@@ -20,10 +20,6 @@ def main():
     subparsers = parser.add_subparsers(dest='sub', required=True, title='command', description='The available commands',
                                        help='select a sub command to use')
     CmdFactory.set_subparser(subparsers)
-
-
-
-
     # =====================================================================
     parser_entropy = subparsers.add_parser('entropy',
                                            help='This command performs entropy analysis on the sample')
@@ -41,7 +37,7 @@ def main():
     parser_matrix_generate.add_argument('-i', '--input', required=True, help='This is a text, with each line being the '
                                                                              'path to each entropy or beta file')
     parser_matrix_generate.add_argument('-o', '--out', required=True, help='The output is a standard bed format file')
-    parser_matrix_generate.add_argument('--gzip', default=False, help='compress the result by gzip')
+    parser_matrix_generate.add_argument('-z', '--gzip', action="store_true", help='compress the result by gzip')
     parser_matrix_generate.add_argument('-c', '--coordinate', required=True,
                                         help='The CpG.bed.gz file which can generate by pattools genome-build')
     parser_matrix_generate.add_argument('-d', '--depth', type=int, default=3, help='the lowest depth of a matrix')
